@@ -33,7 +33,7 @@
                 <div class="header-content">
                     <h1>Tableau de bord</h1>
                     <div class="user-info">
-                        <button onclick="exportData()" style="margin-right: 15px;">Exporter les données</button>
+                        <button id="exportDataBtn" style="margin-right: 15px;">Exporter les données</button> <!-- ID added, onclick removed -->
                         <span>Administrateur</span>
                         <i class="fas fa-user-circle"></i>
                     </div>
@@ -364,6 +364,14 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             updateStats();
+
+            // Attach export button listener
+            const exportBtn = document.getElementById('exportDataBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportData);
+            } else {
+                console.error("Bouton d'exportation 'exportDataBtn' non trouvé.");
+            }
             
             // Rafraîchissement périodique
             setInterval(updateStats, 30000); // Mise à jour toutes les 30 secondes
