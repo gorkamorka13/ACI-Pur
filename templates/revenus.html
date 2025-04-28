@@ -346,129 +346,216 @@
                 tableBody.appendChild(row);
             });
 
-            // Appel pour initialiser/mettre à jour le graphique avec les revenus filtrés
-            initRevenusChart(revenus); 
+            // Ne pas appeler initRevenusChart ici, sera appelé après loadData ou par le filtre
         }
 
         // Variable pour stocker l'instance du graphique
         let revenusChartInstance = null;
 
-        // Fonction pour initialiser le graphique d'évolution des revenus
-        function initRevenusChart(revenusData) {
-            const chartElement = document.getElementById('revenus-chart');
-            if (!chartElement) {
-                console.error("L'élément 'revenus-chart' est introuvable.");
+        // Fonction pour initialiser/mettre à jour le graphique d'évolution (Revenus, Charges, Net)
+        function initRevenusChart() {
+            console.log("[revenus.html] Initializing/Updating Chart..."); // Log start
+
+            if (!globalData || !globalData.revenus || !globalData.charges) {
+                console.warn("[revenus.html] Missing globalData for chart.");
                 return;
             }
-            
-            // S'assurer que l'élément enfant est un canvas ou le créer
-            let ctx;
+
+            const chartElement = document.getElementById('revenus-chart');
+            if (!chartElement) {
+                console.error("[revenus.html] Chart container 'revenus-chart' not found.");
+                return;
+            }
+
+            // Get selected year from filter
+            const anneeFilter = document.getElementById('filter-annee').value;
+            const selectedYear = anneeFilter ? parseInt(anneeFilter) : null; // null means all years
+            const chartTitleYear = selectedYear ? selectedYear : "Toutes les années";
+
+            console.log(`[revenus.html] Selected year for chart: ${chartTitleYear}`);
+
+            // Prepare canvas
             let canvas = chartElement.querySelector('canvas');
             if (!canvas) {
                 canvas = document.createElement('canvas');
-                chartElement.innerHTML = ''; // Nettoyer le contenu précédent (ex: message "pas de données")
+                chartElement.innerHTML = ''; // Clear previous content
                 chartElement.appendChild(canvas);
             }
-            ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                 console.error("[revenus.html] Failed to get 2D context for canvas.");
+                 return;
+            }
 
+            // Aggregate data by month for the selected year (or all years)
+            const monthlyData = {};
+            const moisNoms = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"];
 
-            if (!revenusData || revenusData.length === 0) {
-                // Si pas de données, afficher un message et détruire l'ancien graphique
-                chartElement.innerHTML = '<p style="text-align: center; padding: 20px;">Aucune donnée de revenu disponible pour afficher le graphique.</p>';
-                 if (revenusChartInstance) {
-                    revenusChartInstance.destroy(); 
+            // Aggregate Revenus
+            globalData.revenus.forEach(rev => {
+                if (!rev || !rev.date || !rev.montant) return;
+                const date = new Date(rev.date);
+                if (isNaN(date.getTime())) return; // Skip invalid dates
+                
+                // Filter by year if selected
+                if (selectedYear && date.getFullYear() !== selectedYear) return; 
+
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM
+                if (!monthlyData[monthKey]) monthlyData[monthKey] = { revenus: 0, charges: 0 };
+                monthlyData[monthKey].revenus += parseFloat(rev.montant);
+            });
+
+            // Aggregate Charges
+            globalData.charges.forEach(chg => {
+                if (!chg || !chg.date || !chg.montant) return;
+                const date = new Date(chg.date);
+                if (isNaN(date.getTime())) return; // Skip invalid dates
+
+                // Filter by year if selected
+                if (selectedYear && date.getFullYear() !== selectedYear) return;
+
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM
+                if (!monthlyData[monthKey]) monthlyData[monthKey] = { revenus: 0, charges: 0 }; // Initialize if only charges exist for this month
+                monthlyData[monthKey].charges += parseFloat(chg.montant);
+            });
+
+            console.log("[revenus.html] Aggregated monthly data:", monthlyData);
+
+            // Sort months chronologically
+            const sortedMonths = Object.keys(monthlyData).sort();
+
+            if (sortedMonths.length === 0) {
+                chartElement.innerHTML = `<p style="text-align: center; padding: 20px;">Aucune donnée disponible pour l'année ${chartTitleYear} pour afficher le graphique.</p>`;
+                if (revenusChartInstance) {
+                    revenusChartInstance.destroy();
                     revenusChartInstance = null;
                 }
+                console.log("[revenus.html] No data for the selected period.");
                 return;
             }
 
-            // Préparer les données pour le graphique (par mois)
-            const revenusParMois = {};
-            const moisNoms = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"];
-
-            revenusData.forEach(rev => {
-                // Vérifier si la date est valide
-                const date = new Date(rev.date);
-                 if (isNaN(date.getTime())) {
-                    console.warn(`Date invalide ignorée: ${rev.date}`);
-                    return; // Ignorer cette entrée si la date est invalide
-                }
-                const anneeMois = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // Format YYYY-MM
-                if (!revenusParMois[anneeMois]) {
-                    revenusParMois[anneeMois] = 0;
-                }
-                revenusParMois[anneeMois] += parseFloat(rev.montant || 0);
-            });
-
-            // Trier les clés (mois) pour l'ordre chronologique
-            const moisTries = Object.keys(revenusParMois).sort();
-
-            const labels = moisTries.map(key => {
+            // Prepare labels and datasets
+            const labels = sortedMonths.map(key => {
                 const [annee, mois] = key.split('-');
                 return `${moisNoms[parseInt(mois) - 1]} ${annee}`;
             });
-            const dataPoints = moisTries.map(key => revenusParMois[key]);
+            const revenusDataPoints = sortedMonths.map(key => monthlyData[key].revenus);
+            const chargesDataPoints = sortedMonths.map(key => monthlyData[key].charges);
+            const netDataPoints = sortedMonths.map(key => monthlyData[key].revenus - monthlyData[key].charges);
 
-            // Détruire l'ancien graphique s'il existe
+            console.log("[revenus.html] Chart Labels:", labels);
+            console.log("[revenus.html] Revenus Data:", revenusDataPoints);
+            console.log("[revenus.html] Charges Data:", chargesDataPoints);
+            console.log("[revenus.html] Net Data:", netDataPoints);
+
+            // Destroy existing chart instance if it exists
             if (revenusChartInstance) {
+                console.log("[revenus.html] Destroying previous chart instance.");
                 revenusChartInstance.destroy();
             }
 
-            // Créer le nouveau graphique
-            revenusChartInstance = new Chart(ctx, {
-                type: 'line', // Type de graphique (ligne)
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenus ACI par mois',
-                        data: dataPoints,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Important pour que le graphique remplisse le conteneur
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    // Assurer que dataService est disponible ou utiliser un formatage par défaut
-                                    return typeof dataService !== 'undefined' ? dataService.formatMontant(value) : `${value} €`;
-                                }
+            // Create the new chart
+            try {
+                console.log("[revenus.html] Creating new chart instance...");
+                revenusChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Total Revenus',
+                                data: revenusDataPoints,
+                                borderColor: 'rgb(75, 192, 192)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                tension: 0.1,
+                                fill: false
+                            },
+                            {
+                                label: 'Total Charges',
+                                data: chargesDataPoints,
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                tension: 0.1,
+                                fill: false
+                            },
+                            {
+                                label: 'Revenu Net',
+                                data: netDataPoints,
+                                borderColor: 'rgb(54, 162, 235)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                tension: 0.1,
+                                fill: false
                             }
-                        }
+                        ]
                     },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Évolution Mensuelle - ${chartTitleYear}`
+                            },
+                            legend: {
+                                position: 'top', // Legend allows toggling
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.y !== null) {
+                                            label += dataService.formatMontant(context.parsed.y);
+                                        }
+                                        return label;
                                     }
-                                    if (context.parsed.y !== null) {
-                                         // Assurer que dataService est disponible ou utiliser un formatage par défaut
-                                        label += typeof dataService !== 'undefined' ? dataService.formatMontant(context.parsed.y) : `${context.parsed.y} €`;
-                                    }
-                                    return label;
                                 }
                             }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: { display: true, text: 'Mois' }
+                            },
+                            y: {
+                                display: true,
+                                title: { display: true, text: 'Montant (€)' },
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return dataService.formatMontant(value);
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                           mode: 'nearest',
+                           axis: 'x',
+                           intersect: false
                         }
                     }
+                });
+                console.log("[revenus.html] Chart created successfully.");
+            } catch (chartError) {
+                console.error("[revenus.html] Error creating chart:", chartError);
+                chartElement.innerHTML = '<p style="text-align: center; padding: 20px; color: red;">Erreur lors de la création du graphique.</p>';
+                if (revenusChartInstance) {
+                    revenusChartInstance.destroy();
+                    revenusChartInstance = null;
                 }
-            });
+            }
         }
 
-
-        // Fonction pour initialiser le filtre des années
+        // Fonction pour initialiser le filtre des années (utilise revenus ET charges pour plus de robustesse)
         function initFilterAnnees() {
-            if (!globalData || !globalData.revenus) return;
+            if (!globalData || (!globalData.revenus && !globalData.charges)) return;
             
-            const annees = [...new Set(globalData.revenus.map(r => new Date(r.date).getFullYear()))];
+            const anneesRevenus = globalData.revenus ? globalData.revenus.map(r => new Date(r.date).getFullYear()) : [];
+            const anneesCharges = globalData.charges ? globalData.charges.map(c => new Date(c.date).getFullYear()) : [];
+            const annees = [...new Set([...anneesRevenus, ...anneesCharges])].filter(year => !isNaN(year)); // Combine, unique, remove NaN
+            
             annees.sort((a, b) => b - a); // Tri décroissant
 
             const select = document.getElementById('filter-annee');
@@ -484,13 +571,17 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            loadData(); // Charge les données et appelle updateStats() sans argument (année courante)
+            loadData().then(() => {
+                 // Initialiser le graphique après le chargement initial des données
+                 initRevenusChart(); 
+            });
             
             // Gestion du filtre par année
             document.getElementById('filter-annee').addEventListener('change', function() {
-                const selectedYear = this.value; // Récupère l'année sélectionnée
-                initTableRevenus(); // Met à jour le tableau et le graphique (utilise déjà la valeur du filtre)
-                updateStats(selectedYear || null); // Met à jour les cartes de statistiques avec l'année sélectionnée (ou null si "Toutes les années")
+                const selectedYear = this.value; 
+                initTableRevenus(); // Met à jour le tableau (qui utilise déjà la valeur du filtre)
+                updateStats(selectedYear || null); // Met à jour les cartes de statistiques
+                initRevenusChart(); // Met à jour le graphique avec la nouvelle année filtrée
             });
             
             // Gestion des modales
