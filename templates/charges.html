@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../css/style.css">
     <!-- Ajout de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Ajout de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -110,10 +112,11 @@
             </div>
 
             <!-- Graphique de répartition des charges -->
+            <!-- Graphique de répartition des charges -->
             <div class="chart-container mt-20">
                 <h3>Répartition des charges par catégorie</h3>
-                <div class="chart" id="charges-chart">
-                    <!-- Le graphique sera généré par JavaScript -->
+                <div class="chart">
+                    <canvas id="charges-chart"></canvas> <!-- Remplacer div par canvas -->
                 </div>
             </div>
         </div>
@@ -220,6 +223,7 @@
         import { dataService } from '../js/services/DataService.js';
 
         let globalData = null;
+        let chargesChartInstance = null; // Variable pour stocker l'instance du graphique
 
         // Fonction pour charger les données
         async function loadData() {
@@ -228,7 +232,8 @@
                 globalData = { charges };
                 initTableCharges();
                 initFilterCategories();
-                updateSummaryStats(charges); // Add call to update stats
+                updateSummaryStats(charges);
+                updateChargesChart(charges); // Ajouter l'appel pour mettre à jour le graphique
             } catch (error) {
                 console.error('Erreur lors du chargement des charges:', error);
                 const tableBody = document.getElementById('liste-charges');
@@ -347,6 +352,88 @@
             document.getElementById('charges-variables').textContent = dataService.formatMontant(variables);
             // TODO: Update year label dynamically if needed
         }
+
+        // Fonction pour mettre à jour le graphique des charges par catégorie
+        function updateChargesChart(charges) {
+            const ctx = document.getElementById('charges-chart').getContext('2d');
+            if (!ctx) {
+                console.error('Canvas context not found for charges chart.');
+                return;
+            }
+
+            // Détruire l'ancien graphique s'il existe
+            if (chargesChartInstance) {
+                chargesChartInstance.destroy();
+            }
+
+            if (!charges || charges.length === 0) {
+                // Afficher un message si pas de données
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear canvas
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#6c757d';
+                ctx.textAlign = 'center';
+                ctx.fillText('Aucune donnée de charge disponible pour le graphique.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                chargesChartInstance = null; // Reset instance
+                return;
+            }
+
+            // Préparer les données pour le graphique
+            const categoriesData = charges.reduce((acc, charge) => {
+                const categorie = charge.categorie || 'Non catégorisé';
+                const montant = parseFloat(charge.montant) || 0;
+                acc[categorie] = (acc[categorie] || 0) + montant;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(categoriesData);
+            const data = Object.values(categoriesData);
+
+            // Couleurs pour le graphique (peut être étendu si plus de catégories)
+            const backgroundColors = [
+                '#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8',
+                '#6c757d', '#fd7e14', '#6610f2', '#e83e8c', '#20c997'
+            ];
+            const borderColors = backgroundColors.map(color => color + 'B3'); // Add some transparency
+
+            // Créer le nouveau graphique (camembert)
+            chargesChartInstance = new Chart(ctx, {
+                type: 'pie', // Type de graphique
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Répartition par catégorie',
+                        data: data,
+                        backgroundColor: backgroundColors.slice(0, labels.length),
+                        borderColor: borderColors.slice(0, labels.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permet au graphique de s'adapter à la hauteur du conteneur
+                    plugins: {
+                        legend: {
+                            position: 'top', // Position de la légende
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += dataService.formatMontant(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
 
         // Fonction pour initialiser le filtre des catégories
         function initFilterCategories() {
