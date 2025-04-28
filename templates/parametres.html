@@ -314,16 +314,12 @@
         </div>
     </div>
 
-    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/main.js"></script> <!-- Load main JS first -->
+    <script type="module">
+        import { dataService } from '../js/services/DataService.js'; // Import DataService
 
-    <script>
-        // Paramètres initiaux (les valeurs seront chargées depuis localStorage si disponibles)
-        let parametres = {
-            partFixe: 50, // Valeur par défaut, sera écrasée par localStorage si existant
-            facteurCogerant: 1.7,
-            partRCP: 25,
-            partProjets: 25
-        };
+        // Paramètres (sera chargé depuis l'API ou utilisera les valeurs HTML par défaut)
+        let parametres = null; 
         
         // Éléments DOM
         const sliderCogerant = document.getElementById('slider-cogerant');
@@ -391,57 +387,119 @@
             });
         });
 
-        // Événement du bouton de sauvegarde
-        document.querySelector('.btn-save').addEventListener('click', function() {
-            if (updateDisplay()) {
+        // Fonction séparée pour gérer l'input des sliders RCP/Projets
+        function handleVariableSliderInput() {
+            const currentRCP = parseInt(sliderRCP.value);
+            const currentProjets = parseInt(sliderProjets.value);
+            const total = currentRCP + currentProjets;
+
+            // Ajuster automatiquement si le total dépasse 100%
+            if (total > 100) {
+                if (this === sliderRCP) {
+                    sliderProjets.value = Math.max(0, 100 - currentRCP);
+                } else {
+                    sliderRCP.value = Math.max(0, 100 - currentProjets);
+                }
+            }
+            updateDisplay(); // Mettre à jour l'affichage après ajustement potentiel
+        }
+
+        // Fonction séparée pour gérer le clic sur le bouton de sauvegarde
+        async function handleSaveClick() {
+            console.log("Save button clicked.");
+            if (updateDisplay()) { // updateDisplay vérifie aussi si le total est 100%
                 const partFixe = 100 - (parseInt(sliderRCP.value) + parseInt(sliderProjets.value));
-                
-                // Sauvegarder les paramètres
                 const newParams = {
+                    // Assurer que l'ID n'est pas envoyé si ce n'est pas nécessaire par l'API PUT
+                    // L'API actuelle semble ignorer l'ID dans le body et utilise celui de l'URL (implicitement 1)
                     partFixe: partFixe,
                     facteurCogerant: parseFloat(sliderCogerant.value),
                     partRCP: parseInt(sliderRCP.value),
                     partProjets: parseInt(sliderProjets.value)
                 };
+                console.log("Saving parameters:", newParams);
 
-                // Sauvegarder dans le localStorage
-                localStorage.setItem('parametresRepartition', JSON.stringify(newParams));
-            
-                // Mettre à jour les paramètres en mémoire
-                parametres = newParams;
-            
-                showAlert('Paramètres de répartition enregistrés avec succès', 'success');
+                try {
+                    const savedParams = await dataService.saveParametresRepartition(newParams);
+                    parametres = savedParams; // Mettre à jour les paramètres en mémoire localement
+                    console.log("Parameters saved successfully:", savedParams);
+                    
+                    if (window.showAlert) {
+                         window.showAlert('Paramètres enregistrés avec succès!', 'success');
+                    } else {
+                        alert('Paramètres enregistrés avec succès!');
+                    }
+                    updateDisplay(); // Mettre à jour l'affichage après sauvegarde
 
-                // Recharger la page de répartition si elle est ouverte
-                const repartitionPage = window.opener?.document.querySelector('.page-repartition');
-                if (repartitionPage) {
-                    window.opener.location.reload();
+                } catch (error) {
+                    console.error("Erreur lors de la sauvegarde des paramètres:", error);
+                     if (window.showAlert) {
+                         window.showAlert("Erreur sauvegarde: " + error.message, 'danger');
+                     } else {
+                        alert("Erreur sauvegarde: " + error.message);
+                     }
                 }
+            } else {
+                 console.log("Save prevented: Total is not 100%.");
             }
-        });
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Charger les valeurs sauvegardées depuis le localStorage
-            const savedParams = localStorage.getItem('parametresRepartition');
-            if (savedParams) {
-                parametres = JSON.parse(savedParams);
-                sliderCogerant.value = parametres.facteurCogerant;
-                sliderRCP.value = parametres.partRCP;
-                sliderProjets.value = parametres.partProjets;
         }
+
+        // Fonction d'initialisation
+        async function initializePage() {
+            console.log("Initializing parameters page...");
+            // Charger les valeurs depuis l'API via DataService
+            try {
+                parametres = await dataService.loadParametresRepartition();
+                if (parametres) {
+                    console.log("Paramètres chargés depuis l'API:", parametres);
+                    sliderCogerant.value = parametres.facteurCogerant;
+                    sliderRCP.value = parametres.partRCP;
+                    sliderProjets.value = parametres.partProjets;
+                } else {
+                    console.warn("Aucun paramètre initial chargé depuis l'API, utilisation des valeurs par défaut du HTML.");
+                    // Lire les valeurs par défaut des sliders HTML pour initialiser l'objet parametres
+                    parametres = {
+                         partFixe: 100 - (parseInt(sliderRCP.value) + parseInt(sliderProjets.value)),
+                         facteurCogerant: parseFloat(sliderCogerant.value),
+                         partRCP: parseInt(sliderRCP.value),
+                         partProjets: parseInt(sliderProjets.value)
+                    };
+                }
+            } catch (error) {
+                 console.error("Erreur lors du chargement des paramètres initiaux:", error);
+                 alert("Erreur chargement paramètres: " + error.message + "\nUtilisation des valeurs par défaut.");
+                 // Lire les valeurs par défaut des sliders HTML en cas d'erreur
+                 parametres = {
+                      partFixe: 100 - (parseInt(sliderRCP.value) + parseInt(sliderProjets.value)),
+                      facteurCogerant: parseFloat(sliderCogerant.value),
+                      partRCP: parseInt(sliderRCP.value),
+                      partProjets: parseInt(sliderProjets.value)
+                 };
+            }
         
-            // Mettre à jour l'affichage initial
+            // Mettre à jour l'affichage initial APRES avoir défini les valeurs des sliders
+            console.log("Updating initial display...");
             updateDisplay();
             
-            // Gérer les onglets
+            // Attacher les écouteurs d'événements ICI, après l'initialisation
+            console.log("Attaching event listeners...");
+            sliderCogerant.addEventListener('input', updateDisplay);
+            sliderRCP.addEventListener('input', handleVariableSliderInput);
+            sliderProjets.addEventListener('input', handleVariableSliderInput);
+            document.querySelector('.btn-save').addEventListener('click', handleSaveClick); // Utiliser une fonction nommée
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
+                    // Ajouter ici la logique pour afficher/masquer le contenu des onglets si nécessaire
                 });
             });
-        });
+            console.log("Initialization complete.");
+        }
+
+        // Appel de l'initialisation (assure que le DOM est prêt car c'est un module)
+        initializePage();
+
     </script>
 </body>
 </html>

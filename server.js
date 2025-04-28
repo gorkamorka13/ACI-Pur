@@ -14,6 +14,7 @@ const revenusRouter = require('./api/revenus');
 const chargesRouter = require('./api/charges');
 const professionnelsRouter = require('./api/professionnels');
 const projetsRouter = require('./api/projets');
+const parametresRepartitionRouter = require('./api/parametresRepartition'); // Importer le nouveau routeur
 
 // Fonction pour obtenir l'adresse IP locale
 function getLocalIP() {
@@ -53,36 +54,7 @@ app.use('/api/revenus', revenusRouter);
 app.use('/api/charges', chargesRouter);
 app.use('/api/professionnels', professionnelsRouter);
 app.use('/api/projets', projetsRouter);
-
-// Route pour obtenir les paramètres de répartition
-app.get('/api/parametresRepartition', async (req, res) => {
-    try {
-        const parametres = await db.ParametresRepartition.findOne();
-        res.json(parametres || {});
-    } catch (error) {
-        console.error('Erreur lors de la récupération des paramètres de répartition:', error);
-        res.status(500).json({ error: 'Erreur lors de la récupération des paramètres de répartition' });
-    }
-});
-
-// Route pour mettre à jour les paramètres de répartition
-app.put('/api/parametresRepartition', async (req, res) => {
-    try {
-        const [instance, created] = await db.ParametresRepartition.findOrCreate({
-            where: { id: 1 },
-            defaults: req.body
-        });
-        
-        if (!created) {
-            await instance.update(req.body);
-        }
-        
-        res.json(instance);
-    } catch (error) {
-        console.error('Erreur lors de la mise à jour des paramètres de répartition:', error);
-        res.status(500).json({ error: 'Erreur lors de la mise à jour des paramètres de répartition' });
-    }
-});
+app.use('/api/parametresRepartition', parametresRepartitionRouter); // Utiliser le routeur dédié
 
 // Synchronisation de la base de données et démarrage du serveur
 db.sequelize.sync().then(() => {
@@ -95,4 +67,4 @@ db.sequelize.sync().then(() => {
     });
 }).catch(err => {
     console.error('Erreur lors de la synchronisation de la base de données:', err);
-}); 
+});
