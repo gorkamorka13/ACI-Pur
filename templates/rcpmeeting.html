@@ -364,8 +364,12 @@
                         <input type="date" id="edit-reunion-date" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="edit-reunion-participants">Nombre de participants</label>
-                        <input type="number" id="edit-reunion-participants" class="form-control" min="1" required>
+                        <label for="edit-reunion-titre">Titre</label>
+                        <input type="text" id="edit-reunion-titre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-reunion-description">Description (optionnel)</label>
+                        <textarea id="edit-reunion-description" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="edit-reunion-duree">Durée (minutes)</label>
@@ -474,14 +478,16 @@
                 editBtn.className = 'fas fa-edit';
                 editBtn.title = 'Modifier';
                 editBtn.addEventListener('click', () => {
-                     // TODO: Update edit modal and logic similarly if needed
-                     document.getElementById('edit-reunion-id').value = reunion.id;
-                     document.getElementById('edit-reunion-date').value = reunion.date;
-                     // document.getElementById('edit-reunion-participants').value = reunion.nb_participants; // Field removed
-                     document.getElementById('edit-reunion-duree').value = reunion.duree;
-                     // Need to add titre/description fields to edit modal and populate them here
-                     alert('La modification nécessite une mise à jour du formulaire d\'édition.');
-                     // document.getElementById('modal-edit-reunion').classList.add('show'); // Temporarily disable edit
+                    // Populate the edit modal
+                    document.getElementById('edit-reunion-id').value = reunion.id;
+                    document.getElementById('edit-reunion-date').value = reunion.date;
+                    document.getElementById('edit-reunion-titre').value = reunion.titre || ''; // Handle potential null/undefined
+                    document.getElementById('edit-reunion-description').value = reunion.description || ''; // Handle potential null/undefined
+                    document.getElementById('edit-reunion-duree').value = reunion.duree;
+                    
+                    // Show the modal (assuming your main.js handles modal toggling via class or style)
+                    const modal = document.getElementById('modal-edit-reunion');
+                    modal.classList.add('show'); // Or modal.style.display = 'block';
                  });
                 tdActions.appendChild(editBtn);
                 
@@ -489,9 +495,21 @@
                 const deleteBtn = document.createElement('i');
                 deleteBtn.className = 'fas fa-trash-alt';
                 deleteBtn.title = 'Supprimer';
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cette réunion ?')) {
-                        alert('La suppression n\'est pas disponible pour le moment.');
+                deleteBtn.addEventListener('click', async () => {
+                    if (confirm(`Êtes-vous sûr de vouloir supprimer la réunion "${reunion.titre}" du ${dataService.formatDate(reunion.date)} ?`)) {
+                        try {
+                            await dataService.deleteRcpMeeting(reunion.id);
+                            console.log('Réunion supprimée:', reunion.id);
+                            if (window.showAlert) {
+                                window.showAlert('Réunion supprimée avec succès!', 'success');
+                            } else {
+                                alert('Réunion supprimée avec succès!');
+                            }
+                            await loadData(); // Reload data to reflect deletion
+                        } catch (error) {
+                            console.error('Erreur lors de la suppression de la réunion:', error);
+                            alert(`Erreur lors de la suppression: ${error.message}`);
+                        }
                     }
                 });
                 tdActions.appendChild(deleteBtn);
@@ -579,8 +597,45 @@
             });
 
             // Gestion du formulaire d'édition
-            document.getElementById('btn-save-edit-reunion').addEventListener('click', function() {
-                alert('La modification de réunions n\'est pas disponible pour le moment.');
+            document.getElementById('btn-save-edit-reunion').addEventListener('click', async function() {
+                const id = document.getElementById('edit-reunion-id').value;
+                const date = document.getElementById('edit-reunion-date').value;
+                const titre = document.getElementById('edit-reunion-titre').value;
+                const description = document.getElementById('edit-reunion-description').value;
+                const duree = document.getElementById('edit-reunion-duree').value;
+
+                if (!id || !date || !titre || !duree) {
+                    alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
+                    return;
+                }
+
+                const updatedMeetingData = {
+                    id: parseInt(id), // Ensure ID is an integer if needed by backend
+                    date,
+                    titre,
+                    description,
+                    duree: parseInt(duree)
+                };
+
+                try {
+                    // Use saveRcpMeeting for both create and update
+                    const updatedMeeting = await dataService.saveRcpMeeting(updatedMeetingData); 
+                    console.log('Réunion modifiée:', updatedMeeting);
+                    
+                    if (window.showAlert) {
+                        window.showAlert('Réunion modifiée avec succès!', 'success');
+                    } else {
+                        alert('Réunion modifiée avec succès!');
+                    }
+
+                    // Close modal
+                    document.getElementById('modal-edit-reunion').classList.remove('show'); // Or style.display = 'none';
+                    // Reload data
+                    await loadData(); 
+                } catch (error) {
+                    console.error('Erreur lors de la modification de la réunion:', error);
+                    alert(`Erreur lors de la modification: ${error.message}`);
+                }
             });
 
             // Rafraîchissement périodique
