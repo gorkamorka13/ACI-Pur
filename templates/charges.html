@@ -214,7 +214,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-save-edit-charge">Enregistrer</button>
-                <button class="btn btn-danger modal-close">Annuler</button>
+                <button class="btn btn-danger" id="btn-cancel-edit-charge">Annuler</button> <!-- Removed modal-close, added ID -->
             </div>
         </div>
     </div>
@@ -511,12 +511,29 @@
             document.getElementById('filter-type').addEventListener('change', filterCharges);
             document.getElementById('filter-categorie').addEventListener('change', filterCharges);
 
-            // Gestion des modales (fermeture)
+            // Gestion des modales (fermeture générique - ne s'applique plus au cancel de l'edit modal)
             document.querySelectorAll('.modal-close').forEach(button => {
                 button.addEventListener('click', function() {
-                    this.closest('.modal').classList.remove('show');
+                    // This handles closing for modals opened with classList.add('show'), like the 'Add Charge' modal
+                    const modal = this.closest('.modal');
+                    if (modal) {
+                        modal.classList.remove('show');
+                        // Also ensure style.display is reset if it was somehow set
+                        modal.style.display = 'none';
+                    }
                 });
             });
+
+            // Gestion spécifique de la fermeture du modal d'édition via le bouton Annuler
+            const cancelEditButton = document.getElementById('btn-cancel-edit-charge');
+            if (cancelEditButton) {
+                cancelEditButton.addEventListener('click', function() {
+                    const editModal = document.getElementById('modal-edit-charge');
+                    if (editModal) {
+                        editModal.style.display = 'none'; // Close using style.display
+                    }
+                });
+            }
 
             // Gestion du formulaire d'ajout
             const saveButton = document.getElementById('btn-save-add-charge');
