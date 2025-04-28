@@ -291,11 +291,31 @@
                 editBtn.className = 'fas fa-edit';
                 editBtn.title = 'Modifier';
                 editBtn.addEventListener('click', () => {
-                    document.getElementById('edit-revenu-id').value = revenu.id;
-                    document.getElementById('edit-revenu-date').value = revenu.date;
-                    document.getElementById('edit-revenu-description').value = revenu.description;
-                    document.getElementById('edit-revenu-montant').value = revenu.montant;
-                    document.getElementById('modal-edit-revenu').classList.add('show');
+                    console.log('Edit button clicked for revenu:', revenu); // Log revenu data
+                    try {
+                        // Populate the modal form fields
+                        document.getElementById('edit-revenu-id').value = revenu.id || ''; // Use empty string as fallback
+                        // Ensure date is in YYYY-MM-DD format for the input type="date"
+                        const dateObject = new Date(revenu.date);
+                        const formattedDate = !isNaN(dateObject.getTime()) ? dateObject.toISOString().split('T')[0] : '';
+                        document.getElementById('edit-revenu-date').value = formattedDate; 
+                        document.getElementById('edit-revenu-description').value = revenu.description || ''; // Use empty string as fallback
+                        document.getElementById('edit-revenu-montant').value = revenu.montant || ''; // Use empty string as fallback
+                        
+                        // Get the modal element
+                        // Get the modal element
+                        const modalElement = document.getElementById('modal-edit-revenu');
+                        if (modalElement) {
+                            console.log('Showing edit modal using style.display.');
+                            modalElement.style.display = 'block'; // Use style.display consistent with main.js
+                        } else {
+                            console.error('Edit modal element (#modal-edit-revenu) not found!');
+                            alert("Erreur : Impossible d'ouvrir la fenêtre de modification.");
+                        }
+                    } catch (error) {
+                        console.error('Error populating or showing edit modal:', error);
+                        alert(`Une erreur est survenue lors de l'ouverture de la fenêtre de modification: ${error.message}`);
+                    }
                 });
                 tdActions.appendChild(editBtn);
                 
@@ -303,9 +323,21 @@
                 const deleteBtn = document.createElement('i');
                 deleteBtn.className = 'fas fa-trash-alt';
                 deleteBtn.title = 'Supprimer';
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer ce revenu ?')) {
-                        alert('La suppression n\'est pas disponible pour le moment.');
+                deleteBtn.addEventListener('click', async () => { // Make async
+                    if (confirm(`Êtes-vous sûr de vouloir supprimer le revenu "${revenu.description}" du ${dataService.formatDate(revenu.date)} ?`)) {
+                        try {
+                            await dataService.deleteRevenu(revenu.id);
+                            console.log('Revenu supprimé:', revenu.id);
+                            if (window.showAlert) {
+                                window.showAlert('Revenu supprimé avec succès!', 'success');
+                            } else {
+                                alert('Revenu supprimé avec succès!');
+                            }
+                            await loadData(); // Reload data after deletion
+                        } catch (error) {
+                            console.error('Erreur lors de la suppression du revenu:', error);
+                            alert(`Erreur lors de la suppression: ${error.message}`);
+                        }
                     }
                 });
                 tdActions.appendChild(deleteBtn);
@@ -510,8 +542,47 @@
             });
 
             // Gestion du formulaire d'édition
-            document.getElementById('btn-save-edit-revenu').addEventListener('click', function() {
-                alert('La modification de revenus n\'est pas disponible pour le moment.');
+            document.getElementById('btn-save-edit-revenu').addEventListener('click', async function() { // Make async
+                const id = document.getElementById('edit-revenu-id').value;
+                const date = document.getElementById('edit-revenu-date').value;
+                const description = document.getElementById('edit-revenu-description').value;
+                const montant = document.getElementById('edit-revenu-montant').value;
+
+                if (!id || !date || !description || !montant) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    return;
+                }
+
+                const updatedRevenuData = {
+                    id: parseInt(id), // Ensure ID is an integer if needed by backend
+                    date,
+                    description,
+                    montant: parseFloat(montant)
+                };
+
+                try {
+                    const savedRevenu = await dataService.saveRevenu(updatedRevenuData); // saveRevenu handles PUT
+                    console.log('Revenu modifié:', savedRevenu);
+
+                    if (window.showAlert) {
+                        window.showAlert('Revenu modifié avec succès!', 'success');
+                    } else {
+                        alert('Revenu modifié avec succès!');
+                    }
+
+                    // Close modal using style.display
+                    const editModal = document.getElementById('modal-edit-revenu');
+                    if (editModal) {
+                        editModal.style.display = 'none'; 
+                    }
+                    // Reset form (optional, maybe not needed for edit)
+                    // document.getElementById('form-edit-revenu').reset(); 
+                    // Reload data
+                    await loadData();
+                } catch (error) {
+                    console.error('Erreur lors de la modification du revenu:', error);
+                    alert(`Erreur lors de la modification: ${error.message}`);
+                }
             });
 
             // Rafraîchissement périodique
