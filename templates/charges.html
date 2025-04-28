@@ -303,13 +303,31 @@
                 editBtn.className = 'fas fa-edit';
                 editBtn.title = 'Modifier';
                 editBtn.addEventListener('click', () => {
-                    document.getElementById('edit-charge-id').value = charge.id;
-                    document.getElementById('edit-charge-date').value = charge.date;
-                    document.getElementById('edit-charge-description').value = charge.description;
-                    document.getElementById('edit-charge-categorie').value = charge.categorie;
-                    document.getElementById('edit-charge-type').value = charge.type;
-                    document.getElementById('edit-charge-montant').value = charge.montant;
-                    document.getElementById('modal-edit-charge').classList.add('show');
+                    console.log('Edit button clicked for charge:', charge);
+                    try {
+                        document.getElementById('edit-charge-id').value = charge.id || '';
+                        // Ensure date is in YYYY-MM-DD format
+                        const dateObject = new Date(charge.date);
+                        const formattedDate = !isNaN(dateObject.getTime()) ? dateObject.toISOString().split('T')[0] : '';
+                        document.getElementById('edit-charge-date').value = formattedDate;
+                        document.getElementById('edit-charge-description').value = charge.description || '';
+                        document.getElementById('edit-charge-categorie').value = charge.categorie || '';
+                        document.getElementById('edit-charge-type').value = charge.type || '';
+                        document.getElementById('edit-charge-montant').value = charge.montant || '';
+                        
+                        // Show modal using style.display
+                        const modalElement = document.getElementById('modal-edit-charge');
+                        if (modalElement) {
+                            console.log('Showing edit charge modal using style.display.');
+                            modalElement.style.display = 'block'; 
+                        } else {
+                            console.error('Edit modal element (#modal-edit-charge) not found!');
+                            alert("Erreur : Impossible d'ouvrir la fenêtre de modification.");
+                        }
+                    } catch (error) {
+                         console.error('Error populating or showing edit charge modal:', error);
+                         alert(`Une erreur est survenue lors de l'ouverture de la fenêtre de modification: ${error.message}`);
+                    }
                 });
                 tdActions.appendChild(editBtn);
 
@@ -317,9 +335,21 @@
                 const deleteBtn = document.createElement('i');
                 deleteBtn.className = 'fas fa-trash-alt';
                 deleteBtn.title = 'Supprimer';
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cette charge ?')) {
-                        alert('La suppression n\'est pas disponible pour le moment.');
+                deleteBtn.addEventListener('click', async () => { // Make async
+                    if (confirm(`Êtes-vous sûr de vouloir supprimer la charge "${charge.description}" du ${dataService.formatDate(charge.date)} ?`)) {
+                        try {
+                            await dataService.deleteCharge(charge.id);
+                            console.log('Charge supprimée:', charge.id);
+                            if (window.showAlert) {
+                                window.showAlert('Charge supprimée avec succès!', 'success');
+                            } else {
+                                alert('Charge supprimée avec succès!');
+                            }
+                            await loadData(); // Reload data after deletion
+                        } catch (error) {
+                            console.error('Erreur lors de la suppression de la charge:', error);
+                            alert(`Erreur lors de la suppression: ${error.message}`);
+                        }
                     }
                 });
                 tdActions.appendChild(deleteBtn);
@@ -542,8 +572,49 @@
             }
 
             // Gestion du formulaire d'édition
-            document.getElementById('btn-save-edit-charge').addEventListener('click', function() {
-                alert('La modification de charges n\'est pas disponible pour le moment.');
+            document.getElementById('btn-save-edit-charge').addEventListener('click', async function() { // Make async
+                const id = document.getElementById('edit-charge-id').value;
+                const date = document.getElementById('edit-charge-date').value;
+                const description = document.getElementById('edit-charge-description').value;
+                const categorie = document.getElementById('edit-charge-categorie').value;
+                const type = document.getElementById('edit-charge-type').value;
+                const montant = document.getElementById('edit-charge-montant').value;
+
+                if (!id || !date || !description || !categorie || !type || !montant) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    return;
+                }
+
+                const updatedChargeData = {
+                    id: parseInt(id), // Ensure ID is integer if needed
+                    date,
+                    description,
+                    categorie,
+                    type,
+                    montant: parseFloat(montant)
+                };
+
+                try {
+                    const savedCharge = await dataService.saveCharge(updatedChargeData); // saveCharge handles PUT
+                    console.log('Charge modifiée:', savedCharge);
+
+                    if (window.showAlert) {
+                        window.showAlert('Charge modifiée avec succès!', 'success');
+                    } else {
+                        alert('Charge modifiée avec succès!');
+                    }
+
+                    // Close modal using style.display
+                    const editModal = document.getElementById('modal-edit-charge');
+                    if (editModal) {
+                        editModal.style.display = 'none'; 
+                    }
+                    // Reload data
+                    await loadData();
+                } catch (error) {
+                    console.error('Erreur lors de la modification de la charge:', error);
+                    alert(`Erreur lors de la modification: ${error.message}`);
+                }
             });
 
             // Rafraîchissement périodique
