@@ -228,6 +228,7 @@
                 globalData = { charges };
                 initTableCharges();
                 initFilterCategories();
+                updateSummaryStats(charges); // Add call to update stats
             } catch (error) {
                 console.error('Erreur lors du chargement des charges:', error);
                 const tableBody = document.getElementById('liste-charges');
@@ -245,7 +246,7 @@
         function initTableCharges() {
             const tableBody = document.getElementById('liste-charges');
             tableBody.innerHTML = '';
-            
+
             if (!globalData || !globalData.charges || globalData.charges.length === 0) {
                 const row = document.createElement('tr');
                 const td = document.createElement('td');
@@ -256,25 +257,25 @@
                 tableBody.appendChild(row);
                 return;
             }
-            
+
             globalData.charges.forEach((charge, index) => {
                 const row = document.createElement('tr');
-                
+
                 // Date
                 const tdDate = document.createElement('td');
                 tdDate.textContent = dataService.formatDate(charge.date);
                 row.appendChild(tdDate);
-                
+
                 // Description
                 const tdDesc = document.createElement('td');
                 tdDesc.textContent = charge.description;
                 row.appendChild(tdDesc);
-                
+
                 // Catégorie
                 const tdCat = document.createElement('td');
                 tdCat.textContent = charge.categorie;
                 row.appendChild(tdCat);
-                
+
                 // Type
                 const tdType = document.createElement('td');
                 const typeSpan = document.createElement('span');
@@ -282,16 +283,16 @@
                 typeSpan.textContent = charge.type;
                 tdType.appendChild(typeSpan);
                 row.appendChild(tdType);
-                
+
                 // Montant
                 const tdMontant = document.createElement('td');
                 tdMontant.textContent = dataService.formatMontant(charge.montant);
                 row.appendChild(tdMontant);
-                
+
                 // Actions
                 const tdActions = document.createElement('td');
                 tdActions.className = 'action-icons';
-                
+
                 // Bouton éditer
                 const editBtn = document.createElement('i');
                 editBtn.className = 'fas fa-edit';
@@ -306,7 +307,7 @@
                     document.getElementById('modal-edit-charge').classList.add('show');
                 });
                 tdActions.appendChild(editBtn);
-                
+
                 // Bouton supprimer
                 const deleteBtn = document.createElement('i');
                 deleteBtn.className = 'fas fa-trash-alt';
@@ -317,20 +318,44 @@
                     }
                 });
                 tdActions.appendChild(deleteBtn);
-                
+
                 row.appendChild(tdActions);
                 tableBody.appendChild(row);
             });
         }
 
+        // Fonction pour mettre à jour les statistiques récapitulatives
+        function updateSummaryStats(charges) {
+            let total = 0;
+            let fixes = 0;
+            let variables = 0;
+
+            if (charges && charges.length > 0) {
+                charges.forEach(charge => {
+                    const montant = parseFloat(charge.montant) || 0;
+                    total += montant;
+                    if (charge.type === 'Fixe') {
+                        fixes += montant;
+                    } else if (charge.type === 'Variable') {
+                        variables += montant;
+                    }
+                });
+            }
+
+            document.getElementById('total-charges').textContent = dataService.formatMontant(total);
+            document.getElementById('charges-fixes').textContent = dataService.formatMontant(fixes);
+            document.getElementById('charges-variables').textContent = dataService.formatMontant(variables);
+            // TODO: Update year label dynamically if needed
+        }
+
         // Fonction pour initialiser le filtre des catégories
         function initFilterCategories() {
             if (!globalData || !globalData.charges) return;
-            
+
             const categories = [...new Set(globalData.charges.map(c => c.categorie))];
             const select = document.getElementById('filter-categorie');
             select.innerHTML = '<option value="">Toutes les catégories</option>';
-            
+
             categories.forEach(categorie => {
                 if (categorie) {
                     const option = document.createElement('option');
@@ -346,29 +371,30 @@
             const typeFilter = document.getElementById('filter-type').value;
             const categorieFilter = document.getElementById('filter-categorie').value;
             const rows = document.querySelectorAll('#liste-charges tr');
-            
+
             rows.forEach(row => {
                 if (row.children.length < 6) return; // Ignore les lignes de message
-                
+
                 const typeCell = row.children[3].textContent;
                 const categorieCell = row.children[2].textContent;
-                
+
                 const typeMatch = !typeFilter || typeCell === typeFilter;
                 const categorieMatch = !categorieFilter || categorieCell === categorieFilter;
-                
+
                 row.style.display = typeMatch && categorieMatch ? '' : 'none';
             });
         }
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[charges.html] DOMContentLoaded event fired.');
             loadData();
-            
+
             // Gestion des filtres
             document.getElementById('filter-type').addEventListener('change', filterCharges);
             document.getElementById('filter-categorie').addEventListener('change', filterCharges);
-            
-            // Gestion des modales
+
+            // Gestion des modales (fermeture)
             document.querySelectorAll('.modal-close').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.modal').classList.remove('show');
@@ -376,9 +402,57 @@
             });
 
             // Gestion du formulaire d'ajout
-            document.getElementById('btn-save-add-charge').addEventListener('click', function() {
-                alert('L\'ajout de charges n\'est pas disponible pour le moment.');
-            });
+            const saveButton = document.getElementById('btn-save-add-charge');
+            if (saveButton) {
+                console.log('[charges.html] Attaching click listener to #btn-save-add-charge.');
+                saveButton.addEventListener('click', async function(event) {
+                    console.log('[charges.html] Save button clicked!');
+                    event.preventDefault(); // Prevent default form submission if it's part of a form
+
+                    // --- Add Charge Logic ---
+                    const chargeData = {
+                       date: document.getElementById('add-charge-date').value,
+                       description: document.getElementById('add-charge-description').value,
+                       categorie: document.getElementById('add-charge-categorie').value,
+                       type: document.getElementById('add-charge-type').value,
+                       montant: parseFloat(document.getElementById('add-charge-montant').value)
+                   };
+
+                   // Validation simple (peut être améliorée)
+                   if (!chargeData.date || !chargeData.description || !chargeData.categorie || !chargeData.type || isNaN(chargeData.montant) || chargeData.montant <= 0) {
+                       alert('Veuillez remplir tous les champs correctement.');
+                       return;
+                   }
+
+                   try {
+                       const response = await fetch('/api/charges', {
+                           method: 'POST',
+                           headers: {
+                               'Content-Type': 'application/json',
+                           },
+                           body: JSON.stringify(chargeData),
+                       });
+
+                       if (!response.ok) {
+                           const errorData = await response.json();
+                           throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
+                       }
+
+                       // Succès
+                       document.getElementById('modal-add-charge').classList.remove('show');
+                       document.getElementById('form-add-charge').reset(); // Réinitialiser le formulaire
+                       await loadData(); // Recharger les données pour afficher la nouvelle charge
+                       alert('Charge ajoutée avec succès !');
+
+                   } catch (error) {
+                       console.error('Erreur lors de l\'ajout de la charge:', error);
+                       alert(`Échec de l'ajout de la charge: ${error.message}`);
+                   }
+                   // --- End Add Charge Logic ---
+                });
+            } else {
+                console.error('[charges.html] Could not find #btn-save-add-charge on DOMContentLoaded.');
+            }
 
             // Gestion du formulaire d'édition
             document.getElementById('btn-save-edit-charge').addEventListener('click', function() {
@@ -387,7 +461,23 @@
 
             // Rafraîchissement périodique
             setInterval(loadData, 30000);
+
+            // --- Modal Opening Logic (No listener attachment here anymore) ---
+            const openModalButton = document.querySelector('button[data-target="#modal-add-charge"]');
+            if (openModalButton) {
+                openModalButton.addEventListener('click', function() {
+                    console.log('[charges.html] Modal open button clicked.');
+                    // Just open the modal (assuming CSS or another script handles the 'show' class)
+                    document.getElementById('modal-add-charge').classList.add('show');
+                    // Clear the form when opening the modal
+                    document.getElementById('form-add-charge').reset();
+                });
+            } else {
+                console.error('[charges.html] Could not find button that opens the modal.');
+            }
+            // --- End Modal Opening Logic ---
+
         });
     </script>
 </body>
-</html> 
+</html>
