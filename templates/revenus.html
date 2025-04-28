@@ -319,8 +319,44 @@
             });
 
             // Gestion du formulaire d'ajout
-            document.getElementById('btn-save-add-revenu').addEventListener('click', function() {
-                alert('L\'ajout de revenus n\'est pas disponible pour le moment.');
+            document.getElementById('btn-save-add-revenu').addEventListener('click', async function() {
+                const date = document.getElementById('add-revenu-date').value;
+                const description = document.getElementById('add-revenu-description').value;
+                const montant = document.getElementById('add-revenu-montant').value;
+
+                if (!date || !description || !montant) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    return;
+                }
+
+                const newRevenuData = {
+                    date,
+                    description,
+                    montant: parseFloat(montant)
+                };
+
+                try {
+                    // Call the existing saveRevenu function from DataService
+                    const addedRevenu = await dataService.saveRevenu(newRevenuData);
+                    console.log('Revenu ajouté:', addedRevenu);
+
+                    // Optional: Show success message
+                    if (window.showAlert) {
+                        window.showAlert('Revenu ajouté avec succès!', 'success');
+                    } else {
+                        alert('Revenu ajouté avec succès!');
+                    }
+
+                    // Close modal
+                    document.getElementById('modal-add-revenu').style.display = 'none';
+                    // Reset form
+                    document.getElementById('form-add-revenu').reset();
+                    // Reload data
+                    await loadData();
+                } catch (error) {
+                    console.error('Erreur lors de l\'ajout du revenu:', error);
+                    alert(`Erreur lors de l'ajout: ${error.message}`);
+                }
             });
 
             // Gestion du formulaire d'édition
@@ -332,5 +368,6 @@
             setInterval(loadData, 30000);
         });
     </script>
+    <script type="module" src="../js/main.js"></script> <!-- Load main JS as module -->
 </body>
-</html> 
+</html>
