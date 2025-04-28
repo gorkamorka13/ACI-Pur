@@ -239,6 +239,7 @@ header {
 .chart {
     display: block;
     max-width: 100%;
+    min-height: 300px; /* Ajout d'une hauteur minimale */
     /* margin: 0 auto; Removed */
     /* Remove height, remove flex properties */
 }

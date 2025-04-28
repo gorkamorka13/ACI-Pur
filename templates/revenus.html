@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../css/style.css">
     <!-- Ajout de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Ajout de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -175,16 +177,20 @@
 
         let globalData = null;
 
-        // Fonction pour charger les données
+        // Fonction pour charger les données (revenus et charges)
         async function loadData() {
             try {
-                const revenus = await dataService.loadRevenus();
-                globalData = { revenus };
-                updateStats();
-                initTableRevenus();
-                initFilterAnnees();
+                // Charger les revenus et les charges en parallèle
+                const [revenus, charges] = await Promise.all([
+                    dataService.loadRevenus(),
+                    dataService.loadCharges() 
+                ]);
+                globalData = { revenus, charges }; // Stocker les deux types de données
+                updateStats(); // Mettre à jour les stats (qui utiliseront maintenant les charges)
+                initTableRevenus(); // Mettre à jour le tableau des revenus
+                initFilterAnnees(); // Mettre à jour le filtre des années
             } catch (error) {
-                console.error('Erreur lors du chargement des revenus:', error);
+                console.error('Erreur lors du chargement des données (revenus/charges):', error);
                 const tableBody = document.getElementById('liste-revenus');
                 tableBody.innerHTML = `
                     <tr>
@@ -196,18 +202,41 @@
             }
         }
 
-        // Fonction pour mettre à jour les statistiques
-        function updateStats() {
-            if (!globalData || !globalData.revenus) return;
+        // Fonction pour mettre à jour les statistiques (Revenus, Charges, Net) pour une année donnée
+        function updateStats(year = null) {
+            if (!globalData || !globalData.revenus || !globalData.charges) return;
 
-            const currentYear = new Date().getFullYear();
-            document.getElementById('annee-revenus').textContent = currentYear;
+            // Déterminer l'année à utiliser: l'année passée en argument ou l'année courante par défaut
+            const yearToUse = year ? parseInt(year) : new Date().getFullYear();
+            const yearLabelText = year ? `Année ${year}` : `Année ${new Date().getFullYear()}`;
 
+            // Mettre à jour les labels d'année sur les cartes
+            document.getElementById('annee-revenus').textContent = yearToUse; // Met à jour le span dans la première carte
+             const chargeYearLabel = document.querySelector('.stat-card:nth-child(2) .year-label');
+             if (chargeYearLabel) chargeYearLabel.textContent = yearLabelText;
+             const netYearLabel = document.querySelector('.stat-card:nth-child(3) .year-label');
+             if (netYearLabel) netYearLabel.textContent = yearLabelText;
+
+
+            // Calculer Total Revenus pour l'année sélectionnée
             const totalRevenus = globalData.revenus
-                .filter(rev => new Date(rev.date).getFullYear() === currentYear)
+                .filter(rev => new Date(rev.date).getFullYear() === yearToUse)
                 .reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
 
+            // Calculer Total Charges pour l'année sélectionnée
+            const totalCharges = globalData.charges
+                .filter(charge => new Date(charge.date).getFullYear() === yearToUse)
+                .reduce((sum, charge) => sum + parseFloat(charge.montant || 0), 0);
+
+            // Calculer Revenu Net
+            const revenuNet = totalRevenus - totalCharges;
+
+            // Mettre à jour l'affichage
             document.getElementById('total-revenus').textContent = dataService.formatMontant(totalRevenus);
+            document.getElementById('total-charges').textContent = dataService.formatMontant(totalCharges);
+            document.getElementById('revenu-net').textContent = dataService.formatMontant(revenuNet);
+            
+            // Note: Les mises à jour des labels d'année sont faites au début de la fonction maintenant.
         }
 
         // Fonction pour initialiser le tableau des revenus
@@ -284,7 +313,124 @@
                 row.appendChild(tdActions);
                 tableBody.appendChild(row);
             });
+
+            // Appel pour initialiser/mettre à jour le graphique avec les revenus filtrés
+            initRevenusChart(revenus); 
         }
+
+        // Variable pour stocker l'instance du graphique
+        let revenusChartInstance = null;
+
+        // Fonction pour initialiser le graphique d'évolution des revenus
+        function initRevenusChart(revenusData) {
+            const chartElement = document.getElementById('revenus-chart');
+            if (!chartElement) {
+                console.error("L'élément 'revenus-chart' est introuvable.");
+                return;
+            }
+            
+            // S'assurer que l'élément enfant est un canvas ou le créer
+            let ctx;
+            let canvas = chartElement.querySelector('canvas');
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                chartElement.innerHTML = ''; // Nettoyer le contenu précédent (ex: message "pas de données")
+                chartElement.appendChild(canvas);
+            }
+            ctx = canvas.getContext('2d');
+
+
+            if (!revenusData || revenusData.length === 0) {
+                // Si pas de données, afficher un message et détruire l'ancien graphique
+                chartElement.innerHTML = '<p style="text-align: center; padding: 20px;">Aucune donnée de revenu disponible pour afficher le graphique.</p>';
+                 if (revenusChartInstance) {
+                    revenusChartInstance.destroy(); 
+                    revenusChartInstance = null;
+                }
+                return;
+            }
+
+            // Préparer les données pour le graphique (par mois)
+            const revenusParMois = {};
+            const moisNoms = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+
+            revenusData.forEach(rev => {
+                // Vérifier si la date est valide
+                const date = new Date(rev.date);
+                 if (isNaN(date.getTime())) {
+                    console.warn(`Date invalide ignorée: ${rev.date}`);
+                    return; // Ignorer cette entrée si la date est invalide
+                }
+                const anneeMois = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // Format YYYY-MM
+                if (!revenusParMois[anneeMois]) {
+                    revenusParMois[anneeMois] = 0;
+                }
+                revenusParMois[anneeMois] += parseFloat(rev.montant || 0);
+            });
+
+            // Trier les clés (mois) pour l'ordre chronologique
+            const moisTries = Object.keys(revenusParMois).sort();
+
+            const labels = moisTries.map(key => {
+                const [annee, mois] = key.split('-');
+                return `${moisNoms[parseInt(mois) - 1]} ${annee}`;
+            });
+            const dataPoints = moisTries.map(key => revenusParMois[key]);
+
+            // Détruire l'ancien graphique s'il existe
+            if (revenusChartInstance) {
+                revenusChartInstance.destroy();
+            }
+
+            // Créer le nouveau graphique
+            revenusChartInstance = new Chart(ctx, {
+                type: 'line', // Type de graphique (ligne)
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenus ACI par mois',
+                        data: dataPoints,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Important pour que le graphique remplisse le conteneur
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    // Assurer que dataService est disponible ou utiliser un formatage par défaut
+                                    return typeof dataService !== 'undefined' ? dataService.formatMontant(value) : `${value} €`;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                         // Assurer que dataService est disponible ou utiliser un formatage par défaut
+                                        label += typeof dataService !== 'undefined' ? dataService.formatMontant(context.parsed.y) : `${context.parsed.y} €`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
 
         // Fonction pour initialiser le filtre des années
         function initFilterAnnees() {
@@ -306,10 +452,14 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
+            loadData(); // Charge les données et appelle updateStats() sans argument (année courante)
             
             // Gestion du filtre par année
-            document.getElementById('filter-annee').addEventListener('change', initTableRevenus);
+            document.getElementById('filter-annee').addEventListener('change', function() {
+                const selectedYear = this.value; // Récupère l'année sélectionnée
+                initTableRevenus(); // Met à jour le tableau et le graphique (utilise déjà la valeur du filtre)
+                updateStats(selectedYear || null); // Met à jour les cartes de statistiques avec l'année sélectionnée (ou null si "Toutes les années")
+            });
             
             // Gestion des modales
             document.querySelectorAll('.modal-close').forEach(button => {
@@ -351,8 +501,8 @@
                     document.getElementById('modal-add-revenu').style.display = 'none';
                     // Reset form
                     document.getElementById('form-add-revenu').reset();
-                    // Reload data
-                    await loadData();
+                    // Reload data (revenus et charges)
+                    await loadData(); 
                 } catch (error) {
                     console.error('Erreur lors de l\'ajout du revenu:', error);
                     alert(`Erreur lors de l'ajout: ${error.message}`);
