@@ -299,12 +299,12 @@
 
             <div class="table-container">
                 <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Nombre de Participants</th>
-                            <th>Durée (minutes)</th>
-                            <th>Actions</th>
+                     <thead>
+                         <tr>
+                             <th>Date</th>
+                             <th>Titre</th> 
+                             <th>Durée (minutes)</th>
+                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="liste-reunions">
@@ -326,14 +326,18 @@
                 <form id="form-add-reunion">
                     <div class="form-group">
                         <label for="add-reunion-date">Date</label>
-                        <input type="date" id="add-reunion-date" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="add-reunion-participants">Nombre de participants</label>
-                        <input type="number" id="add-reunion-participants" class="form-control" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="add-reunion-duree">Durée (minutes)</label>
+                         <input type="date" id="add-reunion-date" class="form-control" required>
+                     </div>
+                     <div class="form-group">
+                         <label for="add-reunion-titre">Titre</label>
+                         <input type="text" id="add-reunion-titre" class="form-control" required>
+                     </div>
+                     <div class="form-group">
+                         <label for="add-reunion-description">Description (optionnel)</label>
+                         <textarea id="add-reunion-description" class="form-control" rows="3"></textarea>
+                     </div>
+                     <div class="form-group">
+                         <label for="add-reunion-duree">Durée (minutes)</label>
                         <input type="number" id="add-reunion-duree" class="form-control" min="1" required>
                     </div>
                 </form>
@@ -451,12 +455,12 @@
                 tdDate.textContent = dataService.formatDate(reunion.date);
                 row.appendChild(tdDate);
                 
-                // Nombre de participants
-                const tdParticipants = document.createElement('td');
-                tdParticipants.textContent = reunion.nb_participants;
-                row.appendChild(tdParticipants);
-                
-                // Durée
+                 // Titre (remplacing participants)
+                 const tdTitre = document.createElement('td');
+                 tdTitre.textContent = reunion.titre; // Display titre instead
+                 row.appendChild(tdTitre);
+                 
+                 // Durée
                 const tdDuree = document.createElement('td');
                 tdDuree.textContent = reunion.duree;
                 row.appendChild(tdDuree);
@@ -470,12 +474,15 @@
                 editBtn.className = 'fas fa-edit';
                 editBtn.title = 'Modifier';
                 editBtn.addEventListener('click', () => {
-                    document.getElementById('edit-reunion-id').value = reunion.id;
-                    document.getElementById('edit-reunion-date').value = reunion.date;
-                    document.getElementById('edit-reunion-participants').value = reunion.nb_participants;
-                    document.getElementById('edit-reunion-duree').value = reunion.duree;
-                    document.getElementById('modal-edit-reunion').classList.add('show');
-                });
+                     // TODO: Update edit modal and logic similarly if needed
+                     document.getElementById('edit-reunion-id').value = reunion.id;
+                     document.getElementById('edit-reunion-date').value = reunion.date;
+                     // document.getElementById('edit-reunion-participants').value = reunion.nb_participants; // Field removed
+                     document.getElementById('edit-reunion-duree').value = reunion.duree;
+                     // Need to add titre/description fields to edit modal and populate them here
+                     alert('La modification nécessite une mise à jour du formulaire d\'édition.');
+                     // document.getElementById('modal-edit-reunion').classList.add('show'); // Temporarily disable edit
+                 });
                 tdActions.appendChild(editBtn);
                 
                 // Bouton supprimer
@@ -529,8 +536,46 @@
             });
 
             // Gestion du formulaire d'ajout
-            document.getElementById('btn-save-add-reunion').addEventListener('click', function() {
-                alert('L\'ajout de réunions n\'est pas disponible pour le moment.');
+            document.getElementById('btn-save-add-reunion').addEventListener('click', async function() {
+                const date = document.getElementById('add-reunion-date').value;
+                const titre = document.getElementById('add-reunion-titre').value;
+                const description = document.getElementById('add-reunion-description').value;
+                const duree = document.getElementById('add-reunion-duree').value;
+
+                if (!date || !titre || !duree) {
+                    alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
+                    return;
+                }
+
+                const newMeetingData = {
+                    date,
+                    titre,
+                    description,
+                    duree: parseInt(duree)
+                };
+
+                try {
+                    // Call the existing saveRcpMeeting function from DataService
+                    const addedMeeting = await dataService.saveRcpMeeting(newMeetingData); 
+                    console.log('Réunion ajoutée:', addedMeeting);
+                    
+                    // Optional: Show success message (using showAlert if available globally)
+                    if (window.showAlert) {
+                        window.showAlert('Réunion ajoutée avec succès!', 'success');
+                    } else {
+                        alert('Réunion ajoutée avec succès!');
+                    }
+
+                    // Close modal
+                    document.getElementById('modal-add-reunion').style.display = 'none';
+                    // Reset form
+                    document.getElementById('form-add-reunion').reset();
+                    // Reload data
+                    await loadData(); 
+                } catch (error) {
+                    console.error('Erreur lors de l\'ajout de la réunion:', error);
+                    alert(`Erreur lors de l'ajout: ${error.message}`);
+                }
             });
 
             // Gestion du formulaire d'édition
