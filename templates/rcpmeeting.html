@@ -271,7 +271,7 @@
                     </div>
                 </div>
             </header>
-
+            <br>
             <div class="quick-stats">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -284,7 +284,7 @@
                     </div>
                 </div>
             </div>
-
+            <br>
             <div class="actions-bar">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-reunion">
                     <i class="fas fa-plus"></i> Ajouter une réunion
@@ -379,7 +379,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-save-edit-reunion">Enregistrer</button>
-                <button class="btn btn-danger modal-close">Annuler</button>
+                <button class="btn btn-danger" id="btn-cancel-edit-reunion">Annuler</button> <!-- Removed modal-close, added ID -->
             </div>
         </div>
     </div>
@@ -480,14 +480,26 @@
                 editBtn.addEventListener('click', () => {
                     // Populate the edit modal
                     document.getElementById('edit-reunion-id').value = reunion.id;
-                    document.getElementById('edit-reunion-date').value = reunion.date;
-                    document.getElementById('edit-reunion-titre').value = reunion.titre || ''; // Handle potential null/undefined
-                    document.getElementById('edit-reunion-description').value = reunion.description || ''; // Handle potential null/undefined
+                    // Ensure date is in YYYY-MM-DD format if it's a Date object or string
+                    let formattedDate = reunion.date;
+                    try {
+                        const dateObject = new Date(reunion.date);
+                        if (!isNaN(dateObject.getTime())) {
+                            formattedDate = dateObject.toISOString().split('T')[0];
+                        }
+                    } catch (e) { /* Keep original string if parsing fails */ }
+                    document.getElementById('edit-reunion-date').value = formattedDate;
+                    document.getElementById('edit-reunion-titre').value = reunion.titre || '';
+                    document.getElementById('edit-reunion-description').value = reunion.description || '';
                     document.getElementById('edit-reunion-duree').value = reunion.duree;
                     
-                    // Show the modal (assuming your main.js handles modal toggling via class or style)
+                    // Show the modal using style.display for consistency with main.js
                     const modal = document.getElementById('modal-edit-reunion');
-                    modal.classList.add('show'); // Or modal.style.display = 'block';
+                    if (modal) {
+                        modal.style.display = 'block'; 
+                    } else {
+                        console.error("Edit modal not found!");
+                    }
                  });
                 tdActions.appendChild(editBtn);
                 
@@ -546,23 +558,25 @@
             // Gestion du filtre par année
             document.getElementById('filter-annee').addEventListener('change', initTableReunions);
             
-            // Gestion des modales (fermeture)
-            document.querySelectorAll('.modal-close').forEach(button => {
-                button.addEventListener('click', async function() { // Make async
-                    const modal = this.closest('.modal');
-                    if (modal) {
-                        modal.classList.remove('show'); // Hide the modal
-                        // Reload data to ensure table listeners are refreshed
-                        // This fixes the issue where actions stop working after cancelling edit
+            // Generic modal close handling is now done by js/main.js
+            // Remove the inline generic handler to avoid conflicts.
+
+            // Gestion spécifique de la fermeture du modal d'édition via le bouton Annuler
+            const cancelEditButton = document.getElementById('btn-cancel-edit-reunion');
+            if (cancelEditButton) {
+                cancelEditButton.addEventListener('click', async function() { // Make async
+                    const editModal = document.getElementById('modal-edit-reunion');
+                    if (editModal) {
+                        editModal.style.display = 'none'; // Hide the edit modal using style.display
+                        // Reload data specifically after cancelling edit to refresh table listeners
                         try {
                             await loadData(); 
                         } catch (error) {
-                            console.error("Error reloading data after modal close:", error);
-                            // Optionally inform the user if reloading fails critically
+                            console.error("Error reloading data after cancelling edit:", error);
                         }
                     }
                 });
-            });
+            }
 
             // Gestion du formulaire d'ajout
             document.getElementById('btn-save-add-reunion').addEventListener('click', async function() {
@@ -639,8 +653,11 @@
                         alert('Réunion modifiée avec succès!');
                     }
 
-                    // Close modal
-                    document.getElementById('modal-edit-reunion').classList.remove('show'); // Or style.display = 'none';
+                    // Close modal using style.display
+                    const editModal = document.getElementById('modal-edit-reunion');
+                    if (editModal) {
+                         editModal.style.display = 'none';
+                    }
                     // Reload data
                     await loadData(); 
                 } catch (error) {
@@ -653,5 +670,5 @@
             setInterval(loadData, 30000);
         });
     </script>
-    <script type="module" src="../js/main.js"></script> <!-- Load main JS as module -->
+    <!-- Removed duplicate load of main.js -->
 </html>
