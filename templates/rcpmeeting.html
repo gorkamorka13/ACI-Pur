@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réunions RCP - MSP Gestion</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .rcp-container {
+            padding: 20px;
+        }
+
+        .rcp-content {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .rcp-left-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rcp-right-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .reunion-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .reunion-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .reunion-item.selected {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .reunion-info {
+            flex-grow: 1;
+        }
+        
+        .reunion-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .reunion-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .reunion-meta i {
+            margin-right: 5px;
+            color: #007bff;
+        }
+        
+        .reunion-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.4em;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+        
+        .btn-nouvelle-reunion {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .details-header h2 {
+            margin: 0;
+        }
+
+        .details-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .details-section {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        
+        .presence-list {
+            margin-top: 25px;
+        }
+        
+        .presence-list h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .presence-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .presence-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .presence-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .presence-role {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        #info-reunion {
+            color: #666;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 25px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 18px;
+            width: 18px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            border-color: #2196F3;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #2196F3;
+            border-color: #2196F3;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .reunion-participation {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .reunion-participation i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li class="active"><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Réunions RCP</h1>
+                    <div class="user-info">
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Réunions</h3>
+                        <p class="total-amount" id="total-reunions">0</p>
+                        <p class="year-label">Année <span id="annee-reunions">2023</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-reunion">
+                    <i class="fas fa-plus"></i> Ajouter une réunion
+                </button>
+                <div class="filter-group">
+                    <label for="filter-annee">Filtrer par année:</label>
+                    <select id="filter-annee" class="form-control">
+                        <option value="">Toutes les années</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Nombre de Participants</th>
+                            <th>Durée (minutes)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liste-reunions">
+                        <!-- Les réunions seront générées dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Réunion -->
+    <div class="modal" id="modal-add-reunion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Ajouter une réunion</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-reunion">
+                    <div class="form-group">
+                        <label for="add-reunion-date">Date</label>
+                        <input type="date" id="add-reunion-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-reunion-participants">Nombre de participants</label>
+                        <input type="number" id="add-reunion-participants" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-reunion-duree">Durée (minutes)</label>
+                        <input type="number" id="add-reunion-duree" class="form-control" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-save-add-reunion">Ajouter</button>
+                <button class="btn btn-danger modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Éditer Réunion -->
+    <div class="modal" id="modal-edit-reunion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Modifier une réunion</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-reunion">
+                    <input type="hidden" id="edit-reunion-id">
+                    <div class="form-group">
+                        <label for="edit-reunion-date">Date</label>
+                        <input type="date" id="edit-reunion-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-reunion-participants">Nombre de participants</label>
+                        <input type="number" id="edit-reunion-participants" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-reunion-duree">Durée (minutes)</label>
+                        <input type="number" id="edit-reunion-duree" class="form-control" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-save-edit-reunion">Enregistrer</button>
+                <button class="btn btn-danger modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module">
+        import { dataService } from '/js/services/DataService.js';
+
+        let globalData = null;
+
+        // Fonction pour charger les données
+        async function loadData() {
+            try {
+                const rcpMeetings = await dataService.loadRcpMeetings();
+                globalData = { rcpMeetings };
+                updateStats();
+                initTableReunions();
+                initFilterAnnees();
+            } catch (error) {
+                console.error('Erreur lors du chargement des réunions:', error);
+                const tableBody = document.getElementById('liste-reunions');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: red;">
+                            Erreur lors du chargement des données. Détails: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStats() {
+            if (!globalData || !globalData.rcpMeetings) return;
+
+            const currentYear = new Date().getFullYear();
+            document.getElementById('annee-reunions').textContent = currentYear;
+
+            const totalReunions = globalData.rcpMeetings
+                .filter(reunion => new Date(reunion.date).getFullYear() === currentYear)
+                .length;
+
+            document.getElementById('total-reunions').textContent = totalReunions;
+        }
+
+        // Fonction pour initialiser le tableau des réunions
+        function initTableReunions() {
+            const tableBody = document.getElementById('liste-reunions');
+            tableBody.innerHTML = '';
+            
+            if (!globalData || !globalData.rcpMeetings || globalData.rcpMeetings.length === 0) {
+                const row = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 4;
+                td.textContent = 'Aucune réunion enregistrée';
+                td.style.textAlign = 'center';
+                row.appendChild(td);
+                tableBody.appendChild(row);
+                return;
+            }
+
+            const anneeFilter = document.getElementById('filter-annee').value;
+            let reunions = globalData.rcpMeetings;
+
+            if (anneeFilter) {
+                reunions = reunions.filter(reunion => 
+                    new Date(reunion.date).getFullYear().toString() === anneeFilter
+                );
+            }
+
+            reunions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            reunions.forEach(reunion => {
+                const row = document.createElement('tr');
+                
+                // Date
+                const tdDate = document.createElement('td');
+                tdDate.textContent = dataService.formatDate(reunion.date);
+                row.appendChild(tdDate);
+                
+                // Nombre de participants
+                const tdParticipants = document.createElement('td');
+                tdParticipants.textContent = reunion.nb_participants;
+                row.appendChild(tdParticipants);
+                
+                // Durée
+                const tdDuree = document.createElement('td');
+                tdDuree.textContent = reunion.duree;
+                row.appendChild(tdDuree);
+                
+                // Actions
+                const tdActions = document.createElement('td');
+                tdActions.className = 'action-icons';
+                
+                // Bouton éditer
+                const editBtn = document.createElement('i');
+                editBtn.className = 'fas fa-edit';
+                editBtn.title = 'Modifier';
+                editBtn.addEventListener('click', () => {
+                    document.getElementById('edit-reunion-id').value = reunion.id;
+                    document.getElementById('edit-reunion-date').value = reunion.date;
+                    document.getElementById('edit-reunion-participants').value = reunion.nb_participants;
+                    document.getElementById('edit-reunion-duree').value = reunion.duree;
+                    document.getElementById('modal-edit-reunion').classList.add('show');
+                });
+                tdActions.appendChild(editBtn);
+                
+                // Bouton supprimer
+                const deleteBtn = document.createElement('i');
+                deleteBtn.className = 'fas fa-trash-alt';
+                deleteBtn.title = 'Supprimer';
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer cette réunion ?')) {
+                        alert('La suppression n\'est pas disponible pour le moment.');
+                    }
+                });
+                tdActions.appendChild(deleteBtn);
+                
+                row.appendChild(tdActions);
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fonction pour initialiser le filtre des années
+        function initFilterAnnees() {
+            if (!globalData || !globalData.rcpMeetings) return;
+            
+            const annees = [...new Set(globalData.rcpMeetings.map(r => 
+                new Date(r.date).getFullYear()
+            ))];
+            annees.sort((a, b) => b - a); // Tri décroissant
+
+            const select = document.getElementById('filter-annee');
+            select.innerHTML = '<option value="">Toutes les années</option>';
+            
+            annees.forEach(annee => {
+                const option = document.createElement('option');
+                option.value = annee.toString();
+                option.textContent = annee.toString();
+                select.appendChild(option);
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Gestion du filtre par année
+            document.getElementById('filter-annee').addEventListener('change', initTableReunions);
+            
+            // Gestion des modales
+            document.querySelectorAll('.modal-close').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('show');
+                });
+            });
+
+            // Gestion du formulaire d'ajout
+            document.getElementById('btn-save-add-reunion').addEventListener('click', function() {
+                alert('L\'ajout de réunions n\'est pas disponible pour le moment.');
+            });
+
+            // Gestion du formulaire d'édition
+            document.getElementById('btn-save-edit-reunion').addEventListener('click', function() {
+                alert('La modification de réunions n\'est pas disponible pour le moment.');
+            });
+
+            // Rafraîchissement périodique
+            setInterval(loadData, 30000);
+        });
+    </script>
+    <script type="module" src="../js/main.js"></script> <!-- Load main JS as module -->
+</html>

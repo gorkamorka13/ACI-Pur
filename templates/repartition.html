@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Répartition des Revenus - MSP Gestion</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Ajout de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .content-section {
+            background: white;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .btn-parametres {
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid #2196F3;
+            color: #2196F3;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-parametres:hover {
+            background: #f5f5f5;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chart-tab {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-tab.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .chart-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .chart-container {
+            /* height: 400px; Removed fixed height */
+            margin-bottom: 20px;
+            /* padding: 0 !important; Removed padding override */
+            /* overflow: hidden; Removed overflow */
+        }
+
+        .parametres-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .parametre-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+        }
+
+        .parametre-title {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .parametre-subtitle {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .parametre-value {
+            font-size: 1.2em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .tooltip-box {
+            position: absolute;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .tooltip-box.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li class="active"><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Répartition des Revenus</h1>
+                    <div class="user-info">
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-section">
+                <div class="section-title">
+                    <h2>Critères de répartition</h2>
+                    <button class="btn-parametres">
+                        <i class="fas fa-cog"></i>
+                        Modifier les paramètres
+                    </button>
+                </div>
+
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-view="repartition">Répartition</button>
+                    <button class="chart-tab" data-view="presence-rcp">Présence RCP</button>
+                    <button class="chart-tab" data-view="implication-projets">Implication projets</button>
+                </div>
+
+                <div class="chart-description">
+                    Ce graphique présente la répartition des rémunérations pour les associés, ventilée par type de contribution (part fixe, présence RCP, et implication dans les projets).
+                </div>
+
+                <div class="chart-container">
+                    <div style="position: relative; height:400px; width:100%">
+                        <canvas id="repartition-chart"></canvas>
+                    </div>
+            </div>
+
+                <div class="parametres-grid">
+                    <div class="parametre-card">
+                        <div class="parametre-title">Part fixe</div>
+                        <div class="parametre-subtitle">Du revenu net</div>
+                        <div class="parametre-value" id="param-part-fixe">50%</div>
+                    </div>
+                    <div class="parametre-card">
+                        <div class="parametre-title">Facteur cogérant</div>
+                        <div class="parametre-subtitle">Associés gérants</div>
+                        <div class="parametre-value" id="param-facteur-cogerant">×1.7</div>
+                    </div>
+                    <div class="parametre-card">
+                        <div class="parametre-title">Part RCP</div>
+                        <div class="parametre-subtitle">Du revenu net</div>
+                        <div class="parametre-value" id="param-part-rcp">25%</div>
+                    </div>
+                    <div class="parametre-card">
+                        <div class="parametre-title">Part Projets</div>
+                        <div class="parametre-subtitle">Du revenu net</div>
+                        <div class="parametre-value" id="param-part-projets">25%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module">
+        import { dataService } from '../js/services/DataService.js';
+        
+        let repartitionChart = null; // Pour garder une référence au graphique
+        let globalData = null; // Pour stocker toutes les données chargées
+        let currentView = 'repartition'; // Vue actuelle du graphique
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadDataAndInit();
+            setupEventListeners();
+        });
+
+        async function loadDataAndInit() {
+            try {
+                globalData = await dataService.loadAllData();
+                if (!globalData) throw new Error("Chargement des données a échoué.");
+                
+                updateParametresDisplay();
+                updateChart(); // Afficher le graphique initial (répartition)
+
+            } catch (error) {
+                console.error("Erreur initialisation Répartition:", error);
+                // Afficher une erreur à l'utilisateur
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer) {
+                    chartContainer.innerHTML = `<p style="text-align:center; color:red;">Erreur chargement: ${error.message}</p>`;
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            // Onglets de graphique
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    currentView = tab.dataset.view;
+                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateChartDescription();
+                    updateChart();
+                });
+            });
+            
+            // Bouton Modifier paramètres (redirige vers la page paramètres)
+             const btnParams = document.querySelector('.btn-parametres');
+             if(btnParams) {
+                 btnParams.addEventListener('click', () => {
+                     window.location.href = 'parametres.html';
+                 });
+             }
+        }
+
+        // Fonction pour mettre à jour l'affichage des paramètres
+        function updateParametresDisplay() {
+            const params = globalData?.parametresRepartition;
+            if (!params) return; // Ne rien faire si les paramètres ne sont pas chargés
+        
+            document.getElementById('param-part-fixe').textContent = (params.partFixe || 0) + '%';
+            document.getElementById('param-facteur-cogerant').textContent = '×' + (params.facteurCogerant || 0);
+            document.getElementById('param-part-rcp').textContent = (params.partRCP || 0) + '%';
+            document.getElementById('param-part-projets').textContent = (params.partProjets || 0) + '%';
+        }
+
+        // Met à jour la description sous les onglets
+        function updateChartDescription() {
+            const descriptionEl = document.querySelector('.chart-description');
+            if (!descriptionEl) return;
+            
+            switch (currentView) {
+                case 'repartition':
+                    descriptionEl.textContent = "Ce graphique présente la répartition des rémunérations pour les associés, ventilée par type de contribution (part fixe, présence RCP, et implication dans les projets).";
+                    break;
+                case 'presence-rcp':
+                    descriptionEl.textContent = "Ce graphique montre le temps total de présence aux réunions RCP pour chaque associé sur la période sélectionnée.";
+                    break;
+                case 'implication-projets':
+                    descriptionEl.textContent = "Ce graphique illustre l'implication pondérée de chaque associé dans les différents projets.";
+                    break;
+                default:
+                     descriptionEl.textContent = 'Sélectionnez une vue.';
+            }
+        }
+
+        // Fonction principale pour mettre à jour le graphique
+        function updateChart() {
+            if (!globalData) return; // S'assurer que les données sont chargées
+
+            const ctx = document.getElementById('repartition-chart').getContext('2d');
+
+            // Détruire l'ancien graphique s'il existe
+            if (repartitionChart instanceof Chart) {
+                repartitionChart.destroy();
+            }
+
+            // Construire le graphique en fonction de la vue sélectionnée
+            let chartConfig = null;
+            try {
+                switch (currentView) {
+                    case 'repartition':
+                        chartConfig = getRepartitionChartConfig();
+                        break;
+                    case 'presence-rcp':
+                         chartConfig = getPresenceRcpChartConfig();
+                        break;
+                    case 'implication-projets':
+                         chartConfig = getImplicationProjetsChartConfig();
+                        break;
+                    default:
+                        console.warn("Vue de graphique non reconnue:", currentView);
+                        return; // Ne pas créer de graphique si la vue est inconnue
+                }
+                
+                if (chartConfig) {
+                    // Create chart directly without setTimeout
+                    try {
+                        repartitionChart = new Chart(ctx, chartConfig);
+                    } catch (chartError) {
+                        console.error(`Erreur lors de la création du graphique (${currentView}):`, chartError); // Updated error log source
+                        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        ctx.textAlign = 'center';
+                        ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2); // Updated error message
+                    }
+                }
+            } catch (error) {
+                 console.error(`Erreur initiale lors de la préparation du graphique (${currentView}):`, error); // Keep this outer catch
+                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                 ctx.textAlign = 'center';
+                 ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2);
+            }
+        }
+
+        // --- Fonctions de configuration spécifiques pour chaque graphique --- 
+
+        function getRepartitionChartConfig() {
+            const params = globalData.parametresRepartition;
+            const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+            const revenus = globalData.revenus;
+            const charges = globalData.charges;
+            
+            // Calculs de base (similaires à index.html, pourraient être factorisés)
+            const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+            const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
+            const montantNet = Math.max(0, totalRevenus - totalCharges);
+
+            const montantPartFixe = montantNet * (params.partFixe / 100);
+            const montantPartRCP = montantNet * (params.partRCP / 100);
+            const montantPartProjets = montantNet * (params.partProjets / 100);
+
+            // Calcul des parts individuelles (simplifié, logique RCP/Projets à affiner)
+            const nbAssocies = professionnels.length || 1;
+            const pointsFixePonderes = professionnels.reduce((sum, p) => sum + (p.statut === 'Cogérant' ? params.facteurCogerant : 1), 0) || 1;
+            
+            // TODO: Calculer précisément les points RCP et Projets par associé
+            const pointsRcpParAssocie = {}; // Ex: { associeId: points, ... }
+            const pointsProjetsParAssocie = {}; // Ex: { associeId: points, ... }
+            const totalPointsRcp = nbAssocies; // Placeholder
+            const totalPointsProjets = nbAssocies; // Placeholder
+            
+            professionnels.forEach(p => {
+                pointsRcpParAssocie[p.id] = 1; // Placeholder
+                pointsProjetsParAssocie[p.id] = 1; // Placeholder
+            });
+
+            const data = {
+                labels: professionnels.map(p => p.nom),
+                    datasets: [
+                        {
+                        label: `Part Fixe (${params.partFixe}%)`,
+                        data: professionnels.map(p => 
+                            (montantPartFixe / pointsFixePonderes) * (p.statut === 'Cogérant' ? params.facteurCogerant : 1)
+                        ),
+                            backgroundColor: '#2196F3',
+                        stack: 'Stack 0',
+                        },
+                        {
+                            label: `Part RCP (${params.partRCP}%)`,
+                        data: professionnels.map(p => (montantPartRCP / totalPointsRcp) * (pointsRcpParAssocie[p.id] || 0)),
+                        backgroundColor: '#4CAF50',
+                        stack: 'Stack 0',
+                        },
+                        {
+                            label: `Part Projets (${params.partProjets}%)`,
+                        data: professionnels.map(p => (montantPartProjets / totalPointsProjets) * (pointsProjetsParAssocie[p.id] || 0)),
+                        backgroundColor: '#FFC107',
+                        stack: 'Stack 0',
+                        }
+                    ]
+            };
+
+            return {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Restored
+                    // Simplified options: Removed plugins, scales
+                }
+            };
+        }
+        
+        function getPresenceRcpChartConfig() {
+            // TODO: Implémenter la récupération et l'affichage des données de présence RCP
+            // Données fictives pour l'instant
+            const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+            const data = {
+                labels: professionnels.map(p => p.nom),
+                datasets: [{
+                    label: 'Temps total présence RCP (heures)',
+                    data: professionnels.map(() => Math.random() * 40), // Données aléatoires
+                    backgroundColor: '#64B5F6',
+                }]
+            };
+            return {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Restored
+                    plugins: {
+                         title: { display: true, text: 'Temps de présence estimé aux réunions RCP' },
+                         legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                            }
+                        }
+            };
+        }
+        
+        function getImplicationProjetsChartConfig() {
+            // TODO: Implémenter la récupération et l'affichage des données d'implication projets
+            // Données fictives pour l'instant
+             const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+            const data = {
+                labels: professionnels.map(p => p.nom),
+                datasets: [{
+                    label: 'Score d\'implication projets (pondéré)',
+                    data: professionnels.map(() => Math.random() * 10), // Données aléatoires
+                    backgroundColor: '#FF9800',
+                }]
+            };
+             return {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Restored
+                    plugins: {
+                        title: { display: true, text: 'Score d\'implication estimé dans les projets' },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            };
+        }
+
+    </script>
+</body>
+</html>

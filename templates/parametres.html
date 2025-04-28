@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - MSP Gestion</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Ajout de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .content-section {
+            background: white;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .alert-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-info i {
+            color: #2196F3;
+            font-size: 1.2em;
+            margin-top: 2px;
+        }
+
+        .alert-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        .tab:hover:not(.active) {
+            background: #f5f5f5;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .repartition-bar {
+            height: 24px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .repartition-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85em;
+            white-space: nowrap;
+            padding: 0 10px;
+        }
+
+        .repartition-segment.part-fixe {
+            background: #2196F3;
+        }
+
+        .repartition-segment.part-rcp {
+            background: #64B5F6;
+        }
+
+        .repartition-segment.part-projets {
+            background: #4CAF50;
+        }
+
+        .slider-group {
+            margin-bottom: 25px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .slider-value {
+            color: #2196F3;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .slider-description {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2196F3;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .btn-save {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            float: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #1976D2;
+        }
+
+        .btn-save i {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li class="active"><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Paramètres</h1>
+                    <div class="user-info">
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="alert-info">
+                <i class="fas fa-info-circle"></i>
+                <p>La modification des facteurs de pondération affectera directement la répartition des rémunérations entre les associés de la MSP.</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active">Facteurs de répartition</button>
+                <button class="tab">Paramètres généraux</button>
+                <button class="tab">Sauvegarde et export</button>
+            </div>
+
+            <div class="content-section">
+                <h2 class="section-title">Facteurs de pondération</h2>
+                <p class="section-subtitle">Définissez les facteurs qui impactent la répartition des rémunérations entre les associés.</p>
+
+                <div class="repartition-bar">
+                    <div class="repartition-segment part-fixe" style="width: 50%">Part fixe: 50%</div>
+                    <div class="repartition-segment part-rcp" style="width: 25%">RCP: 25%</div>
+                    <div class="repartition-segment part-projets" style="width: 25%">Projets: 25%</div>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Facteur cogérant</span>
+                        <span class="slider-value">×1.7</span>
+                    </div>
+                    <p class="slider-description">Pondération appliquée aux associés ayant le statut de gérant</p>
+                    <input type="range" class="slider" id="slider-cogerant" min="0.5" max="3" step="0.1" value="1.7">
+                    <div class="slider-range">
+                        <span>×0.5</span>
+                        <span>×3.0</span>
+                                </div>
+                            </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Pourcentage RCP</span>
+                        <span class="slider-value">25%</span>
+                    </div>
+                    <p class="slider-description">Part des revenus nets attribuée en fonction de la présence aux RCP</p>
+                    <input type="range" class="slider" id="slider-rcp" min="0" max="50" value="25">
+                    <div class="slider-range">
+                        <span>0%</span>
+                        <span>50%</span>
+                            </div>
+                    </div>
+                    
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Pourcentage projets</span>
+                        <span class="slider-value">25%</span>
+                    </div>
+                    <p class="slider-description">Part des revenus nets attribuée en fonction de l'implication dans les projets</p>
+                    <input type="range" class="slider" id="slider-projets" min="0" max="75" value="25">
+                    <div class="slider-range">
+                        <span>0%</span>
+                        <span>75%</span>
+                    </div>
+                </div>
+
+                <button class="btn-save">
+                    <i class="fas fa-save"></i>
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de réinitialisation -->
+    <div class="modal" id="modal-confirm-reset">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmer la réinitialisation</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Cette action va supprimer définitivement toutes les données de l'application.</p>
+                    <p>Cette opération ne peut pas être annulée.</p>
+                    <p>Êtes-vous sûr de vouloir continuer ?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-confirm-reset" class="btn btn-danger">Oui, réinitialiser</button>
+                <button class="btn btn-secondary modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+
+    <script>
+        // Paramètres initiaux (les valeurs seront chargées depuis localStorage si disponibles)
+        let parametres = {
+            partFixe: 50, // Valeur par défaut, sera écrasée par localStorage si existant
+            facteurCogerant: 1.7,
+            partRCP: 25,
+            partProjets: 25
+        };
+        
+        // Éléments DOM
+        const sliderCogerant = document.getElementById('slider-cogerant');
+        const sliderRCP = document.getElementById('slider-rcp');
+        const sliderProjets = document.getElementById('slider-projets');
+        const barPartFixe = document.querySelector('.part-fixe');
+        const barPartRCP = document.querySelector('.part-rcp');
+        const barPartProjets = document.querySelector('.part-projets');
+        
+        // Fonction pour mettre à jour l'affichage
+        function updateDisplay() {
+            // Mettre à jour les valeurs affichées des sliders
+            const valueCogerant = sliderCogerant.value;
+            const valueRCP = sliderRCP.value;
+            const valueProjets = sliderProjets.value;
+            const partFixe = 100 - (parseInt(valueRCP) + parseInt(valueProjets));
+
+            // Mettre à jour les textes des valeurs
+            document.querySelectorAll('.slider-value')[0].textContent = '×' + valueCogerant;
+            document.querySelectorAll('.slider-value')[1].textContent = valueRCP + '%';
+            document.querySelectorAll('.slider-value')[2].textContent = valueProjets + '%';
+
+            // Mettre à jour la barre de répartition
+            barPartFixe.style.width = partFixe + '%';
+            barPartFixe.textContent = 'Part fixe: ' + partFixe + '%';
+            barPartRCP.style.width = valueRCP + '%';
+            barPartRCP.textContent = 'RCP: ' + valueRCP + '%';
+            barPartProjets.style.width = valueProjets + '%';
+            barPartProjets.textContent = 'Projets: ' + valueProjets + '%';
+
+            // Vérifier si le total est égal à 100%
+            const total = partFixe + parseInt(valueRCP) + parseInt(valueProjets);
+            const btnSave = document.querySelector('.btn-save');
+            btnSave.disabled = total !== 100;
+            btnSave.style.opacity = total !== 100 ? '0.5' : '1';
+
+            // Mettre à jour les couleurs des valeurs
+            const sliderValues = document.querySelectorAll('.slider-value');
+            sliderValues.forEach(value => {
+                value.style.color = total === 100 ? '#2196F3' : '#f44336';
+            });
+
+            return total === 100;
+            }
+            
+        // Événements des sliders
+        sliderCogerant.addEventListener('input', updateDisplay);
+
+        [sliderRCP, sliderProjets].forEach(slider => {
+            slider.addEventListener('input', function() {
+                const currentRCP = parseInt(sliderRCP.value);
+                const currentProjets = parseInt(sliderProjets.value);
+                const total = currentRCP + currentProjets;
+
+                // Ajuster automatiquement si le total dépasse 100%
+                if (total > 100) {
+                    if (this === sliderRCP) {
+                        sliderProjets.value = Math.max(0, 100 - currentRCP);
+            } else {
+                        sliderRCP.value = Math.max(0, 100 - currentProjets);
+                    }
+                }
+
+                updateDisplay();
+            });
+        });
+
+        // Événement du bouton de sauvegarde
+        document.querySelector('.btn-save').addEventListener('click', function() {
+            if (updateDisplay()) {
+                const partFixe = 100 - (parseInt(sliderRCP.value) + parseInt(sliderProjets.value));
+                
+                // Sauvegarder les paramètres
+                const newParams = {
+                    partFixe: partFixe,
+                    facteurCogerant: parseFloat(sliderCogerant.value),
+                    partRCP: parseInt(sliderRCP.value),
+                    partProjets: parseInt(sliderProjets.value)
+                };
+
+                // Sauvegarder dans le localStorage
+                localStorage.setItem('parametresRepartition', JSON.stringify(newParams));
+            
+                // Mettre à jour les paramètres en mémoire
+                parametres = newParams;
+            
+                showAlert('Paramètres de répartition enregistrés avec succès', 'success');
+
+                // Recharger la page de répartition si elle est ouverte
+                const repartitionPage = window.opener?.document.querySelector('.page-repartition');
+                if (repartitionPage) {
+                    window.opener.location.reload();
+                }
+            }
+        });
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger les valeurs sauvegardées depuis le localStorage
+            const savedParams = localStorage.getItem('parametresRepartition');
+            if (savedParams) {
+                parametres = JSON.parse(savedParams);
+                sliderCogerant.value = parametres.facteurCogerant;
+                sliderRCP.value = parametres.partRCP;
+                sliderProjets.value = parametres.partProjets;
+        }
+        
+            // Mettre à jour l'affichage initial
+            updateDisplay();
+            
+            // Gérer les onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

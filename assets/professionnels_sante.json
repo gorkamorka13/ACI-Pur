@@ -1,0 +1,163 @@
+[
+    {
+        "Nom": "ESPARSA Florian",
+        "Profession": "Médecin",
+        "Email": "dr.esparsa@gmail.com",
+        "Téléphone": "620464238",
+        "Statut": "Cogérant"
+    },
+    {
+        "Nom": "LAFITTE Jean Yves",
+        "Profession": "Médecin",
+        "Email": "jylafitte@gmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "RAIMBAULT MALLET Marie",
+        "Profession": "Médecin",
+        "Email": "m.raimbault80@hotmail.fr",
+        "Téléphone": "762458652",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "BOURVEN Margot",
+        "Profession": "Médecin",
+        "Email": "margot.bourven@gmail.com",
+        "Téléphone": "649529100",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "LALIS Agnès",
+        "Profession": "Pharmacien",
+        "Email": "alalis@totum.fr",
+        "Téléphone": "662279867",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "FERRON Valérie",
+        "Profession": "Pharmacien",
+        "Email": "valerie.ferron@laposte.net",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "GAYRIN Esther",
+        "Profession": "Pharmacien",
+        "Email": "esther.gayrin@outlook.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "GABORIAU Sandrine",
+        "Profession": "Infirmière",
+        "Email": "sandrine-gaboriau@sfr.fr",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "POQUIN Sylvie",
+        "Profession": "Infirmière",
+        "Email": "poquin.sylvie17@orange.fr",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "CHEMIN Emilie",
+        "Profession": "Infirmière",
+        "Email": "chemin.emilie17@gmail.com",
+        "Téléphone": "682120123",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "BLAY Séverine",
+        "Profession": "Infirmière",
+        "Email": "severine.blay@gmail.com",
+        "Téléphone": "616456553",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "TETAUD Virginie",
+        "Profession": "Infirmière",
+        "Email": "ninitetaud@live.fr",
+        "Téléphone": "680562395",
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "ARNAUD Marjorie",
+        "Profession": "Infirmière",
+        "Email": "marjoriearnaud764@gmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "ARNAUD Sarah",
+        "Profession": "Infirmière",
+        "Email": "saraharnaud@orange.fr",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "LELIEVRE Mélanie",
+        "Profession": "Infirmière",
+        "Email": "lelievremelaniee@gmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "COLLADO Marta",
+        "Profession": "Kinésithérapeute",
+        "Email": "martaccollado@hotmail.com",
+        "Téléphone": "783134547",
+        "Statut": "Cogérant"
+    },
+    {
+        "Nom": "CHAPELIER Ludovic",
+        "Profession": "Kinésithérapeute",
+        "Email": "ludovic.chapelier@yahoo.fr",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "MOREL Emilie",
+        "Profession": "Kinésithérapeute",
+        "Email": "emi-toy@hotmail.fr",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "SALIERNO Alexandra",
+        "Profession": "Kinésithérapeute",
+        "Email": "alexsalierno@hotmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "LOPEZ Julien",
+        "Profession": "Dentiste",
+        "Email": "julienlopez.dentiste@gmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "EGRETEAU Emmanuelle",
+        "Profession": "Pédicure podologue",
+        "Email": "egreteau.podologue@gmail.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "CHAUVEL Pascal",
+        "Profession": "Pédicure podologue",
+        "Email": "chavelpascal@icloud.com",
+        "Téléphone": null,
+        "Statut": "Associé"
+    },
+    {
+        "Nom": "CAMBERLEIN Bernard",
+        "Profession": "Médecin",
+        "Email": null,
+        "Téléphone": null,
+        "Statut": "Associé"
+    }
+]

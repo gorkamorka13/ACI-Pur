@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Revenus - MSP Gestion</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Ajout de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li class="active"><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Gestion des Revenus ACI</h1>
+                    <div class="user-info">
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Revenus</h3>
+                        <p class="total-amount" id="total-revenus">0 €</p>
+                        <p class="year-label">Année <span id="annee-revenus">2023</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Charges</h3>
+                        <p class="total-amount" id="total-charges">0 €</p>
+                        <p class="year-label">Année 2023</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Revenu Net</h3>
+                        <p class="total-amount" id="revenu-net">0 €</p>
+                        <p class="year-label">Année 2023</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-revenu">
+                    <i class="fas fa-plus"></i> Ajouter un revenu
+                </button>
+                <div class="filter-group">
+                    <label for="filter-annee">Filtrer par année:</label>
+                    <select id="filter-annee" class="form-control">
+                        <option value="">Toutes les années</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Montant</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liste-revenus">
+                        <!-- Les revenus seront générés dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Graphique d'évolution des revenus -->
+            <div class="chart-container mt-20">
+                <h3>Évolution des revenus ACI</h3>
+                <div class="chart" id="revenus-chart">
+                    <!-- Le graphique sera généré par JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Revenu -->
+    <div class="modal" id="modal-add-revenu">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Ajouter un revenu</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-revenu">
+                    <div class="form-group">
+                        <label for="add-revenu-date">Date</label>
+                        <input type="date" id="add-revenu-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-revenu-description">Description</label>
+                        <input type="text" id="add-revenu-description" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-revenu-montant">Montant (€)</label>
+                        <input type="number" id="add-revenu-montant" class="form-control" step="0.01" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-save-add-revenu">Ajouter</button>
+                <button class="btn btn-danger modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Éditer Revenu -->
+    <div class="modal" id="modal-edit-revenu">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Modifier un revenu</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-revenu">
+                    <input type="hidden" id="edit-revenu-id">
+                    <div class="form-group">
+                        <label for="edit-revenu-date">Date</label>
+                        <input type="date" id="edit-revenu-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-revenu-description">Description</label>
+                        <input type="text" id="edit-revenu-description" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-revenu-montant">Montant (€)</label>
+                        <input type="number" id="edit-revenu-montant" class="form-control" step="0.01" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-save-edit-revenu">Enregistrer</button>
+                <button class="btn btn-danger modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { dataService } from '../js/services/DataService.js';
+
+        let globalData = null;
+
+        // Fonction pour charger les données
+        async function loadData() {
+            try {
+                const revenus = await dataService.loadRevenus();
+                globalData = { revenus };
+                updateStats();
+                initTableRevenus();
+                initFilterAnnees();
+            } catch (error) {
+                console.error('Erreur lors du chargement des revenus:', error);
+                const tableBody = document.getElementById('liste-revenus');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: red;">
+                            Erreur lors du chargement des données. Détails: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStats() {
+            if (!globalData || !globalData.revenus) return;
+
+            const currentYear = new Date().getFullYear();
+            document.getElementById('annee-revenus').textContent = currentYear;
+
+            const totalRevenus = globalData.revenus
+                .filter(rev => new Date(rev.date).getFullYear() === currentYear)
+                .reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+
+            document.getElementById('total-revenus').textContent = dataService.formatMontant(totalRevenus);
+        }
+
+        // Fonction pour initialiser le tableau des revenus
+        function initTableRevenus() {
+            const tableBody = document.getElementById('liste-revenus');
+            tableBody.innerHTML = '';
+            
+            if (!globalData || !globalData.revenus || globalData.revenus.length === 0) {
+                const row = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 4;
+                td.textContent = 'Aucun revenu enregistré';
+                td.style.textAlign = 'center';
+                row.appendChild(td);
+                tableBody.appendChild(row);
+                return;
+            }
+
+            const anneeFilter = document.getElementById('filter-annee').value;
+            let revenus = globalData.revenus;
+
+            if (anneeFilter) {
+                revenus = revenus.filter(rev => new Date(rev.date).getFullYear().toString() === anneeFilter);
+            }
+
+            revenus.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            revenus.forEach(revenu => {
+                const row = document.createElement('tr');
+                
+                // Date
+                const tdDate = document.createElement('td');
+                tdDate.textContent = dataService.formatDate(revenu.date);
+                row.appendChild(tdDate);
+                
+                // Description
+                const tdDesc = document.createElement('td');
+                tdDesc.textContent = revenu.description;
+                row.appendChild(tdDesc);
+                
+                // Montant
+                const tdMontant = document.createElement('td');
+                tdMontant.textContent = dataService.formatMontant(revenu.montant);
+                row.appendChild(tdMontant);
+                
+                // Actions
+                const tdActions = document.createElement('td');
+                tdActions.className = 'action-icons';
+                
+                // Bouton éditer
+                const editBtn = document.createElement('i');
+                editBtn.className = 'fas fa-edit';
+                editBtn.title = 'Modifier';
+                editBtn.addEventListener('click', () => {
+                    document.getElementById('edit-revenu-id').value = revenu.id;
+                    document.getElementById('edit-revenu-date').value = revenu.date;
+                    document.getElementById('edit-revenu-description').value = revenu.description;
+                    document.getElementById('edit-revenu-montant').value = revenu.montant;
+                    document.getElementById('modal-edit-revenu').classList.add('show');
+                });
+                tdActions.appendChild(editBtn);
+                
+                // Bouton supprimer
+                const deleteBtn = document.createElement('i');
+                deleteBtn.className = 'fas fa-trash-alt';
+                deleteBtn.title = 'Supprimer';
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce revenu ?')) {
+                        alert('La suppression n\'est pas disponible pour le moment.');
+                    }
+                });
+                tdActions.appendChild(deleteBtn);
+                
+                row.appendChild(tdActions);
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fonction pour initialiser le filtre des années
+        function initFilterAnnees() {
+            if (!globalData || !globalData.revenus) return;
+            
+            const annees = [...new Set(globalData.revenus.map(r => new Date(r.date).getFullYear()))];
+            annees.sort((a, b) => b - a); // Tri décroissant
+
+            const select = document.getElementById('filter-annee');
+            select.innerHTML = '<option value="">Toutes les années</option>';
+            
+            annees.forEach(annee => {
+                const option = document.createElement('option');
+                option.value = annee.toString();
+                option.textContent = annee.toString();
+                select.appendChild(option);
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            
+            // Gestion du filtre par année
+            document.getElementById('filter-annee').addEventListener('change', initTableRevenus);
+            
+            // Gestion des modales
+            document.querySelectorAll('.modal-close').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('show');
+                });
+            });
+
+            // Gestion du formulaire d'ajout
+            document.getElementById('btn-save-add-revenu').addEventListener('click', function() {
+                alert('L\'ajout de revenus n\'est pas disponible pour le moment.');
+            });
+
+            // Gestion du formulaire d'édition
+            document.getElementById('btn-save-edit-revenu').addEventListener('click', function() {
+                alert('La modification de revenus n\'est pas disponible pour le moment.');
+            });
+
+            // Rafraîchissement périodique
+            setInterval(loadData, 30000);
+        });
+    </script>
+</body>
+</html> 

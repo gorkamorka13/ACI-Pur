@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSP Gestion - Maison de Santé Pluriprofessionnelle</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Ajout de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="templates/revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="templates/associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="templates/charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li><a href="templates/rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li><a href="templates/projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li><a href="templates/repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li><a href="templates/parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Tableau de bord</h1>
+                    <div class="user-info">
+                        <button onclick="exportData()" style="margin-right: 15px;">Exporter les données</button>
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+            <div class="dashboard">
+                <div class="welcome-section">
+                    <h2>Bienvenue sur MSP Gestion</h2>
+                    <p>Application de gestion pour votre Maison de Santé Pluriprofessionnelle</p>
+                </div>
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Revenus ACI</h3>
+                            <p class="total-amount" id="total-revenus">0 €</p>
+                            <p class="year-label">Année <span id="annee-revenus">2023</span></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Associés</h3>
+                            <p class="total-amount" id="total-associes">0</p>
+                            <p class="year-label">Professionnels actifs</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Charges</h3>
+                            <p class="total-amount" id="total-charges">0 €</p>
+                            <p class="year-label">Année <span id="annee-charges">2023</span></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Réunions RCP</h3>
+                            <p class="total-amount" id="total-reunions">0</p>
+                            <p class="year-label">Année <span id="annee-reunions">2023</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="chart-container">
+                        <h3>Répartition des revenus</h3>
+                        <div style="position: relative; height:300px; width:100%">
+                            <canvas class="chart" id="repartition-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="recent-activities">
+                        <h3>Paramètres de répartition actuels</h3>
+                        <div class="parametres-grid">
+                            <div class="parametre-card">
+                                <div class="parametre-title">Part fixe</div>
+                                <div class="parametre-subtitle">Du revenu net</div>
+                                <div class="parametre-value" id="param-part-fixe">50%</div>
+                            </div>
+                            <div class="parametre-card">
+                                <div class="parametre-title">Facteur cogérant</div>
+                                <div class="parametre-subtitle">Associés gérants</div>
+                                <div class="parametre-value" id="param-facteur-cogerant">×1.7</div>
+                            </div>
+                            <div class="parametre-card">
+                                <div class="parametre-title">Part RCP</div>
+                                <div class="parametre-subtitle">Du revenu net</div>
+                                <div class="parametre-value" id="param-part-rcp">25%</div>
+                            </div>
+                            <div class="parametre-card">
+                                <div class="parametre-title">Part Projets</div>
+                                <div class="parametre-subtitle">Du revenu net</div>
+                                <div class="parametre-value" id="param-part-projets">25%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Configuration -->
+    <script type="module" src="js/config/config.js"></script>
+    
+    <!-- Utilitaires -->
+    <script type="module" src="js/utils/dateUtils.js"></script>
+    <script type="module" src="js/utils/validationUtils.js"></script>
+    
+    <!-- Services -->
+    <script type="module" src="js/services/DataService.js"></script>
+    <script type="module" src="js/services/AssocieService.js"></script>
+    
+    <!-- Migration - Désactivé -->
+    <!-- <script type="module" src="js/migration/migrationService.js"></script> -->
+    <!-- <script type="module" src="js/migration/index.js"></script> -->
+    
+    <!-- Application -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module">
+        import { dataService } from './js/services/DataService.js';
+
+        let globalData = null;
+
+        // Fonction pour mettre à jour les statistiques
+        async function updateStats() {
+            try {
+                const currentYear = new Date().getFullYear();
+                
+                // Mise à jour des années affichées (vérifier si les éléments existent)
+                const elAnneeRevenus = document.getElementById('annee-revenus');
+                if (elAnneeRevenus) elAnneeRevenus.textContent = currentYear;
+                
+                const elAnneeCharges = document.getElementById('annee-charges');
+                if (elAnneeCharges) elAnneeCharges.textContent = currentYear;
+                
+                const elAnneeReunions = document.getElementById('annee-reunions');
+                if (elAnneeReunions) elAnneeReunions.textContent = currentYear;
+
+                // Chargement des données
+                globalData = await dataService.loadAllData();
+                
+                // Vérifier si les données essentielles sont chargées
+                if (!globalData || !globalData.revenus || !globalData.charges || !globalData.rcpMeetings || !globalData.professionnels || !globalData.parametresRepartition) {
+                    console.error('Données incomplètes après chargement:', globalData);
+                    throw new Error('Données essentielles manquantes après le chargement.');
+                }
+
+                // Calcul des totaux pour l'année en cours
+                const totalRevenus = globalData.revenus
+                    .filter(rev => rev && rev.date && new Date(rev.date).getFullYear() === currentYear)
+                    .reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+
+                const totalCharges = globalData.charges
+                    .filter(chg => chg && chg.date && new Date(chg.date).getFullYear() === currentYear)
+                    .reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
+
+                const totalReunions = globalData.rcpMeetings
+                    .filter(reu => reu && reu.date && new Date(reu.date).getFullYear() === currentYear)
+                    .length;
+
+                // Correction : Utiliser les noms de champs retournés par Sequelize (minuscules)
+                const totalAssocies = globalData.professionnels
+                    .filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant')) 
+                    .length;
+
+                // Mise à jour de l'affichage (vérifier si les éléments existent)
+                const elTotalRevenus = document.getElementById('total-revenus');
+                if (elTotalRevenus) elTotalRevenus.textContent = dataService.formatMontant(totalRevenus);
+
+                const elTotalCharges = document.getElementById('total-charges');
+                if (elTotalCharges) elTotalCharges.textContent = dataService.formatMontant(totalCharges);
+
+                const elTotalReunions = document.getElementById('total-reunions');
+                if (elTotalReunions) elTotalReunions.textContent = totalReunions;
+                
+                const elTotalAssocies = document.getElementById('total-associes');
+                if (elTotalAssocies) elTotalAssocies.textContent = totalAssocies;
+
+                // Mise à jour des paramètres (vérifier si les éléments existent)
+                const params = globalData.parametresRepartition;
+                if (params) {
+                    const elPartFixe = document.getElementById('param-part-fixe');
+                    if (elPartFixe) elPartFixe.textContent = params.partFixe + '%';
+                    
+                    const elFacteurCogerant = document.getElementById('param-facteur-cogerant');
+                    if (elFacteurCogerant) elFacteurCogerant.textContent = '×' + params.facteurCogerant;
+                    
+                    const elPartRCP = document.getElementById('param-part-rcp');
+                    if (elPartRCP) elPartRCP.textContent = params.partRCP + '%';
+                    
+                    const elPartProjets = document.getElementById('param-part-projets');
+                    if (elPartProjets) elPartProjets.textContent = params.partProjets + '%';
+                }
+
+                // Mise à jour du graphique
+                updateGraphique();
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour des statistiques:', error);
+                // Afficher un message d'erreur plus ciblé si possible
+                // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
+            }
+        }
+
+        // Fonction pour afficher le graphique de répartition
+        function updateGraphique() {
+            // Vérifier si les données nécessaires sont chargées
+            if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges) {
+                 console.warn('Données manquantes pour le graphique (index.html), annulation de la mise à jour.');
+                 return;
+            }
+
+            const chartElement = document.getElementById('repartition-chart');
+            if (!chartElement) {
+                console.error("Élément canvas 'repartition-chart' non trouvé.");
+                return;
+            }
+            const ctx = chartElement.getContext('2d');
+            
+            const professionnels = globalData.professionnels;
+            const params = globalData.parametresRepartition;
+            const revenus = globalData.revenus;
+            const charges = globalData.charges;
+
+            // Calcul des montants
+            const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+            const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
+            const montantARepartir = Math.max(0, totalRevenus - totalCharges);
+
+            const montantPartFixe = montantARepartir * (params.partFixe / 100);
+            const montantPartRCP = montantARepartir * (params.partRCP / 100);
+            const montantPartProjets = montantARepartir * (params.partProjets / 100);
+
+            // Filtrer uniquement les associés actifs pour la répartition
+            const associesActifs = professionnels.filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'));
+            const nbAssociesActifs = associesActifs.length || 1; // Eviter division par zéro
+
+            // Calculer le total des points pondérés pour la part fixe
+            const pointsFixePonderes = associesActifs.reduce((sum, p) => sum + (p.statut === 'Cogérant' ? params.facteurCogerant : 1), 0) || 1;
+
+            // -- DEBUG LOGS --
+            console.log("[index.html] Calculs pour graphique:");
+            console.log(" - Montant Net à Répartir:", dataService.formatMontant(montantARepartir));
+            console.log(" - Montant Part Fixe Total:", dataService.formatMontant(montantPartFixe));
+            console.log(" - Montant Part RCP Total:", dataService.formatMontant(montantPartRCP));
+            console.log(" - Montant Part Projets Total:", dataService.formatMontant(montantPartProjets));
+            console.log(" - Nb Associés Actifs:", nbAssociesActifs);
+            console.log(" - Total Points Pondérés Fixe:", pointsFixePonderes);
+            // -- FIN DEBUG LOGS --
+
+            // Préparation des données pour le graphique
+            const data = {
+                labels: associesActifs.map(pro => pro.nom),
+                    datasets: [
+                        {
+                            label: `Part fixe (${params.partFixe}%)`,
+                        // Correction du calcul de la part fixe individuelle
+                        data: associesActifs.map(pro => 
+                            (montantPartFixe / pointsFixePonderes) * (pro.statut === 'Cogérant' ? params.facteurCogerant : 1)
+                            ),
+                        backgroundColor: '#2196F3',
+                        stack: 'Stack 0' // Permet d'empiler les barres
+                        },
+                        {
+                            label: `Part RCP (${params.partRCP}%)`,
+                        // Répartition égale simple pour RCP (logique à affiner si nécessaire)
+                        data: associesActifs.map(() => montantPartRCP / nbAssociesActifs),
+                        backgroundColor: '#64B5F6',
+                        stack: 'Stack 0'
+                        },
+                        {
+                            label: `Part Projets (${params.partProjets}%)`,
+                         // Répartition égale simple pour Projets (logique à affiner si nécessaire)
+                        data: associesActifs.map(() => montantPartProjets / nbAssociesActifs),
+                        backgroundColor: '#4CAF50',
+                        stack: 'Stack 0'
+                        }
+                    ]
+            };
+
+            // -- DEBUG LOGS --
+            console.log("[index.html] Données envoyées au graphique:", JSON.stringify(data, null, 2));
+            // -- FIN DEBUG LOGS --
+
+            // Détruire l'ancien graphique s'il existe
+            if (window.repartitionChart instanceof Chart) {
+                window.repartitionChart.destroy();
+            }
+
+            try {
+                 window.repartitionChart = new Chart(ctx, {
+                     type: 'bar',
+                     data: data, // Utiliser les données préparées
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                         plugins: {
+                             title: { display: true, text: 'Répartition estimée des rémunérations' }, // Titre ajouté
+                             legend: {
+                                 position: 'top'
+                             },
+                             tooltip: {
+                                 callbacks: {
+                                     label: function(context) {
+                                         return context.dataset.label + ': ' + dataService.formatMontant(context.raw);
+                                     }
+                                 }
+                             }
+                         },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return dataService.formatMontant(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (chartError) {
+                 console.error("Erreur lors de la création du graphique Chart.js (index.html):", chartError);
+                 // Afficher une erreur dans le canvas si la création échoue
+                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                 ctx.textAlign = 'center';
+                 ctx.fillText("Erreur graphique", ctx.canvas.width/2, ctx.canvas.height/2);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            
+            // Rafraîchissement périodique
+            setInterval(updateStats, 30000); // Mise à jour toutes les 30 secondes
+        });
+
+        // Fonction d'export (pour la maintenance)
+        function exportData() {
+            if (!globalData) return;
+            
+            const dataStr = JSON.stringify(globalData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'data.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

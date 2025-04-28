@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets et Missions - MSP Gestion</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .projets-container {
+            padding: 20px;
+        }
+
+        .projets-content {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .projets-left-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .projets-right-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.4em;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .projet-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .projet-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .projet-item.selected {
+            border-color: #2196F3;
+            background-color: #f8f9fa;
+        }
+
+        .projet-info {
+            flex-grow: 1;
+        }
+
+        .projet-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .projet-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .projet-meta i {
+            margin-right: 5px;
+            color: #2196F3;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .status-badge.actif {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.inactif {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .weight-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .weight-badge i {
+            margin-right: 5px;
+        }
+
+        .details-section {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .details-title {
+            margin: 0;
+        }
+
+        .details-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .details-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        .contribution-section {
+            margin-top: 30px;
+        }
+
+        .contribution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .contribution-warning {
+            background-color: #fff3e0;
+            border: 1px solid #ffe0b2;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 15px 0;
+            color: #e65100;
+        }
+
+        .associe-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .associe-info {
+            flex-grow: 1;
+        }
+
+        .associe-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .associe-role {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .contribution-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contribution-input input {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-nouveau-projet {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-nouveau-projet i {
+            font-size: 0.9em;
+        }
+
+        .btn-modifier-poids {
+            background: none;
+            border: none;
+            color: #2196F3;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .btn-ajouter-associe {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-egaliser {
+            background: none;
+            border: 1px solid #2196F3;
+            color: #2196F3;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .dropdown-associes {
+            position: absolute;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 250px;
+            display: none;
+        }
+
+        .dropdown-associes.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item .associe-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .dropdown-item .associe-role {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .status-badge.en-cours {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-badge.valide {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .details-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .details-content {
+            display: none;
+        }
+
+        .details-content.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>MSP Gestion</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
+                    <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
+                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
+                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
+                    <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
+                    <li class="active"><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
+                    <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
+                    <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Projets et Missions</h1>
+                    <div class="user-info">
+                        <span>Administrateur</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="projets-container">
+                <div class="projets-content">
+                    <div class="projets-left-column">
+                        <div class="section-header">
+                            <div>
+                                <h2>Liste des projets</h2>
+                                <p class="section-subtitle">Sélectionnez un projet pour gérer les affectations</p>
+                            </div>
+                            <button class="btn-nouveau-projet" id="btn-nouveau-projet">
+                                <i class="fas fa-plus"></i> Nouveau projet
+                            </button>
+                        </div>
+                        <div id="liste-projets">
+                            <!-- Les projets seront générés ici -->
+                        </div>
+                    </div>
+
+                    <div class="projets-right-column">
+                        <div class="details-section">
+                            <div class="details-header">
+                                <div>
+                                    <h2 class="details-title" id="projet-titre">Détails du projet</h2>
+                                    <p class="section-subtitle">Gestion des affectations et contributions</p>
+                                </div>
+                                <div class="details-actions">
+                                    <button class="btn btn-outline" id="btn-modifier">
+                                        <i class="fas fa-edit"></i> Modifier
+                                    </button>
+                                    <button class="btn btn-danger" id="btn-supprimer">
+                                        <i class="fas fa-trash"></i> Supprimer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="details-placeholder" id="details-placeholder">
+                                Sélectionnez un projet pour voir les détails et gérer les contributions
+                            </div>
+
+                            <div class="details-content" id="details-content">
+                                <div class="details-meta">
+                                    <span><i class="far fa-calendar"></i> <span id="projet-dates"></span></span>
+                                    <span>
+                                        <i class="fas fa-weight-hanging"></i> Poids: <span id="projet-poids">1</span>
+                                        <button class="btn-modifier-poids" id="btn-modifier-poids">
+                                            <i class="fas fa-edit"></i> Modifier le poids
+                                        </button>
+                                    </span>
+                                </div>
+
+                                <div class="contribution-section">
+                                    <div class="contribution-header">
+                                        <h3>Associés affectés au projet</h3>
+                                        <div>
+                                            <button class="btn-egaliser" id="btn-egaliser">
+                                                <i class="fas fa-equals"></i> Égaliser
+                                            </button>
+                                            <button class="btn-ajouter-associe" id="btn-ajouter-associe">
+                                                <i class="fas fa-plus"></i> Ajouter un associé
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="contribution-warning" id="warning-contributions" style="display: none;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Le total des contributions n'est pas égal à 100%. Ajustez les contributions ou cliquez sur "Égaliser" pour une distribution automatique.
+                                    </div>
+
+                                    <div id="liste-associes">
+                                        <!-- Les associés seront générés ici -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ajouter le menu déroulant des associés -->
+            <div class="dropdown-associes" id="dropdown-associes"></div>
+        </div>
+    </div>
+
+    <!-- Modal Nouveau/Modifier Projet -->
+    <div class="modal" id="modal-projet">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nouveau projet</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-projet">
+                    <input type="hidden" id="projet-id">
+                    <div class="form-group">
+                        <label for="projet-titre-input">Titre du projet</label>
+                        <input type="text" id="projet-titre-input" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projet-annee">Année de réalisation</label>
+                        <select id="projet-annee" class="form-control" required>
+                            <option value="">Sélectionnez une année</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projet-poids-input">Poids du projet</label>
+                        <input type="number" id="projet-poids-input" class="form-control" min="1" max="5" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projet-statut">Statut</label>
+                        <select id="projet-statut" class="form-control" required>
+                            <option value="en-cours">En cours</option>
+                            <option value="valide">Validé</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-save-projet">Enregistrer</button>
+                <button class="btn btn-danger modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+    <script type="module">
+        import { dataService } from '../js/services/DataService.js';
+        
+        let allProjets = [];
+        let allProfessionnels = [];
+        let projetSelectionne = null;
+        // Pas de gestion explicite des contributions ici, l'API devrait le gérer
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadInitialData();
+            setupEventListeners();
+        });
+        
+        async function loadInitialData() {
+            try {
+                // Charger projets et professionnels en parallèle
+                [allProjets, allProfessionnels] = await Promise.all([
+                    dataService.loadProjets(),
+                    dataService.loadProfessionnels()
+                ]);
+                
+                // Afficher la liste initiale des projets
+                renderListeProjets();
+                
+                // Si un projet était sélectionné, le réafficher
+                if (projetSelectionne) {
+                    const projetActuel = allProjets.find(p => p.id === projetSelectionne.id);
+                    if (projetActuel) {
+                        projetSelectionne = projetActuel; // Mettre à jour avec les nouvelles données
+                        afficherDetailsProjet(projetSelectionne);
+                    } else {
+                        // Le projet sélectionné n'existe plus
+                        resetDetailsSection();
+                    }
+                } else {
+                    resetDetailsSection();
+                }
+
+            } catch (error) {
+                console.error("Erreur lors du chargement des données Projets:", error);
+                document.getElementById('liste-projets').innerHTML = '<p class="no-data" style="color:red;">Erreur chargement projets.</p>';
+                resetDetailsSection();
+            }
+        }
+
+        function setupEventListeners() {
+            // Boutons principaux
+            document.getElementById('btn-nouveau-projet').addEventListener('click', handleNouveauProjet);
+            document.getElementById('btn-save-projet').addEventListener('click', handleSauvegarderProjet);
+            
+            // Boutons de détail (si le projet est sélectionné)
+            document.getElementById('btn-modifier').addEventListener('click', handleModifierProjet);
+            document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
+            // document.getElementById('btn-modifier-poids').addEventListener('click', modifierPoids); // À réimplémenter si besoin
+            // document.getElementById('btn-ajouter-associe').addEventListener('click', ajouterAssocie); // À réimplémenter si besoin
+            // document.getElementById('btn-egaliser').addEventListener('click', egaliserContributions); // À réimplémenter si besoin
+            
+            // Fermeture des modales
+            document.querySelectorAll('.modal-close').forEach(button => {
+                button.addEventListener('click', () => closeModal(button.closest('.modal').id));
+        });
+        }
+
+        function renderListeProjets() {
+            const container = document.getElementById('liste-projets');
+            container.innerHTML = ''; // Vider la liste
+
+            if (!allProjets || allProjets.length === 0) {
+                container.innerHTML = '<p class="no-data">Aucun projet trouvé.</p>';
+                return;
+            }
+
+            allProjets.forEach(projet => {
+                const div = document.createElement('div');
+                div.className = 'projet-item' + (projetSelectionne && projet.id === projetSelectionne.id ? ' selected' : '');
+                div.setAttribute('data-id', projet.id);
+
+                // Utiliser les noms de champs API (minuscules)
+                const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'terminé' ? 'Terminé' : 'Annulé'); 
+                const statutClass = projet.statut === 'en-cours' ? 'actif' : 'inactif';
+                
+                div.innerHTML = `
+                    <div class="projet-info">
+                        <div class="projet-title">
+                            ${projet.titre}
+                            <span class="status-badge ${statutClass}">${statutLibelle}</span> 
+                        </div>
+                        <div class="projet-meta">
+                            <span><i class="far fa-calendar"></i> ${projet.annee}</span>
+                            <span><i class="fas fa-weight-hanging"></i> Poids: ${projet.poids}</span>
+                            <!-- <span><i class="fas fa-users"></i> X contributeurs</span> --> <!-- Info non dispo directement -->
+                        </div>
+                    </div>
+                `;
+
+                div.addEventListener('click', () => {
+                    document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
+                    div.classList.add('selected');
+                    projetSelectionne = projet;
+                    afficherDetailsProjet(projet);
+                });
+
+                container.appendChild(div);
+            });
+        }
+
+        function resetDetailsSection() {
+             document.getElementById('details-content').style.display = 'none';
+             document.getElementById('details-placeholder').style.display = 'block';
+             document.getElementById('btn-modifier').style.display = 'none';
+             document.getElementById('btn-supprimer').style.display = 'none';
+             document.getElementById('projet-titre').textContent = 'Détails du projet';
+             document.getElementById('liste-associes').innerHTML = ''; // Vider la liste des associés
+             projetSelectionne = null;
+             document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
+        }
+
+        function afficherDetailsProjet(projet) {
+            if (!projet) {
+                resetDetailsSection();
+                return;
+            }
+            
+            document.getElementById('details-placeholder').style.display = 'none';
+            document.getElementById('details-content').style.display = 'block'; // Utiliser block au lieu de add('show')
+            document.getElementById('btn-modifier').style.display = 'inline-block';
+            document.getElementById('btn-supprimer').style.display = 'inline-block';
+
+            document.getElementById('projet-titre').textContent = projet.titre;
+            document.getElementById('projet-dates').textContent = projet.annee;
+            document.getElementById('projet-poids').textContent = projet.poids;
+
+            // Afficher les associés affectés (simplifié pour le moment)
+            // TODO: Implémenter la logique pour charger/afficher/modifier les contributions/affectations
+            const containerAssocies = document.getElementById('liste-associes');
+            containerAssocies.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">Gestion des affectations à implémenter.</p>'; 
+
+            // Cacher l'avertissement de contribution pour l'instant
+            const warningDiv = document.getElementById('warning-contributions');
+            if(warningDiv) warningDiv.style.display = 'none';
+        }
+
+        // --- Gestion des modales ---
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+            // Réinitialiser les formulaires lors de la fermeture
+            const form = modal.querySelector('form');
+            if (form) form.reset();
+            document.getElementById('projet-id').value = ''; // Vider l'ID caché
+        }
+        
+        // --- Gestion des actions --- 
+        
+        function handleNouveauProjet() {
+             document.getElementById('form-projet').reset();
+             document.getElementById('projet-id').value = ''; 
+             document.querySelector('#modal-projet .modal-title').textContent = 'Nouveau projet';
+             openModal('modal-projet');
+        }
+
+        function handleModifierProjet() {
+            if (!projetSelectionne) return;
+
+            document.getElementById('projet-id').value = projetSelectionne.id;
+            document.getElementById('projet-titre-input').value = projetSelectionne.titre;
+            document.getElementById('projet-annee').value = projetSelectionne.annee;
+            document.getElementById('projet-poids-input').value = projetSelectionne.poids;
+            document.getElementById('projet-statut').value = projetSelectionne.statut;
+
+            document.querySelector('#modal-projet .modal-title').textContent = 'Modifier le projet';
+            openModal('modal-projet');
+        }
+        
+        async function handleSauvegarderProjet() {
+            const projetData = {
+                id: document.getElementById('projet-id').value || undefined, // Envoyer undefined si nouveau
+                titre: document.getElementById('projet-titre-input').value,
+                annee: document.getElementById('projet-annee').value,
+                poids: parseInt(document.getElementById('projet-poids-input').value) || 1,
+                statut: document.getElementById('projet-statut').value
+            };
+            
+            // Validation simple
+            if (!projetData.titre || !projetData.annee || !projetData.statut) {
+                 alert("Le titre, l'année et le statut sont requis.");
+                return;
+            }
+
+            try {
+                const savedProjet = await dataService.saveProjet(projetData);
+                // Si c'est un nouveau projet, le sélectionner après sauvegarde
+                if (!projetData.id) {
+                    projetSelectionne = savedProjet; 
+                }
+                closeModal('modal-projet');
+                await loadInitialData(); // Recharger la liste et les détails
+            } catch (error) {
+                console.error("Erreur sauvegarde projet:", error);
+                alert("Erreur lors de la sauvegarde: " + error.message);
+        }
+        }
+        
+        async function handleSupprimerProjet() {
+            if (!projetSelectionne) return;
+
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le projet "${projetSelectionne.titre}" ?`)) {
+                try {
+                    await dataService.deleteProjet(projetSelectionne.id);
+                    projetSelectionne = null; // Déselectionner
+                    await loadInitialData(); // Recharger la liste et réinitialiser les détails
+                } catch (error) {
+                    console.error("Erreur suppression projet:", error);
+                    alert("Erreur lors de la suppression: " + error.message);
+            }
+        }
+        }
+        
+        // --- Fonctions à réimplémenter si nécessaire ---
+        /*
+        function modifierPoids() { 
+            if (!projetSelectionne) return;
+            const nouveauPoids = prompt("Nouveau poids:", projetSelectionne.poids);
+            if (nouveauPoids !== null && !isNaN(parseInt(nouveauPoids))) {
+                // TODO: Appeler dataService.saveProjet avec le nouveau poids
+                alert("Modification du poids à implémenter.");
+            }
+        }
+
+        function ajouterAssocie() {
+            if (!projetSelectionne) return;
+             // TODO: Logique pour choisir et ajouter un associé
+             alert("Ajout d'associé à implémenter.");
+        }
+
+        function egaliserContributions() { 
+             if (!projetSelectionne) return;
+             // TODO: Logique pour égaliser les contributions
+             alert("Égalisation des contributions à implémenter.");
+        }
+        */
+
+    </script>
+</body>
+</html>
