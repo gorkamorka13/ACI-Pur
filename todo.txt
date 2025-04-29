@@ -1,0 +1,21 @@
+Okay, I understand. You want to implement the "Gestion des affectations" (Assignment Management) functionality on the "Projets & Missions" page (templates/projets.html). This involves selecting professionals as either "associés" or "contributeurs" for a project using checkboxes and saving these assignments to the database.
+
+This is a new feature that builds upon the concepts we used for managing attendees in RCP meetings. We'll need to modify both the frontend and the backend.
+
+Here's the plan:
+
+Examine Frontend Files:
+Read templates/projets.html to understand the page structure and identify where to add the assignment interface within the project details section.
+Identify the relevant JavaScript file(s) for this page (likely js/projetsManager.js).
+Examine Backend Files:
+Read api/projets/index.js to understand the existing API routes for projects.
+Read models/Projet.js to understand the project data model.
+Read models/Professionnel.js (which we already have) to confirm the professional model structure.
+Design Database Schema: Determine how to model the relationship between Projet and Professionnel for both "associés" and "contributeurs". This will likely require one or two new join tables.
+Modify Backend API:
+Update the GET route for a single project (/api/projets/:id) to include the associated "associés" and "contributeurs".
+Update the POST (create) and PUT (update) routes for projects to accept arrays of IDs for "associés" and "contributeurs" and use Sequelize association methods.
+Update DataService.js: Add/modify functions in DataService.js to fetch project data including associated professionals and to send the updated assignment data to the backend.
+Implement Frontend Logic: Add HTML elements for assignment selection in templates/projets.html and JavaScript logic (likely in js/projetsManager.js) to populate and handle the checkboxes, similar to the RCP meeting attendees.
+Database Migration: Create and run the necessary Sequelize migration(s) to add the new join table(s) to the database.
+Let's start by examining the frontend file templates/projets.html.
