@@ -226,9 +226,20 @@
 
         async function loadDataAndInit() {
             try {
-                globalData = await dataService.loadAllData();
-                if (!globalData) throw new Error("Chargement des données a échoué.");
+                // Load all data including the new RCP presence data
+                const [allData, rcpPresenceData] = await Promise.all([
+                    dataService.loadAllData(),
+                    dataService.loadRcpPresenceData() // Fetch RCP presence data
+                ]);
+
+                if (!allData) throw new Error("Chargement des données principales a échoué.");
                 
+                // Combine all data into globalData
+                globalData = {
+                    ...allData,
+                    rcpPresenceData: rcpPresenceData // Store RCP presence data
+                };
+
                 updateParametresDisplay();
                 updateChart(); // Afficher le graphique initial (répartition)
 
@@ -363,16 +374,20 @@
             const nbAssocies = professionnels.length || 1;
             const pointsFixePonderes = professionnels.reduce((sum, p) => sum + (p.statut === 'Cogérant' ? params.facteurCogerant : 1), 0) || 1;
             
-            // TODO: Calculer précisément les points RCP et Projets par associé
-            const pointsRcpParAssocie = {}; // Ex: { associeId: points, ... }
+            // Calculate RCP points based on actual presence data
+            const rcpPresenceData = globalData.rcpPresenceData || [];
+            const totalPresenceMinutes = rcpPresenceData.reduce((sum, item) => sum + item.totalPresenceMinutes, 0);
+            
+            const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes]));
+
+            // TODO: Calculate precisely the points Projets par associé
             const pointsProjetsParAssocie = {}; // Ex: { associeId: points, ... }
-            const totalPointsRcp = nbAssocies; // Placeholder
-            const totalPointsProjets = nbAssocies; // Placeholder
+            const totalPointsProjets = nbAssocies; // Placeholder (needs actual project logic)
             
             professionnels.forEach(p => {
-                pointsRcpParAssocie[p.id] = 1; // Placeholder
                 pointsProjetsParAssocie[p.id] = 1; // Placeholder
             });
+
 
             const data = {
                 labels: professionnels.map(p => p.nom),
@@ -387,9 +402,16 @@
                         },
                         {
                             label: `Part RCP (${params.partRCP}%)`,
-                        data: professionnels.map(p => (montantPartRCP / totalPointsRcp) * (pointsRcpParAssocie[p.id] || 0)),
-                        backgroundColor: '#4CAF50',
-                        stack: 'Stack 0',
+                            // Distribute montantPartRCP based on presence minutes
+                            data: professionnels.map(p => {
+                                const presenceMinutes = presenceMap.get(p.id) || 0;
+                                if (totalPresenceMinutes === 0) {
+                                    return 0; // Avoid division by zero
+                                }
+                                return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
+                            }),
+                            backgroundColor: '#4CAF50',
+                            stack: 'Stack 0',
                         },
                         {
                             label: `Part Projets (${params.partProjets}%)`,
