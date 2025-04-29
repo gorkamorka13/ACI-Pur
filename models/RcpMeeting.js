@@ -23,8 +23,19 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'rcp_meetings',
+    tableName: 'rcp_meetings',
     timestamps: false
   });
 
+  RcpMeeting.associate = (models) => {
+    // Define the many-to-many relationship with Professionnel
+    RcpMeeting.belongsToMany(models.Professionnel, {
+      through: 'meeting_attendees', // Name of the join table
+      foreignKey: 'meetingId',      // Foreign key in the join table for RcpMeeting
+      otherKey: 'professionnelId',  // Foreign key in the join table for Professionnel
+      as: 'Professionnels'          // Alias for the association (used in meeting.setProfessionnels)
+    });
+  };
+
   return RcpMeeting;
-}; 
+};

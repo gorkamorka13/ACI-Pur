@@ -171,12 +171,15 @@
             font-style: italic;
         }
 
+        /* Removed custom checkbox styles */
+        /*
         .checkbox-container {
             display: block;
             position: relative;
             padding-left: 25px;
             cursor: pointer;
             user-select: none;
+            position: relative;
         }
 
         .checkbox-container input {
@@ -196,7 +199,11 @@
             background-color: #fff;
             border: 2px solid #ddd;
             border-radius: 3px;
-            transition: all 0.2s ease;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
         }
 
         .checkbox-container:hover input ~ .checkmark {
@@ -208,25 +215,19 @@
             border-color: #2196F3;
         }
 
-        .checkmark:after {
-            content: "";
-            position: absolute;
+        .checkmark i {
             display: none;
+            color: white;
+            font-size: 10px;
+            line-height: 1;
         }
 
-        .checkbox-container input:checked ~ .checkmark:after {
-            display: block;
+        .checkbox-container input:checked ~ .checkmark i {
+            display: inline-block;
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
         }
-
-        .checkbox-container .checkmark:after {
-            left: 5px;
-            top: 2px;
-            width: 4px;
-            height: 8px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
+        */
 
         .reunion-participation {
             display: inline-flex;
@@ -303,7 +304,7 @@
                      <thead>
                          <tr>
                              <th>Date</th>
-                             <th>Titre</th> 
+                             <th>Titre</th>
                              <th>Durée (minutes)</th>
                              <th>Actions</th>
                         </tr>
@@ -340,6 +341,13 @@
                      <div class="form-group">
                          <label for="add-reunion-duree">Durée (minutes)</label>
                         <input type="number" id="add-reunion-duree" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Participants (Associés)</label>
+                        <div id="add-reunion-attendees-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                            <!-- Checkboxes will be loaded here -->
+                            <p>Chargement des associés...</p>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -389,17 +397,25 @@
         import { dataService } from '/js/services/DataService.js';
 
         let globalData = null;
+        let allProfessionnels = []; // Added to store professionals
 
         // Fonction pour charger les données
         async function loadData() {
             try {
-                const rcpMeetings = await dataService.loadRcpMeetings();
+                // Load professionals and meetings in parallel
+                const [rcpMeetings, professionnels] = await Promise.all([
+                    dataService.loadRcpMeetings(),
+                    dataService.loadProfessionnels()
+                ]);
+                allProfessionnels = professionnels; // Store professionals
                 globalData = { rcpMeetings };
                 updateStats();
                 initTableReunions();
                 initFilterAnnees();
+                // Populate attendees checkboxes once data is loaded
+                populateAttendeesCheckboxes();
             } catch (error) {
-                console.error('Erreur lors du chargement des réunions:', error);
+                console.error('Erreur lors du chargement des réunions ou professionnels:', error);
                 const tableBody = document.getElementById('liste-reunions');
                 tableBody.innerHTML = `
                     <tr>
@@ -445,7 +461,7 @@
             let reunions = globalData.rcpMeetings;
 
             if (anneeFilter) {
-                reunions = reunions.filter(reunion => 
+                reunions = reunions.filter(reunion =>
                     new Date(reunion.date).getFullYear().toString() === anneeFilter
                 );
             }
@@ -497,7 +513,7 @@
                     // Show the modal using style.display for consistency with main.js
                     const modal = document.getElementById('modal-edit-reunion');
                     if (modal) {
-                        modal.style.display = 'block'; 
+                        modal.style.display = 'block';
                     } else {
                         console.error("Edit modal not found!");
                     }
@@ -536,7 +552,7 @@
         function initFilterAnnees() {
             if (!globalData || !globalData.rcpMeetings) return;
             
-            const annees = [...new Set(globalData.rcpMeetings.map(r => 
+            const annees = [...new Set(globalData.rcpMeetings.map(r =>
                 new Date(r.date).getFullYear()
             ))];
             annees.sort((a, b) => b - a); // Tri décroissant
@@ -549,6 +565,43 @@
                 option.value = annee.toString();
                 option.textContent = annee.toString();
                 select.appendChild(option);
+            });
+        }
+
+        // Function to populate attendee checkboxes
+        function populateAttendeesCheckboxes() {
+            const container = document.getElementById('add-reunion-attendees-list');
+            if (!container) return;
+            container.innerHTML = ''; // Clear previous content (like "Chargement...")
+
+            if (!allProfessionnels || allProfessionnels.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
+                return;
+            }
+
+            // Sort professionals by name for better usability
+            allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+            allProfessionnels.forEach(pro => {
+                // Assuming 'pro' has 'id' and 'nom' properties based on DataService/API
+                const div = document.createElement('div');
+                div.style.marginBottom = '8px'; // Add some spacing
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = `attendee-${pro.id}`;
+                input.value = pro.id; // Store the professional's ID
+                input.name = 'attendees'; // Group checkboxes
+
+                const label = document.createElement('label');
+                label.htmlFor = `attendee-${pro.id}`;
+                label.style.marginLeft = '5px'; // Space between checkbox and text
+                // Display name and profession if available
+                label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
+
+                div.appendChild(input);     // Standard checkbox input
+                div.appendChild(label);     // Standard label
+                container.appendChild(div);
             });
         }
 
@@ -568,10 +621,10 @@
                 cancelEditButton.addEventListener('click', async function() { // Make async
                     const editModal = document.getElementById('modal-edit-reunion');
                     if (editModal) {
-                        editModal.style.display = 'none'; // Hide the edit modal using style.display
+                        editModal.style.display = 'none';
                         // Reload data specifically after cancelling edit to refresh table listeners
                         try {
-                            await loadData(); 
+                            await loadData();
                         } catch (error) {
                             console.error("Error reloading data after cancelling edit:", error);
                         }
@@ -591,16 +644,26 @@
                     return;
                 }
 
+                // Collect selected attendee IDs
+                const selectedAttendees = [];
+                const attendeeCheckboxes = document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]:checked');
+                attendeeCheckboxes.forEach(checkbox => {
+                    selectedAttendees.push(checkbox.value); // Assuming value is the ID
+                });
+
                 const newMeetingData = {
                     date,
                     titre,
                     description,
-                    duree: parseInt(duree)
+                    duree: parseInt(duree),
+                    attendeeIds: selectedAttendees // Add the array of IDs
                 };
+
+                console.log('New Meeting Data:', newMeetingData); // Log the data being sent
 
                 try {
                     // Call the existing saveRcpMeeting function from DataService
-                    const addedMeeting = await dataService.saveRcpMeeting(newMeetingData); 
+                    const addedMeeting = await dataService.saveRcpMeeting(newMeetingData);
                     console.log('Réunion ajoutée:', addedMeeting);
                     
                     // Optional: Show success message (using showAlert if available globally)
@@ -612,10 +675,12 @@
 
                     // Close modal
                     document.getElementById('modal-add-reunion').style.display = 'none';
-                    // Reset form
+                    // Reset form (including clearing checkboxes)
                     document.getElementById('form-add-reunion').reset();
+                    // Manually uncheck checkboxes as reset might not cover dynamically added ones reliably
+                    document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]').forEach(cb => cb.checked = false);
                     // Reload data
-                    await loadData(); 
+                    await loadData();
                 } catch (error) {
                     console.error('Erreur lors de l\'ajout de la réunion:', error);
                     alert(`Erreur lors de l'ajout: ${error.message}`);
@@ -645,7 +710,7 @@
 
                 try {
                     // Use saveRcpMeeting for both create and update
-                    const updatedMeeting = await dataService.saveRcpMeeting(updatedMeetingData); 
+                    const updatedMeeting = await dataService.saveRcpMeeting(updatedMeetingData);
                     console.log('Réunion modifiée:', updatedMeeting);
                     
                     if (window.showAlert) {
@@ -660,7 +725,7 @@
                          editModal.style.display = 'none';
                     }
                     // Reload data
-                    await loadData(); 
+                    await loadData();
                 } catch (error) {
                     console.error('Erreur lors de la modification de la réunion:', error);
                     alert(`Erreur lors de la modification: ${error.message}`);
