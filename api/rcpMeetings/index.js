@@ -20,6 +20,42 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET - Récupérer le temps total de présence RCP par professionnel
+// This route must be defined BEFORE the /:id route
+router.get('/presence', async (req, res) => {
+    try {
+        // Query to calculate total duration per professional for attended meetings
+        const presenceData = await db.Professionnel.findAll({
+            attributes: [
+                'id',
+                'Nom', // Assuming 'Nom' is the name field in Professionnel
+                [db.sequelize.fn('SUM', db.sequelize.col('Meetings.duree')), 'totalPresenceMinutes'] // Sum the duration of associated meetings using the alias
+            ],
+            include: [{
+                model: db.RcpMeeting,
+                as: 'Meetings', // Use the alias defined in Professionnel model
+                attributes: [], // Don't select meeting attributes
+                through: { attributes: [] } // Don't select attributes from the join table
+            }],
+            group: ['Professionnel.id', 'Professionnel.Nom'], // Group by professional
+            raw: true // Return raw data instead of model instances
+        });
+
+        // Format the data if needed (e.g., convert minutes to hours, add professional details)
+        const formattedData = presenceData.map(item => ({
+            id: item.id,
+            nom: item.Nom,
+            totalPresenceMinutes: item.totalPresenceMinutes || 0 // Ensure 0 if no meetings attended
+        }));
+
+        res.json(formattedData);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données de présence RCP:', error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des données de présence RCP' });
+    }
+});
+
+
 // GET - Récupérer une réunion par ID
 router.get('/:id', async (req, res) => {
     try {
@@ -89,7 +125,6 @@ router.post('/', async (req, res) => {
                  // Find which IDs were not found (optional, for better error message)
                  const foundIds = attendees.map(a => a.id.toString()); // Ensure comparison is consistent (string vs number)
                  const missingIds = attendeeIds.filter(id => !foundIds.includes(id.toString()));
-                 console.error(`Missing professional IDs: ${missingIds.join(', ')}`); // Log missing IDs
                  return res.status(400).json({ error: `Certains IDs de participants n'ont pas été trouvés: ${missingIds.join(', ')}` });
             }
             console.log('Setting professionals for the meeting.'); // Log attempt to set professionals
@@ -214,5 +249,6 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la suppression de la réunion' });
     }
 });
+
 
 module.exports = router;

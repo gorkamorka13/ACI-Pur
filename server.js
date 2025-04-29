@@ -9,7 +9,11 @@ require('dotenv').config();
 const db = require('./models');
 
 // Importer les routes API
+// Clear require cache for rcpMeetings to ensure latest version is loaded
+delete require.cache[require.resolve('./api/rcpMeetings')]; 
 const rcpMeetingsRouter = require('./api/rcpMeetings');
+console.log('rcpMeetingsRouter after require:', rcpMeetingsRouter); // Log the router object
+
 const revenusRouter = require('./api/revenus');
 const chargesRouter = require('./api/charges');
 const professionnelsRouter = require('./api/professionnels');

@@ -627,6 +627,7 @@
 
         // Function to populate attendee checkboxes in the edit modal and pre-check associated ones
         function populateEditAttendeesCheckboxes(allProfessionnels, associatedProfessionnels) {
+            console.log('populateEditAttendeesCheckboxes received associatedProfessionnels:', associatedProfessionnels); // Log the received argument
             const container = document.getElementById('edit-reunion-attendees-list');
             if (!container) return;
             container.innerHTML = ''; // Clear previous content (like "Chargement...")

@@ -295,7 +295,7 @@
         }
 
         // Fonction principale pour mettre à jour le graphique
-        function updateChart() {
+        async function updateChart() { // Made async to await chart config
             if (!globalData) return; // S'assurer que les données sont chargées
 
             const ctx = document.getElementById('repartition-chart').getContext('2d');
@@ -310,13 +310,13 @@
             try {
                 switch (currentView) {
                     case 'repartition':
-                        chartConfig = getRepartitionChartConfig();
+                        chartConfig = getRepartitionChartConfig(); // This one is synchronous
                         break;
                     case 'presence-rcp':
-                         chartConfig = getPresenceRcpChartConfig();
+                         chartConfig = await getPresenceRcpChartConfig(); // Await the async function
                         break;
                     case 'implication-projets':
-                         chartConfig = getImplicationProjetsChartConfig();
+                         chartConfig = getImplicationProjetsChartConfig(); // This one is synchronous
                         break;
                     default:
                         console.warn("Vue de graphique non reconnue:", currentView);
@@ -324,18 +324,18 @@
                 }
                 
                 if (chartConfig) {
-                    // Create chart directly without setTimeout
+                    // Create chart
                     try {
                         repartitionChart = new Chart(ctx, chartConfig);
                     } catch (chartError) {
-                        console.error(`Erreur lors de la création du graphique (${currentView}):`, chartError); // Updated error log source
+                        console.error(`Erreur lors de la création du graphique (${currentView}):`, chartError);
                         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                         ctx.textAlign = 'center';
-                        ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2); // Updated error message
+                        ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2);
                     }
                 }
             } catch (error) {
-                 console.error(`Erreur initiale lors de la préparation du graphique (${currentView}):`, error); // Keep this outer catch
+                 console.error(`Erreur lors de la préparation du graphique (${currentView}):`, error); // Keep this outer catch
                  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                  ctx.textAlign = 'center';
                  ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2);
@@ -411,32 +411,75 @@
             };
         }
         
-        function getPresenceRcpChartConfig() {
-            // TODO: Implémenter la récupération et l'affichage des données de présence RCP
-            // Données fictives pour l'instant
-            const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+        async function getPresenceRcpChartConfig() { // Made async to await data fetch
+            // Fetch real presence data
+            let presenceData = [];
+            try {
+                presenceData = await dataService.loadRcpPresenceData();
+            } catch (error) {
+                console.error('Erreur lors du chargement des données de présence RCP pour le graphique:', error);
+                // Return a config that shows an error message on the chart
+                return {
+                    type: 'bar', // Still a bar chart type
+                    data: {
+                        labels: [], // No labels
+                        datasets: [] // No datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Erreur lors du chargement des données de présence RCP' },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        },
+                        // Add a text overlay for the error message
+                        // This requires Chart.js plugin or drawing directly on canvas,
+                        // for simplicity, we'll rely on the title or a separate message outside the canvas.
+                    }
+                };
+            }
+
+            // Filter for Associés and Cogérants if necessary (backend route might already do this)
+            // Assuming the backend returns data only for relevant professionals
+            const professionnels = globalData.professionnels.filter(p => 
+                presenceData.some(pd => pd.id === p.id) // Only include professionals present in the fetched data
+            );
+
+            // Map presence data to professionals, ensuring all relevant professionals are included even if presence is 0
+            const presenceMap = new Map(presenceData.map(item => [item.id, item.totalPresenceMinutes]));
+
             const data = {
                 labels: professionnels.map(p => p.nom),
                 datasets: [{
-                    label: 'Temps total présence RCP (heures)',
-                    data: professionnels.map(() => Math.random() * 40), // Données aléatoires
+                    label: 'Temps total présence RCP (minutes)', // Label in minutes as per backend
+                    data: professionnels.map(p => presenceMap.get(p.id) || 0), // Get presence or 0
                     backgroundColor: '#64B5F6',
                 }]
             };
+
             return {
                 type: 'bar',
                 data: data,
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, // Restored
+                    maintainAspectRatio: false,
                     plugins: {
-                         title: { display: true, text: 'Temps de présence estimé aux réunions RCP' },
+                         title: { display: true, text: 'Temps total de présence aux réunions RCP (minutes)' }, // Updated title
                          legend: { display: false }
                     },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: { 
+                            beginAtZero: true,
+                            title: { // Add Y-axis title
+                                display: true,
+                                text: 'Minutes'
                             }
                         }
+                    }
+                }
             };
         }
         
@@ -472,3 +515,37 @@
     </script>
 </body>
 </html>
+
+</final_file_content>
+
+IMPORTANT: For any future changes to this file, use the final_file_content shown above as your reference. This content reflects the current state of the file, including any auto-formatting (e.g., if you used single quotes but the formatter converted them to double quotes). Always base your SEARCH/REPLACE operations on this final version to ensure accuracy.
+
+<environment_details>
+# VSCode Visible Files
+api/rcpMeetings/index.js
+api/rcpMeetings/index.js
+templates/repartition.html
+
+# VSCode Open Tabs
+index.html
+templates/revenus.html
+templates/projets.html
+models/RcpMeeting.js
+models/Professionnel.js
+api/rcpMeetings/index.js
+templates/rcpmeeting.html
+js/services/DataService.js
+templates/repartition.html
+templates/parametres.html
+templates/charges.html
+templates/associes.html
+
+# Current Time
+4/29/2025, 2:07:22 PM (Europe/Paris, UTC+2:00)
+
+# Context Window Usage
+616,068 / 1,048.576K tokens used (58%)
+
+# Current Mode
+ACT MODE
+</environment_details>

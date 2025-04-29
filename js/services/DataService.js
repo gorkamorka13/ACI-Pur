@@ -447,6 +447,20 @@ class DataService {
             throw error;
         }
     }
+
+    // Function to load RCP presence data per professional
+    async loadRcpPresenceData() {
+        try {
+            const response = await fetch(`${this.baseUrl}/rcpMeetings/presence`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Erreur lors du chargement des données de présence RCP:', error);
+            throw error;
+        }
+    }
 }
 
 const dataService = new DataService();
