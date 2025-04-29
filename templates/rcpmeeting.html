@@ -384,6 +384,13 @@
                         <label for="edit-reunion-duree">Durée (minutes)</label>
                         <input type="number" id="edit-reunion-duree" class="form-control" min="1" required>
                     </div>
+                    <div class="form-group">
+                        <label>Participants (Associés)</label>
+                        <div id="edit-reunion-attendees-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                            <!-- Checkboxes will be loaded here -->
+                            <p>Chargement des associés...</p>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -494,28 +501,39 @@
                 const editBtn = document.createElement('i');
                 editBtn.className = 'fas fa-edit';
                 editBtn.title = 'Modifier';
-                editBtn.addEventListener('click', () => {
-                    // Populate the edit modal
-                    document.getElementById('edit-reunion-id').value = reunion.id;
-                    // Ensure date is in YYYY-MM-DD format if it's a Date object or string
-                    let formattedDate = reunion.date;
+                editBtn.addEventListener('click', async () => { // Made async to use await
                     try {
-                        const dateObject = new Date(reunion.date);
-                        if (!isNaN(dateObject.getTime())) {
-                            formattedDate = dateObject.toISOString().split('T')[0];
+                        // Fetch the specific meeting including associated professionals
+                        const meetingToEdit = await dataService.getRcpMeeting(reunion.id); 
+                        console.log('Fetched meeting for edit:', meetingToEdit); // Log the fetched meeting object
+
+                        // Populate the edit modal fields
+                        document.getElementById('edit-reunion-id').value = meetingToEdit.id;
+                        let formattedDate = meetingToEdit.date;
+                        try {
+                            const dateObject = new Date(meetingToEdit.date);
+                            if (!isNaN(dateObject.getTime())) {
+                                formattedDate = dateObject.toISOString().split('T')[0];
+                            }
+                        } catch (e) { /* Keep original string if parsing fails */ }
+                        document.getElementById('edit-reunion-date').value = formattedDate;
+                        document.getElementById('edit-reunion-titre').value = meetingToEdit.titre || '';
+                        document.getElementById('edit-reunion-description').value = meetingToEdit.description || '';
+                        document.getElementById('edit-reunion-duree').value = meetingToEdit.duree;
+
+                        // Populate and pre-check attendee checkboxes in the edit modal
+                        populateEditAttendeesCheckboxes(allProfessionnels, meetingToEdit.Professionnels); // Pass all professionals and associated ones
+
+                        // Show the modal using style.display for consistency with main.js
+                        const modal = document.getElementById('modal-edit-reunion');
+                        if (modal) {
+                            modal.style.display = 'block';
+                        } else {
+                            console.error("Edit modal not found!");
                         }
-                    } catch (e) { /* Keep original string if parsing fails */ }
-                    document.getElementById('edit-reunion-date').value = formattedDate;
-                    document.getElementById('edit-reunion-titre').value = reunion.titre || '';
-                    document.getElementById('edit-reunion-description').value = reunion.description || '';
-                    document.getElementById('edit-reunion-duree').value = reunion.duree;
-                    
-                    // Show the modal using style.display for consistency with main.js
-                    const modal = document.getElementById('modal-edit-reunion');
-                    if (modal) {
-                        modal.style.display = 'block';
-                    } else {
-                        console.error("Edit modal not found!");
+                    } catch (error) {
+                        console.error('Erreur lors du chargement de la réunion pour modification:', error);
+                        alert(`Erreur lors du chargement de la réunion: ${error.message}`);
                     }
                  });
                 tdActions.appendChild(editBtn);
@@ -606,6 +624,53 @@
                 container.appendChild(div);
             });
         }
+
+        // Function to populate attendee checkboxes in the edit modal and pre-check associated ones
+        function populateEditAttendeesCheckboxes(allProfessionnels, associatedProfessionnels) {
+            const container = document.getElementById('edit-reunion-attendees-list');
+            if (!container) return;
+            container.innerHTML = ''; // Clear previous content (like "Chargement...")
+
+            if (!allProfessionnels || allProfessionnels.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
+                return;
+            }
+
+            // Create a set of associated professional IDs for quick lookup
+            // Ensure associatedProfessionnels is an array before mapping
+            const associatedIds = new Set(Array.isArray(associatedProfessionnels) ? associatedProfessionnels.map(pro => pro.id.toString()) : []); 
+
+            // Sort professionals by name for better usability
+            allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+            allProfessionnels.forEach(pro => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '8px'; // Add some spacing
+                div.style.display = 'flex'; // Use flexbox for alignment
+                div.style.alignItems = 'center'; // Vertically center items
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = `edit-attendee-${pro.id}`; // Use a unique ID for edit modal
+                input.value = pro.id; // Store the professional's ID
+                input.name = 'editAttendees'; // Use a different name for edit checkboxes
+
+                // Check if this professional is in the associated list
+                if (associatedIds.has(pro.id.toString())) { // Ensure string comparison
+                    input.checked = true;
+                }
+
+                const label = document.createElement('label');
+                label.htmlFor = `edit-attendee-${pro.id}`;
+                label.style.marginLeft = '5px'; // Space between checkbox and text
+                label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
+
+                div.appendChild(input);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -702,12 +767,20 @@
                     return;
                 }
 
+                // Collect selected attendee IDs from the edit modal
+                const selectedAttendees = [];
+                const attendeeCheckboxes = document.querySelectorAll('#edit-reunion-attendees-list input[name="editAttendees"]:checked');
+                attendeeCheckboxes.forEach(checkbox => {
+                    selectedAttendees.push(checkbox.value); // Assuming value is the ID
+                });
+
                 const updatedMeetingData = {
                     id: parseInt(id), // Ensure ID is an integer if needed by backend
                     date,
                     titre,
                     description,
-                    duree: parseInt(duree)
+                    duree: parseInt(duree),
+                    attendeeIds: selectedAttendees // Add the array of IDs
                 };
 
                 try {

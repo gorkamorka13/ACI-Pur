@@ -93,13 +93,31 @@ class DataService {
 
     async loadRcpMeetings() {
         try {
-            const response = await fetch(`${this.baseUrl}/rcpMeetings`);
+            // Include associated professionals when loading all meetings for the main table display
+            const response = await fetch(`${this.baseUrl}/rcpMeetings?include=professionnels`); 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
             console.error('Erreur lors du chargement des réunions RCP:', error);
+            throw error;
+        }
+    }
+
+    // Function to load a single RCP meeting by ID, including associated professionals
+    async getRcpMeeting(id) {
+        try {
+            // Include associated professionals when fetching a single meeting
+            const response = await fetch(`${this.baseUrl}/rcpMeetings/${id}?include=professionnels`); 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const meetingData = await response.json();
+            console.log('DataService fetched meeting data:', meetingData); // Log the fetched data
+            return meetingData;
+        } catch (error) {
+            console.error(`Erreur lors du chargement de la réunion RCP avec ID ${id}:`, error);
             throw error;
         }
     }
@@ -432,4 +450,4 @@ class DataService {
 }
 
 const dataService = new DataService();
-export { dataService }; 
+export { dataService };

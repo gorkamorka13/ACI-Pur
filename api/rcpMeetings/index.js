@@ -5,9 +5,14 @@ const db = require('../../models');
 // GET - Récupérer toutes les réunions
 router.get('/', async (req, res) => {
     try {
-        const meetings = await db.RcpMeeting.findAll({
+        const options = {
             order: [['date', 'DESC']]
-        });
+        };
+        // Check if 'include=professionnels' query parameter is present
+        if (req.query.include === 'professionnels') {
+            options.include = [{ model: db.Professionnel, as: 'Professionnels' }];
+        }
+        const meetings = await db.RcpMeeting.findAll(options);
         res.json(meetings);
     } catch (error) {
         console.error('Erreur lors de la récupération des réunions:', error);
@@ -19,12 +24,19 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const meeting = await db.RcpMeeting.findByPk(id);
+         const options = {};
+        // Check if 'include=professionnels' query parameter is present
+        if (req.query.include === 'professionnels') {
+            options.include = [{ model: db.Professionnel, as: 'Professionnels' }];
+        }
+        const meeting = await db.RcpMeeting.findByPk(id, options);
         
         if (!meeting) {
             return res.status(404).json({ error: 'Réunion non trouvée' });
         }
         
+        console.log('Backend sending meeting data:', meeting); // Log the meeting object before sending
+
         res.json(meeting);
     } catch (error) {
         console.error('Erreur lors de la récupération de la réunion:', error);
@@ -160,12 +172,15 @@ router.put('/:id', async (req, res) => {
 
         // Fetch the updated meeting with attendees to return
         const result = await db.RcpMeeting.findByPk(meeting.id, {
-            include: [db.Professionnel] // Include associated professionals
+            include: [{ model: db.Professionnel, as: 'Professionnels' }] // Include associated professionals using the alias
         });
 
         res.json(result);
     } catch (error) {
-        await transaction.rollback(); // Rollback on any error
+        // Only rollback if the transaction hasn't been committed yet
+        if (transaction.finished !== 'commit') {
+             await transaction.rollback(); 
+        }
         console.error('Erreur lors de la modification de la réunion:', error);
         res.status(500).json({ error: 'Erreur lors de la modification de la réunion' });
     }
