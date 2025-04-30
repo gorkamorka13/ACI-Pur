@@ -35,7 +35,7 @@
                     <h1>Tableau de bord</h1>
                     <div class="user-info">
                         <button id="exportDataBtn" style="margin-right: 15px;">Exporter les données</button> <!-- ID added, onclick removed -->
-                        <span>Administrateur</span>
+                        <span id="usernameDisplay">Administrateur</span> <!-- Added ID here -->
                         <i class="fas fa-user-circle"></i>
                     </div>
                 </div>
@@ -513,6 +513,34 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            // Display username on load
+            const usernameElement = document.getElementById('usernameDisplay');
+            const token = localStorage.getItem('token');
+            let username = 'developpement'; // Default value
+
+            if (token) {
+                try {
+                    // Decode JWT payload (second part)
+                    const payloadBase64 = token.split('.')[1];
+                    const payloadJson = atob(payloadBase64);
+                    const payload = JSON.parse(payloadJson);
+
+                    if (payload && payload.username) {
+                        username = payload.username;
+                    }
+                } catch (e) {
+                    console.error('Failed to decode JWT token:', e);
+                    // Keep default 'developpement' if decoding fails
+                }
+            }
+
+            if (usernameElement) {
+                usernameElement.textContent = username;
+            } else {
+                console.error("Username display element 'usernameDisplay' not found.");
+            }
+
+
             updateStatsAndCharts(); // Call the combined function
 
             // Attach export button listener
