@@ -65,9 +65,14 @@ class DataService {
         }
     }
 
-    async loadCharges() {
+    // Updated to accept an optional year parameter
+    async loadCharges(year = null) { 
         try {
-            const response = await fetch(`${this.baseUrl}/charges`);
+            let url = `${this.baseUrl}/charges`;
+            if (year) {
+                url += `?year=${year}`; // Append year query parameter if provided
+            }
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

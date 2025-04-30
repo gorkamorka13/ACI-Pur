@@ -561,8 +561,6 @@ header {
 }
 
 .modal-close {
-    background-color: #e74c3c;
-    color: white;
     border: none;
     font-size: 0.9em;
     cursor: pointer;

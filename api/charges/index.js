@@ -1,11 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../models');
+const { Op } = require('sequelize'); // Import Op for date filtering
 
 // GET - Récupérer toutes les charges
 router.get('/', async (req, res) => {
     try {
+        const { year } = req.query; // Get the year from query parameters
+        let whereClause = {};
+
+        if (year && !isNaN(parseInt(year))) {
+            const parsedYear = parseInt(year);
+            const startDate = new Date(parsedYear, 0, 1); // January 1st of the year
+            const endDate = new Date(parsedYear, 11, 31, 23, 59, 59, 999); // December 31st of the year
+
+            whereClause.date = {
+                [Op.between]: [startDate, endDate]
+            };
+        }
+
         const charges = await db.Charge.findAll({
+            where: whereClause, // Apply the where clause
             order: [['date', 'DESC']]
         });
         res.json(charges);
@@ -105,4 +120,4 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;
