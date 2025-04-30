@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
+const bcrypt = require('bcrypt');
 const app = express();
 const port = 3000;
 const os = require('os');
 const path = require('path');
-require('dotenv').config();
+
 
 // Importer les modèles Sequelize
 const db = require('./models');
@@ -19,7 +21,17 @@ const chargesRouter = require('./api/charges');
 const professionnelsRouter = require('./api/professionnels');
 const projetsRouter = require('./api/projets');
 const parametresRepartitionRouter = require('./api/parametresRepartition'); // Importer le nouveau routeur
+const authRouter = require('./api/auth'); // Importer le routeur d'authentification
 
+const nodeEnv = process.env.NODE_ENV; // Will be 'development' based on the .env file
+const jwtSecret = process.env.JWT_SECRET; // Will be 'your_super_secret_...'
+
+if (nodeEnv === 'development') {
+  console.log('Running in development mode.');
+}
+else if (nodeEnv === 'production') {
+  console.log('Running in production mode.');
+}
 // Fonction pour obtenir l'adresse IP locale
 function getLocalIP() {
     const interfaces = os.networkInterfaces();
@@ -59,6 +71,7 @@ app.use('/api/charges', chargesRouter);
 app.use('/api/professionnels', professionnelsRouter);
 app.use('/api/projets', projetsRouter);
 app.use('/api/parametresRepartition', parametresRepartitionRouter); // Utiliser le routeur dédié
+app.use('/api/auth', authRouter); // Utiliser le routeur d'authentification
 
 // Synchronisation de la base de données et démarrage du serveur
 db.sequelize.sync().then(() => {
