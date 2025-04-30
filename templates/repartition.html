@@ -506,18 +506,57 @@
         }
         
         function getImplicationProjetsChartConfig() {
-            // TODO: Implémenter la récupération et l'affichage des données d'implication projets
-            // Données fictives pour l'instant
-             const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+            const professionnelsAssocies = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
+            const projets = globalData.projets || []; // Ensure projets is an array
+            
+            const implicationScores = new Map(); // Use a Map for easier score tracking by ID
+            professionnelsAssocies.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores to 0
+
+            const responsableWeight = 2;
+            const contributeurWeight = 1;
+
+            // Calculate scores
+            projets.forEach(projet => {
+                const poids = projet.poids || 0; // Default poids to 0 if missing
+
+                // Process Responsables
+                if (Array.isArray(projet.Responsables)) {
+                    projet.Responsables.forEach(resp => {
+                        if (implicationScores.has(resp.id)) { // Only count if they are Associé/Cogérant
+                            implicationScores.set(resp.id, implicationScores.get(resp.id) + (poids * responsableWeight));
+                        }
+                    });
+                }
+
+                // Process Contributeurs
+                if (Array.isArray(projet.Contributeurs)) {
+                    projet.Contributeurs.forEach(contrib => {
+                        if (implicationScores.has(contrib.id)) { // Only count if they are Associé/Cogérant
+                            // Avoid double-counting if someone is both Responsable and Contributeur for the same project
+                            // Check if they were already counted as Responsable for this project
+                            const isAlsoResponsable = projet.Responsables?.some(r => r.id === contrib.id);
+                            if (!isAlsoResponsable) {
+                                implicationScores.set(contrib.id, implicationScores.get(contrib.id) + (poids * contributeurWeight));
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Prepare chart data
+            const labels = professionnelsAssocies.map(p => p.nom);
+            const scoresData = professionnelsAssocies.map(p => implicationScores.get(p.id) || 0);
+
             const data = {
-                labels: professionnels.map(p => p.nom),
+                labels: labels,
                 datasets: [{
                     label: 'Score d\'implication projets (pondéré)',
-                    data: professionnels.map(() => Math.random() * 10), // Données aléatoires
+                    data: scoresData, // Use calculated scores
                     backgroundColor: '#FF9800',
                 }]
             };
-             return {
+
+            return {
                 type: 'bar',
                 data: data,
                 options: {

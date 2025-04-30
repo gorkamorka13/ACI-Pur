@@ -6,6 +6,18 @@ const db = require('../../models');
 router.get('/', async (req, res) => {
     try {
         const projets = await db.Projet.findAll({
+            include: [ // Include associations
+                { 
+                    model: db.Professionnel, 
+                    as: 'Responsables', 
+                    attributes: ['id', 'nom'] // Only fetch necessary fields
+                },
+                { 
+                    model: db.Professionnel, 
+                    as: 'Contributeurs', 
+                    attributes: ['id', 'nom'] // Only fetch necessary fields
+                }
+            ],
             order: [['annee', 'DESC'], ['titre', 'ASC']]
         });
         res.json(projets);
