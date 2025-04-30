@@ -475,16 +475,10 @@
                                 <div class="contribution-section">
                                     <div class="contribution-header">
                                         <h3>Associés affectés au projet</h3>
-                                        <div style="position: relative;"> <!-- Container for dropdown positioning -->
-                                            <button class="btn-egaliser" id="btn-egaliser">
-                                                <i class="fas fa-equals"></i> Égaliser
-                                            </button>
-                                            <button class="btn-ajouter-associe" id="btn-ajouter-associe">
-                                                <i class="fas fa-plus"></i> Ajouter un associé
-                                            </button>
-                                            <!-- Dropdown moved here for better positioning relative to button -->
-                                            <div class="dropdown-associes" id="dropdown-associes"></div>
-                                        </div>
+                                        <!-- Removed Add Associate Button and Dropdown Container -->
+                                        <button class="btn-egaliser" id="btn-egaliser">
+                                            <i class="fas fa-equals"></i> Égaliser
+                                        </button>
                                     </div>
 
                                     <div class="contribution-warning" id="warning-contributions" style="display: none;">
@@ -502,8 +496,7 @@
                 </div>
             </div>
 
-            <!-- Dropdown moved inside contribution-header -->
-            <!-- <div class="dropdown-associes" id="dropdown-associes"></div> -->
+            <!-- Removed unused dropdown element -->
         </div>
     </div>
 
@@ -543,9 +536,9 @@
                     </div>
                     <hr> <!-- Separator -->
                     <div class="form-group">
-                        <label>Professionnels Affectés</label>
-                        <div id="modal-assigned-professionals">
-                            <!-- Assigned professionals will be listed here -->
+                        <label>Gérer les affectations</label> <!-- Changed Label -->
+                        <div id="modal-professionals-list" style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 10px; padding: 5px;">
+                            <!-- All professionals with toggles will be listed here -->
                         </div>
                     </div>
                 </form>
@@ -565,18 +558,16 @@
         let allProfessionnels = [];
         let projetSelectionne = null;
         let currentAssignments = {}; // { proId: 'responsable'/'contributeur', ... }
-        const dropdownAssocies = document.getElementById('dropdown-associes');
-        const btnAjouterAssocie = document.getElementById('btn-ajouter-associe');
+        // Removed dropdownAssocies, btnAjouterAssocie references
         const listeAssociesContainer = document.getElementById('liste-associes');
-        const modalAssignedProfessionalsContainer = document.getElementById('modal-assigned-professionals');
+        const modalProfessionalsListContainer = document.getElementById('modal-professionals-list'); // Renamed variable
         const modalProjet = document.getElementById('modal-projet'); // Reference to the modal element
 
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', async function() {
             await loadInitialData();
             setupEventListeners();
-            // Add listener to close dropdown when clicking outside
-            document.addEventListener('click', closeDropdownOnClickOutside);
+            // Removed dropdown close listener
         });
 
         async function loadInitialData() {
@@ -589,8 +580,7 @@
 
                 // Afficher la liste initiale des projets
                 renderListeProjets();
-                // Peupler le dropdown des associés une fois les professionnels chargés
-                renderAssociesDropdown();
+                // Removed renderAssociesDropdown call
 
                 // Si un projet était sélectionné, le réafficher
                 if (projetSelectionne) {
@@ -622,7 +612,7 @@
             document.getElementById('btn-modifier').addEventListener('click', handleModifierProjet);
             document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
             // document.getElementById('btn-modifier-poids').addEventListener('click', modifierPoids); // À réimplémenter si besoin
-            btnAjouterAssocie.addEventListener('click', toggleAssociesDropdown); // Connecter le bouton
+            // Removed btnAjouterAssocie listener
             // document.getElementById('btn-egaliser').addEventListener('click', egaliserContributions); // À réimplémenter si besoin
 
             // Fermeture des modales
@@ -630,9 +620,9 @@
                 button.addEventListener('click', () => closeModal(button.closest('.modal').id));
             });
 
-            // Event delegation for remove buttons inside the modal
-            if (modalAssignedProfessionalsContainer) {
-                modalAssignedProfessionalsContainer.addEventListener('click', handleRemoveAssignmentInModal);
+            // Event delegation for role toggles inside the modal
+            if (modalProfessionalsListContainer) { // Use renamed variable
+                modalProfessionalsListContainer.addEventListener('click', handleAssignmentToggleInModal); // Use updated handler
             }
         }
 
@@ -689,8 +679,7 @@
              document.getElementById('liste-associes').innerHTML = ''; // Vider la liste des associés
              projetSelectionne = null;
              document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
-             // Ensure dropdown is hidden when no project is selected
-       if (dropdownAssocies) dropdownAssocies.classList.remove('show');
+             // Removed dropdown hide logic
        currentAssignments = {}; // Clear assignments when resetting
   }
 
@@ -747,8 +736,7 @@
           const warningDiv = document.getElementById('warning-contributions');
           if(warningDiv) warningDiv.style.display = 'none';
 
-          // Ensure dropdown is hidden when switching projects
-             if (dropdownAssocies) dropdownAssocies.classList.remove('show');
+          // Removed dropdown hide logic
 
       } catch (error) {
           console.error("Erreur lors de l'affichage des détails du projet:", error);
@@ -782,7 +770,7 @@
              document.getElementById('projet-id').value = '';
              document.querySelector('#modal-projet .modal-title').textContent = 'Nouveau projet';
              currentAssignments = {}; // Clear assignments for new project
-             renderAssignedProfessionalsInModal(); // Clear modal list
+             renderProfessionalsListInModal(); // Populate modal list for new project
              openModal('modal-projet');
         }
 
@@ -795,8 +783,8 @@
             document.getElementById('projet-poids-input').value = projetSelectionne.poids;
             document.getElementById('projet-statut').value = projetSelectionne.statut;
 
-            // Populate the assigned professionals list in the modal
-            renderAssignedProfessionalsInModal();
+            // Populate the professionals list in the modal with current assignments
+            renderProfessionalsListInModal(); // Populate modal list for editing
 
             document.querySelector('#modal-projet .modal-title').textContent = 'Modifier le projet';
             openModal('modal-projet');
@@ -862,116 +850,10 @@
             }
         }
 
-        // --- Gestion Dropdown Associés ---
+        // --- Removed Dropdown Management Functions ---
+        // renderAssociesDropdown, toggleAssociesDropdown, closeDropdownOnClickOutside removed
 
-        function renderAssociesDropdown() {
-            if (!dropdownAssocies) return;
-            dropdownAssocies.innerHTML = ''; // Clear existing items
-
-            if (!allProfessionnels || allProfessionnels.length === 0) {
-                dropdownAssocies.innerHTML = '<div class="dropdown-item">Aucun professionnel trouvé</div>';
-                return;
-            }
-
-            allProfessionnels.forEach(pro => {
-                const item = document.createElement('div');
-                item.className = 'dropdown-item';
-                item.setAttribute('data-id', pro.id);
-                item.innerHTML = `
-                    <span class="associe-name">${pro.nom} ${pro.prenom}</span>
-                    <span class="associe-role">${pro.specialite}</span>
-                    <div class="role-toggles">
-                        <span class="role-toggle" data-role="responsable">Responsable</span>
-                        <span class="role-toggle" data-role="contributeur">Contributeur</span>
-                    </div>
-                `;
-                // Add event listener to handle selection/deselection and toggle clicks
-                item.addEventListener('click', (e) => {
-                    // Prevent dropdown from closing immediately when clicking inside item, but not toggles
-                    if (!e.target.classList.contains('role-toggle')) {
-                         e.stopPropagation();
-                    }
-                    // Handle toggle button clicks
-                    if (e.target.classList.contains('role-toggle')) {
-                        e.stopPropagation(); // Prevent item click handler too
-                        const clickedToggle = e.target;
-                        const parentToggles = clickedToggle.parentElement;
-                        const role = clickedToggle.dataset.role;
-                        const proId = item.dataset.id;
-
-                        // Toggle the active state for the clicked button
-                        clickedToggle.classList.toggle('active');
-
-                        // Ensure only one toggle is active at a time within the pair
-                        if (clickedToggle.classList.contains('active')) {
-                            const otherRole = role === 'responsable' ? 'contributeur' : 'responsable';
-                            const otherToggle = parentToggles.querySelector(`.role-toggle[data-role="${otherRole}"]`);
-                            if (otherToggle) {
-                                otherToggle.classList.remove('active');
-                            }
-                        }
-
-                        // Update the temporary assignment state
-                        if (clickedToggle.classList.contains('active')) {
-                            currentAssignments[proId] = role;
-                        } else {
-                            // If deactivated, remove from assignments
-                            if (currentAssignments[proId] === role) {
-                                delete currentAssignments[proId];
-                            }
-                        }
-                        console.log(`Assignments updated:`, currentAssignments);
-                    } else {
-                        // Handle click on the item itself (if needed for future actions)
-                        console.log(`Clicked on item for ${pro.nom} ${pro.prenom}`);
-                    }
-                }); // End of item.addEventListener
-                dropdownAssocies.appendChild(item);
-            }); // End of allProfessionnels.forEach
-        } // End of renderAssociesDropdown
-
-        function toggleAssociesDropdown(event) { // Correct function definition
-            event.stopPropagation(); // Prevent click from bubbling up to the document listener
-            if (!projetSelectionne) {
-                alert("Veuillez d'abord sélectionner un projet.");
-                return;
-            }
-            if (dropdownAssocies) {
-                const isOpening = !dropdownAssocies.classList.contains('show');
-                dropdownAssocies.classList.toggle('show');
-
-                if (isOpening) {
-                    // Update toggle states based on currentAssignments when opening
-                    dropdownAssocies.querySelectorAll('.dropdown-item').forEach(item => {
-                        const proId = item.dataset.id;
-                        const assignment = currentAssignments[proId];
-                        item.querySelectorAll('.role-toggle').forEach(toggle => {
-                            if (toggle.dataset.role === assignment) {
-                                toggle.classList.add('active');
-                            } else {
-                                toggle.classList.remove('active');
-                            }
-                        });
-                    });
-                } else {
-                     // Update the displayed list when closing the dropdown
-                     renderAssignedProfessionals();
-                }
-            }
-        }
-
-        function closeDropdownOnClickOutside(event) {
-            if (dropdownAssocies && dropdownAssocies.classList.contains('show')) {
-                // Check if the click was outside the dropdown and not on the button that opens it
-                if (!dropdownAssocies.contains(event.target) && event.target !== btnAjouterAssocie) {
-                    dropdownAssocies.classList.remove('show');
-                    // Update the displayed list when closing the dropdown by clicking outside
-                    renderAssignedProfessionals();
-                }
-            }
-        }
-
-        // --- Render Assigned Professionals List (Main View) ---
+        // --- Render Assigned Professionals List (Main View - Display Only) ---
         function renderAssignedProfessionals() {
             if (!listeAssociesContainer) return;
             listeAssociesContainer.innerHTML = ''; // Clear current list
@@ -979,7 +861,8 @@
             const assignedIds = Object.keys(currentAssignments);
 
             if (assignedIds.length === 0) {
-                listeAssociesContainer.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">Aucun associé affecté. Cliquez sur "Ajouter un associé".</p>';
+                // Updated placeholder text
+                listeAssociesContainer.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">Aucun associé affecté. Utilisez le bouton "Modifier" pour gérer les affectations.</p>';
                 return;
             }
 
@@ -1001,53 +884,69 @@
             });
         }
 
-         // --- Render Assigned Professionals List (Modal View) ---
-        function renderAssignedProfessionalsInModal() {
-            if (!modalAssignedProfessionalsContainer) return;
-            modalAssignedProfessionalsContainer.innerHTML = ''; // Clear current list
+         // --- Render ALL Professionals List with Toggles (Modal View) ---
+        function renderProfessionalsListInModal() {
+            if (!modalProfessionalsListContainer) return;
+            modalProfessionalsListContainer.innerHTML = ''; // Clear current list
 
-            const assignedIds = Object.keys(currentAssignments);
-
-            if (assignedIds.length === 0) {
-                modalAssignedProfessionalsContainer.innerHTML = '<p style="padding: 8px 12px; color: #666;">Aucun professionnel affecté.</p>';
+            if (!allProfessionnels || allProfessionnels.length === 0) {
+                modalProfessionalsListContainer.innerHTML = '<p style="padding: 8px 12px; color: #666;">Aucun professionnel disponible.</p>';
                 return;
             }
 
-            assignedIds.forEach(proId => {
-                const professionnel = allProfessionnels.find(p => p.id.toString() === proId);
-                const role = currentAssignments[proId];
-                if (professionnel) {
-                    const div = document.createElement('div');
-                    div.className = 'modal-associe-item';
-                    div.setAttribute('data-id', proId); // Set ID for removal
-                    div.innerHTML = `
-                        <div class="modal-associe-info">
-                            <span class="associe-name">${professionnel.nom} ${professionnel.prenom}</span>
-                            <span class="associe-role">${role === 'responsable' ? 'Responsable' : 'Contributeur'}</span>
-                        </div>
-                        <button type="button" class="btn-remove-associe" title="Retirer l'affectation">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    modalAssignedProfessionalsContainer.appendChild(div);
-                }
+            allProfessionnels.forEach(pro => {
+                const currentRole = currentAssignments[pro.id]; // Get current assignment for this pro
+                const div = document.createElement('div');
+                // Using a similar class name for potential styling reuse, but maybe adjust later
+                div.className = 'modal-associe-item';
+                div.setAttribute('data-id', pro.id);
+
+                div.innerHTML = `
+                    <div class="modal-associe-info">
+                        <span class="associe-name">${pro.nom} ${pro.prenom || ''}</span>
+                        <span class="associe-role">${pro.profession || ''}</span>
+                    </div>
+                    <div class="role-toggles">
+                        <span class="role-toggle ${currentRole === 'responsable' ? 'active' : ''}" data-role="responsable">Responsable</span>
+                        <span class="role-toggle ${currentRole === 'contributeur' ? 'active' : ''}" data-role="contributeur">Contributeur</span>
+                    </div>
+                `;
+                modalProfessionalsListContainer.appendChild(div);
             });
         }
 
-        // --- Handle Removing Assignment from Modal ---
-        function handleRemoveAssignmentInModal(event) {
-            const removeButton = event.target.closest('.btn-remove-associe');
-            if (!removeButton) return; // Click wasn't on a remove button
+        // --- Handle Assignment Toggles in Modal ---
+        function handleAssignmentToggleInModal(event) {
+            const clickedToggle = event.target.closest('.role-toggle');
+            if (!clickedToggle) return; // Click wasn't on a toggle button
 
-            const itemToRemove = removeButton.closest('.modal-associe-item');
-            const proIdToRemove = itemToRemove.dataset.id;
+            const itemElement = clickedToggle.closest('.modal-associe-item');
+            const proId = itemElement.dataset.id;
+            const role = clickedToggle.dataset.role;
+            const parentToggles = clickedToggle.parentElement;
 
-            if (proIdToRemove && currentAssignments[proIdToRemove]) {
-                delete currentAssignments[proIdToRemove]; // Remove from our temporary state
-                renderAssignedProfessionalsInModal(); // Re-render the modal list
-                // Note: The main list (#liste-associes) will be updated when the modal is closed or saved.
-                console.log(`Removed assignment for ID ${proIdToRemove}. New assignments:`, currentAssignments);
+            // Toggle the active state for the clicked button
+            const wasActive = clickedToggle.classList.contains('active');
+            clickedToggle.classList.toggle('active');
+
+            // Ensure only one toggle is active at a time within the pair
+            if (!wasActive) { // If it just became active
+                const otherRole = role === 'responsable' ? 'contributeur' : 'responsable';
+                const otherToggle = parentToggles.querySelector(`.role-toggle[data-role="${otherRole}"]`);
+                if (otherToggle) {
+                    otherToggle.classList.remove('active');
+                }
+                // Update the assignment state
+                currentAssignments[proId] = role;
+            } else { // If it just became inactive
+                // Remove from assignments only if this specific role was assigned
+                if (currentAssignments[proId] === role) {
+                    delete currentAssignments[proId];
+                }
             }
+
+            console.log(`Assignments updated:`, currentAssignments);
+            // No need to re-render the whole list here, just toggled the class
         }
 
 
