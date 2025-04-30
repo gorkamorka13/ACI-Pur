@@ -147,27 +147,39 @@
         import { dataService } from './js/services/DataService.js';
 
         let globalData = null;
+        let repartitionChart = null; // Keep a reference to the chart
 
-        // Fonction pour mettre à jour les statistiques
-        async function updateStats() {
+        // Fonction pour mettre à jour les statistiques et le graphique
+        async function updateStatsAndChart() {
             try {
                 const currentYear = new Date().getFullYear();
-                
+
                 // Mise à jour des années affichées (vérifier si les éléments existent)
                 const elAnneeRevenus = document.getElementById('annee-revenus');
                 if (elAnneeRevenus) elAnneeRevenus.textContent = currentYear;
-                
+
                 const elAnneeCharges = document.getElementById('annee-charges');
                 if (elAnneeCharges) elAnneeCharges.textContent = currentYear;
-                
+
                 const elAnneeReunions = document.getElementById('annee-reunions');
                 if (elAnneeReunions) elAnneeReunions.textContent = currentYear;
 
-                // Chargement des données
-                globalData = await dataService.loadAllData();
-                
+                // Chargement de toutes les données nécessaires, y compris RCP presence et Projets
+                const [allData, rcpPresenceData] = await Promise.all([
+                    dataService.loadAllData(),
+                    dataService.loadRcpPresenceData()
+                ]);
+
+                if (!allData) throw new Error("Chargement des données principales a échoué.");
+
+                // Combine all data into globalData
+                globalData = {
+                    ...allData,
+                    rcpPresenceData: rcpPresenceData // Store RCP presence data
+                };
+
                 // Vérifier si les données essentielles sont chargées
-                if (!globalData || !globalData.revenus || !globalData.charges || !globalData.rcpMeetings || !globalData.professionnels || !globalData.parametresRepartition) {
+                if (!globalData || !globalData.revenus || !globalData.charges || !globalData.rcpMeetings || !globalData.professionnels || !globalData.parametresRepartition || !globalData.projets || !globalData.rcpPresenceData) {
                     console.error('Données incomplètes après chargement:', globalData);
                     throw new Error('Données essentielles manquantes après le chargement.');
                 }
@@ -187,7 +199,7 @@
 
                 // Correction : Utiliser les noms de champs retournés par Sequelize (minuscules)
                 const totalAssocies = globalData.professionnels
-                    .filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant')) 
+                    .filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'))
                     .length;
 
                 // Mise à jour de l'affichage (vérifier si les éléments existent)
@@ -199,7 +211,7 @@
 
                 const elTotalReunions = document.getElementById('total-reunions');
                 if (elTotalReunions) elTotalReunions.textContent = totalReunions;
-                
+
                 const elTotalAssocies = document.getElementById('total-associes');
                 if (elTotalAssocies) elTotalAssocies.textContent = totalAssocies;
 
@@ -207,32 +219,41 @@
                 const params = globalData.parametresRepartition;
                 if (params) {
                     const elPartFixe = document.getElementById('param-part-fixe');
-                    if (elPartFixe) elPartFixe.textContent = params.partFixe + '%';
-                    
+                    if (elPartFixe) elPartFixe.textContent = (params.partFixe || 0) + '%';
+
                     const elFacteurCogerant = document.getElementById('param-facteur-cogerant');
-                    if (elFacteurCogerant) elFacteurCogerant.textContent = '×' + params.facteurCogerant;
-                    
+                    if (elFacteurCogerant) elFacteurCogerant.textContent = '×' + (params.facteurCogerant || 0);
+
                     const elPartRCP = document.getElementById('param-part-rcp');
-                    if (elPartRCP) elPartRCP.textContent = params.partRCP + '%';
-                    
+                    if (elPartRCP) elPartRCP.textContent = (params.partRCP || 0) + '%';
+
                     const elPartProjets = document.getElementById('param-part-projets');
-                    if (elPartProjets) elPartProjets.textContent = params.partProjets + '%';
+                    if (elPartProjets) elPartProjets.textContent = (params.partProjets || 0) + '%';
                 }
 
-                // Mise à jour du graphique
-                updateGraphique();
+                // Mise à jour du graphique de répartition
+                updateRepartitionChart();
+
             } catch (error) {
-                console.error('Erreur lors de la mise à jour des statistiques:', error);
+                console.error('Erreur lors de la mise à jour des statistiques et du graphique:', error);
                 // Afficher un message d'erreur plus ciblé si possible
                 // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
+                const chartElement = document.getElementById('repartition-chart');
+                 if (chartElement) {
+                     const ctx = chartElement.getContext('2d');
+                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                     ctx.textAlign = 'center';
+                     ctx.fillStyle = 'red';
+                     ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
+                 }
             }
         }
 
-        // Fonction pour afficher le graphique de répartition
-        function updateGraphique() {
+        // Fonction pour afficher le graphique de répartition (aligné avec repartition.html)
+        function updateRepartitionChart() {
             // Vérifier si les données nécessaires sont chargées
-            if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges) {
-                 console.warn('Données manquantes pour le graphique (index.html), annulation de la mise à jour.');
+            if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges || !globalData.rcpPresenceData || !globalData.projets) {
+                 console.warn('Données manquantes pour le graphique de répartition (index.html), annulation de la mise à jour.');
                  return;
             }
 
@@ -242,79 +263,122 @@
                 return;
             }
             const ctx = chartElement.getContext('2d');
-            
+
             const professionnels = globalData.professionnels;
             const params = globalData.parametresRepartition;
             const revenus = globalData.revenus;
             const charges = globalData.charges;
+            const rcpPresenceData = globalData.rcpPresenceData;
+            const projets = globalData.projets;
 
             // Calcul des montants
             const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
             const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
-            const montantARepartir = Math.max(0, totalRevenus - totalCharges);
+            const montantNet = Math.max(0, totalRevenus - totalCharges);
 
-            const montantPartFixe = montantARepartir * (params.partFixe / 100);
-            const montantPartRCP = montantARepartir * (params.partRCP / 100);
-            const montantPartProjets = montantARepartir * (params.partProjets / 100);
+            const montantPartFixe = montantNet * ((params.partFixe || 0) / 100);
+            const montantPartRCP = montantNet * ((params.partRCP || 0) / 100);
+            const montantPartProjets = montantNet * ((params.partProjets || 0) / 100);
 
             // Filtrer uniquement les associés actifs pour la répartition
             const associesActifs = professionnels.filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'));
             const nbAssociesActifs = associesActifs.length || 1; // Eviter division par zéro
 
             // Calculer le total des points pondérés pour la part fixe
-            const pointsFixePonderes = associesActifs.reduce((sum, p) => sum + (p.statut === 'Cogérant' ? params.facteurCogerant : 1), 0) || 1;
+            const pointsFixePonderes = associesActifs.reduce((sum, p) => sum + ((p.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1), 0) || 1;
 
-            // -- DEBUG LOGS --
-            console.log("[index.html] Calculs pour graphique:");
-            console.log(" - Montant Net à Répartir:", dataService.formatMontant(montantARepartir));
-            console.log(" - Montant Part Fixe Total:", dataService.formatMontant(montantPartFixe));
-            console.log(" - Montant Part RCP Total:", dataService.formatMontant(montantPartRCP));
-            console.log(" - Montant Part Projets Total:", dataService.formatMontant(montantPartProjets));
-            console.log(" - Nb Associés Actifs:", nbAssociesActifs);
-            console.log(" - Total Points Pondérés Fixe:", pointsFixePonderes);
-            // -- FIN DEBUG LOGS --
+            // Calculate RCP points based on actual presence data
+            const totalPresenceMinutes = rcpPresenceData.reduce((sum, item) => sum + (item.totalPresenceMinutes || 0), 0) || 1; // Avoid division by zero
+
+            const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes || 0]));
+
+            // --- Calculate Project Implication Scores ---
+            const implicationScores = new Map(); // { associeId: score }
+            associesActifs.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores
+
+            const responsableWeight = 2;
+            const contributeurWeight = 1;
+            let totalImplicationPoints = 0;
+
+            projets.forEach(projet => {
+                const poids = projet.poids || 0;
+
+                // Process Responsables
+                if (Array.isArray(projet.Responsables)) {
+                    projet.Responsables.forEach(resp => {
+                        // Ensure resp is a valid professional object and is an active associate
+                        const associe = associesActifs.find(a => a.id === resp.id);
+                        if (associe) {
+                            const scoreToAdd = poids * responsableWeight;
+                            implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
+                            totalImplicationPoints += scoreToAdd;
+                        }
+                    });
+                }
+
+                // Process Contributeurs
+                if (Array.isArray(projet.Contributeurs)) {
+                    projet.Contributeurs.forEach(contrib => {
+                        // Ensure contrib is a valid professional object and is an active associate
+                        const associe = associesActifs.find(a => a.id === contrib.id);
+                        if (associe) {
+                            // Avoid double-counting if someone is both Responsable and Contributeur for the same project
+                            const isAlsoResponsable = projet.Responsables?.some(r => r.id === associe.id);
+                            if (!isAlsoResponsable) {
+                                const scoreToAdd = poids * contributeurWeight;
+                                implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
+                                totalImplicationPoints += scoreToAdd;
+                            }
+                        }
+                    });
+                }
+            });
+             totalImplicationPoints = totalImplicationPoints || 1; // Avoid division by zero
+            // --- End Project Implication Calculation ---
+
 
             // Préparation des données pour le graphique
             const data = {
                 labels: associesActifs.map(pro => pro.nom),
                     datasets: [
                         {
-                            label: `Part fixe (${params.partFixe}%)`,
-                        // Correction du calcul de la part fixe individuelle
-                        data: associesActifs.map(pro => 
-                            (montantPartFixe / pointsFixePonderes) * (pro.statut === 'Cogérant' ? params.facteurCogerant : 1)
-                            ),
-                        backgroundColor: '#2196F3',
-                        stack: 'Stack 0' // Permet d'empiler les barres
+                            label: `Part Fixe (${params.partFixe || 0}%)`,
+                        data: associesActifs.map(pro =>
+                            (montantPartFixe / pointsFixePonderes) * ((pro.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1)
+                        ),
+                            backgroundColor: '#2196F3',
+                        stack: 'Stack 0',
                         },
                         {
-                            label: `Part RCP (${params.partRCP}%)`,
-                        // Répartition égale simple pour RCP (logique à affiner si nécessaire)
-                        data: associesActifs.map(() => montantPartRCP / nbAssociesActifs),
-                        backgroundColor: '#64B5F6',
-                        stack: 'Stack 0'
+                            label: `Part RCP (${params.partRCP || 0}%)`,
+                            // Distribute montantPartRCP based on presence minutes
+                            data: associesActifs.map(p => {
+                                const presenceMinutes = presenceMap.get(p.id) || 0;
+                                return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
+                            }),
+                            backgroundColor: '#4CAF50',
+                            stack: 'Stack 0',
                         },
                         {
-                            label: `Part Projets (${params.partProjets}%)`,
-                         // Répartition égale simple pour Projets (logique à affiner si nécessaire)
-                        data: associesActifs.map(() => montantPartProjets / nbAssociesActifs),
-                        backgroundColor: '#4CAF50',
-                        stack: 'Stack 0'
+                            label: `Part Projets (${params.partProjets || 0}%)`,
+                         // Distribute montantPartProjets based on calculated implication scores
+                        data: associesActifs.map(p => {
+                                const individualScore = implicationScores.get(p.id) || 0;
+                                return (montantPartProjets * (individualScore / totalImplicationPoints));
+                            }),
+                            backgroundColor: '#FFC107',
+                            stack: 'Stack 0',
                         }
                     ]
             };
 
-            // -- DEBUG LOGS --
-            console.log("[index.html] Données envoyées au graphique:", JSON.stringify(data, null, 2));
-            // -- FIN DEBUG LOGS --
-
             // Détruire l'ancien graphique s'il existe
-            if (window.repartitionChart instanceof Chart) {
-                window.repartitionChart.destroy();
+            if (repartitionChart instanceof Chart) {
+                repartitionChart.destroy();
             }
 
             try {
-                 window.repartitionChart = new Chart(ctx, {
+                 repartitionChart = new Chart(ctx, {
                      type: 'bar',
                      data: data, // Utiliser les données préparées
                 options: {
@@ -361,9 +425,10 @@
             }
         }
 
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
+            updateStatsAndChart(); // Call the combined function
 
             // Attach export button listener
             const exportBtn = document.getElementById('exportDataBtn');
@@ -372,15 +437,15 @@
             } else {
                 console.error("Bouton d'exportation 'exportDataBtn' non trouvé.");
             }
-            
+
             // Rafraîchissement périodique
-            setInterval(updateStats, 30000); // Mise à jour toutes les 30 secondes
+            setInterval(updateStatsAndChart, 30000); // Update stats and chart periodically
         });
 
         // Fonction d'export (pour la maintenance)
         function exportData() {
             if (!globalData) return;
-            
+
             const dataStr = JSON.stringify(globalData, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
