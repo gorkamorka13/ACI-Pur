@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login or Register</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" sizes="any">
     <link rel="stylesheet" href="css/style.css"> <!-- Link to your existing CSS -->
     <style>
         /* Basic styling for the forms */
@@ -12,7 +13,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             background-color: #f4f4f4;
             margin: 0;
         }
@@ -65,9 +65,12 @@
             background-color: #0056b3;
         }
         #message {
-            margin-top: 20px;
+            margin-top: 10px;
             text-align: center;
             color: green;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
         }
         .error {
             color: red;
@@ -76,6 +79,7 @@
 </head>
 <body>
     <div class="container">
+        <div id="message"></div>
         <div class="form-section">
             <h2>Register</h2>
             <form id="registerForm">
@@ -110,8 +114,6 @@
             </form>
         </div>
     </div>
-
-    <div id="message"></div> <!-- Area to display messages -->
 
     <script src="js/auth.js"></script> <!-- Link to the auth logic -->
 </body>
