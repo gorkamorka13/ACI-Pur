@@ -148,6 +148,28 @@ class DataService {
         }
     }
 
+    // Function to load a single Project by ID, including associated professionals
+    async loadProjetById(id) {
+        try {
+            const response = await fetch(`${this.baseUrl}/projets/${id}`); // API endpoint includes associations now
+            if (!response.ok) {
+                // Handle 404 specifically
+                if (response.status === 404) {
+                    console.warn(`Projet avec ID ${id} non trouvé.`);
+                    return null; // Return null if not found
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const projetData = await response.json();
+            console.log('DataService fetched projet data:', projetData); // Log the fetched data
+            return projetData;
+        } catch (error) {
+            console.error(`Erreur lors du chargement du projet avec ID ${id}:`, error);
+            throw error;
+        }
+    }
+
+
     // Méthodes utilitaires pour formater les données
     formatMontant(montant) {
         return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(montant);

@@ -596,8 +596,8 @@
                 if (projetSelectionne) {
                     const projetActuel = allProjets.find(p => p.id === projetSelectionne.id);
                     if (projetActuel) {
-                        projetSelectionne = projetActuel; // Mettre à jour avec les nouvelles données
-                        afficherDetailsProjet(projetSelectionne);
+                        // Pass the ID to the updated function
+                        afficherDetailsProjet(projetActuel.id); 
                     } else {
                         // Le projet sélectionné n'existe plus
                         resetDetailsSection();
@@ -671,15 +671,16 @@
                 div.addEventListener('click', () => {
                     document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
                     div.classList.add('selected');
-                    projetSelectionne = projet;
-                    afficherDetailsProjet(projet);
-                });
+              // REMOVED: projetSelectionne = projet; (afficherDetailsProjet will set the global variable after fetching full data)
+              // Fetch detailed data including associations when a project is clicked
+              afficherDetailsProjet(projet.id);
+          });
 
-                container.appendChild(div);
-            });
-        }
+          container.appendChild(div);
+      });
+  }
 
-        function resetDetailsSection() {
+  function resetDetailsSection() {
              document.getElementById('details-content').style.display = 'none';
              document.getElementById('details-placeholder').style.display = 'block';
              document.getElementById('btn-modifier').style.display = 'none';
@@ -689,41 +690,72 @@
              projetSelectionne = null;
              document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
              // Ensure dropdown is hidden when no project is selected
+       if (dropdownAssocies) dropdownAssocies.classList.remove('show');
+       currentAssignments = {}; // Clear assignments when resetting
+  }
+
+  // Modified to accept projetId and fetch detailed data
+  async function afficherDetailsProjet(projetId) {
+      if (!projetId) {
+          resetDetailsSection();
+          return;
+      }
+
+      try {
+          // Fetch detailed project data including associations
+          const projet = await dataService.loadProjetById(projetId);
+
+          if (!projet) {
+              console.error(`Projet avec ID ${projetId} non trouvé après fetch.`);
+              resetDetailsSection();
+              alert("Le projet sélectionné n'a pas pu être chargé.");
+              return;
+          }
+
+          // Update the global selected project variable with full data
+          projetSelectionne = projet;
+
+          document.getElementById('details-placeholder').style.display = 'none';
+          document.getElementById('details-content').style.display = 'block';
+          document.getElementById('btn-modifier').style.display = 'inline-block';
+          document.getElementById('btn-supprimer').style.display = 'inline-block';
+
+          document.getElementById('projet-titre').textContent = projet.titre;
+          document.getElementById('projet-dates').textContent = projet.annee;
+          document.getElementById('projet-poids').textContent = projet.poids;
+
+          // Populate currentAssignments from fetched data
+          currentAssignments = {}; // Start fresh
+          if (projet.Responsables && Array.isArray(projet.Responsables)) {
+              projet.Responsables.forEach(pro => {
+                  currentAssignments[pro.id] = 'responsable';
+              });
+          }
+          if (projet.Contributeurs && Array.isArray(projet.Contributeurs)) {
+              projet.Contributeurs.forEach(pro => {
+                  // Avoid overwriting if already set as responsable (responsable takes precedence?)
+                  if (!currentAssignments[pro.id]) {
+                      currentAssignments[pro.id] = 'contributeur';
+                  }
+              });
+          }
+          console.log("Loaded assignments:", currentAssignments);
+
+          renderAssignedProfessionals(); // Render the list based on fetched assignments
+
+          // Cacher l'avertissement de contribution pour l'instant
+          const warningDiv = document.getElementById('warning-contributions');
+          if(warningDiv) warningDiv.style.display = 'none';
+
+          // Ensure dropdown is hidden when switching projects
              if (dropdownAssocies) dropdownAssocies.classList.remove('show');
-        }
 
-        function afficherDetailsProjet(projet) {
-            if (!projet) {
-                resetDetailsSection();
-                return;
-            }
-
-            document.getElementById('details-placeholder').style.display = 'none';
-            document.getElementById('details-content').style.display = 'block'; // Utiliser block au lieu de add('show')
-            document.getElementById('btn-modifier').style.display = 'inline-block';
-            document.getElementById('btn-supprimer').style.display = 'inline-block';
-
-            document.getElementById('projet-titre').textContent = projet.titre;
-            document.getElementById('projet-dates').textContent = projet.annee;
-            document.getElementById('projet-poids').textContent = projet.poids;
-
-            // Afficher les associés affectés (simplifié pour le moment)
-            // TODO: Implémenter la logique pour charger/afficher/modifier les affectations
-            // Initialize/clear assignments for the selected project
-            // TODO: Later, load actual assignments from projet.Responsables / projet.Contributeurs
-            currentAssignments = {}; // Reset temporary assignments when selecting a new project
-            // Example: Load dummy data if needed for testing
-            // if (projet.id === 1) { currentAssignments = { '1': 'responsable', '2': 'contributeur'}; }
-
-            renderAssignedProfessionals(); // Render the list based on currentAssignments
-
-            // Cacher l'avertissement de contribution pour l'instant
-            const warningDiv = document.getElementById('warning-contributions');
-            if(warningDiv) warningDiv.style.display = 'none';
-
-            // Ensure dropdown is hidden when switching projects
-             if (dropdownAssocies) dropdownAssocies.classList.remove('show');
-        }
+      } catch (error) {
+          console.error("Erreur lors de l'affichage des détails du projet:", error);
+          alert("Erreur lors du chargement des détails du projet.");
+          resetDetailsSection();
+      }
+  }
 
         // --- Gestion des modales ---
         function openModal(modalId) {

@@ -44,6 +44,22 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: 'meetingId',      // Foreign key in the join table for RcpMeeting
       as: 'Meetings'              // Alias for the association (optional, but good practice)
     });
+
+    // Association with Projet as Responsable
+    Professionnel.belongsToMany(models.Projet, {
+      through: 'ProjetResponsables', // Must match the join table name in Projet model
+      as: 'ProjetsResponsables',   // Alias to access projects where this professional is responsable
+      foreignKey: 'professionnelId', // Foreign key in the join table pointing to Professionnel
+      otherKey: 'projetId'          // Foreign key in the join table pointing to Projet
+    });
+
+    // Association with Projet as Contributeur
+    Professionnel.belongsToMany(models.Projet, {
+      through: 'ProjetContributeurs', // Must match the join table name in Projet model
+      as: 'ProjetsContributeurs',  // Alias to access projects where this professional is contributeur
+      foreignKey: 'professionnelId', // Foreign key in the join table pointing to Professionnel
+      otherKey: 'projetId'          // Foreign key in the join table pointing to Projet
+    });
   };
 
   return Professionnel;
