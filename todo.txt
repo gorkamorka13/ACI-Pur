@@ -1,15 +1,99 @@
-Vérifier les formules, en particulier le poids de l'implication projets.
-Créer une formule implication avec des paramètres modifiables : dialogbox, inputs, à enregistrer dans la bdd, peut-être par projet ?
-Voir si la part projet est intégrée à la validation ou en cours
+In the Repartition des revenus you can find a buton implcation projets.
+I want to implement the functionality attached to this button.
+The aim is to build a plan to do this.
+Main ideas should be:
+According to the list of projects and the respective responsability of the professionals attached to the project (see what has been done on this subject before):
+I want to reflect in the graph Score d'implcation estimé des projets, the actual implication of the professionals.
+Have you an idea to take the level of implication into account in the calculus ?
 
-Vérifier l'application des charges au calcul du bilan (par année ?). Voir si le bilan doit être fait par année d'ailleurs.
 
-login et password de connexion en consultation ou en modification. 
+Let's outline a plan to implement the "Implication Projets" functionality and integrate professional implication into the "Score d'implication estimé des projets" graph.
 
-Sauvegarde de la bdd (Parametres-Sauvegarde et export automatique, manuelle ?)
+Understanding the Goal:
 
-Paramètres généraux (couleurs, fonts, ou autres paramètres)
+The core objective is to make the "Score d'implication estimé des projets" graph reflect the actual involvement of professionals, not just a predefined estimate. This requires defining, capturing, and calculating a measure of "implication".
 
-Application portable (?)
+Initial Questions & Information Gathering:
 
-Éditeur de rapport pdf.
+To build a solid plan, let's clarify a few points about the existing system:
+
+Location of Elements:
+Can you confirm which HTML file contains the "Repartition des revenus" section and the "Implication Projets" button? (Is it ACI-Pur/templates/repartition.html?)
+Where is the "Score d'implcation estimé des projets" graph currently displayed and generated? (Which HTML template and associated JavaScript file?)
+Current Data Structure:
+How is the relationship between Professionnel and Projet currently modeled? Is there a direct link, or a join table/model? (Looking at models/Projet.js, models/Professionnel.js).
+Is there any existing field or mechanism that tracks a professional's role, responsibility, or time spent on a project?
+Existing Calculation:
+How is the "Score d'implication estimé" currently calculated? What factors does it consider? (Likely involves logic in DataService.js or a related manager script).
+Ideas for Quantifying Implication:
+
+Based on potential answers to the above, here are some ways we could quantify "implication":
+
+Time-Based: Track hours logged per professional per project. This is often the most direct measure but requires a time-tracking mechanism.
+Role/Responsibility Weighting: Assign numerical weights to different roles within a project (e.g., Project Lead = 5, Core Contributor = 3, Consultant = 1).
+Task Completion: If tasks are tracked, implication could be based on the number or estimated effort of completed tasks.
+Manual Rating: Implement a system where a project manager or the professionals themselves rate their level of involvement (e.g., on a scale of 1-10).
+Combined Approach: Use a formula combining multiple factors (e.g., Role Weight * (Hours Logged / Estimated Hours)).
+Proposed High-Level Plan Outline:
+
+Once we have a clearer picture and decide on a quantification method, the implementation steps would likely involve:
+
+Data Model Update:
+Modify existing models (Projet.js, Professionnel.js) or create a new model/table (e.g., ProjetImplication) to store the chosen implication metric(s) linking professionals to projects.
+API Endpoint(s):
+Create or update API endpoints (in api/projets/ or a new dedicated API route) to:
+Fetch implication data for projects and professionals.
+Allow creating/updating implication data (e.g., logging hours, setting roles, submitting ratings).
+Frontend Service Layer (DataService.js):
+Add functions to interact with the new API endpoints.
+Incorporate the fetched implication data into the data prepared for the graph.
+UI - Input/Management (Triggered by Button):
+Implement the UI triggered by the "Implication Projets" button. This could be:
+A modal dialog to view/edit implication details for the selected project(s).
+Navigation to a dedicated page for managing project implications.
+UI - Graph Update:
+Modify the JavaScript code that renders the "Score d'implcation estimé des projets" graph.
+Adjust the calculation logic to use the actual implication data fetched via DataService.js instead of, or in addition to, the estimated score.
+
+
+Proposed Plan:
+
+To implement the "Implication Projets" functionality, we need to:
+
+Phase 1: Data Acquisition
+
+Modify API: Update the GET /api/projets endpoint in ACI-Pur/api/projets/index.js to include the Responsables and Contributeurs associations in the findAll query. This will make the necessary data available to the frontend when it loads all projects.
+// In ACI-Pur/api/projets/index.js
+router.get('/', async (req, res) => {
+    try {
+        const projets = await db.Projet.findAll({
+            include: [ // <-- Add this include block
+                { model: db.Professionnel, as: 'Responsables', attributes: ['id', 'nom'] }, // Include only needed fields
+                { model: db.Professionnel, as: 'Contributeurs', attributes: ['id', 'nom'] } // Include only needed fields
+            ],
+            order: [['annee', 'DESC'], ['titre', 'ASC']]
+        });
+        res.json(projets);
+    } catch (error) {
+        // ... error handling ...
+    }
+});
+Verify Frontend: Ensure DataService.js correctly receives and stores this enhanced project data within this.data.projets. No changes should be needed in DataService.js itself, as it just stores the JSON response.
+Phase 2: Calculation Logic
+
+Define Implication Score: Decide on the formula. A simple starting point using the existing data could be:
+Assign a higher weight to Responsables (e.g., responsableWeight = 2) and a lower weight to Contributeurs (e.g., contributeurWeight = 1).
+For each professional (P), calculate their total weighted implication points: TotalPoints(P) = Sum(projet.poids * responsableWeight) for all projects where P is Responsable + Sum(projet.poids * contributeurWeight) for all projects where P is Contributeur.
+The graph can then display these TotalPoints(P) for each professional.
+Implement Calculation: Modify the getImplicationProjetsChartConfig() function in ACI-Pur/templates/repartition.html:
+Access the necessary data: globalData.professionnels (filtered for 'Associé'/'Cogérant') and globalData.projets (which now includes Responsables and Contributeurs).
+Iterate through the projects and professionals to calculate the TotalPoints for each relevant professional based on the chosen formula.
+Use these calculated points as the data for the chart dataset, replacing the random data.
+Phase 3: Refinement (Optional - Future)
+
+Consider adding more granular implication tracking (e.g., percentage involvement, hours) if the initial approach isn't sufficient. This would require data model changes, new API endpoints, and UI modifications (likely triggered by the "Implication Projets" tab/button, perhaps opening a modal).
+Discussion Points:
+
+Does the proposed calculation logic (using Responsable/Contributeur roles and project poids) seem like a reasonable starting point?
+Are the suggested weights (e.g., 2 for Responsable, 1 for Contributeur) acceptable, or should they be different? We could even make these weights configurable parameters later.
+What are your thoughts on this plan, particularly the calculation method? Once we agree, I can proceed with the implementation in ACT MODE, starting with modifying the API.
