@@ -466,6 +466,7 @@
                                     <span><i class="far fa-calendar"></i> <span id="projet-dates"></span></span>
                                     <span>
                                         <i class="fas fa-weight-hanging"></i> Poids: <span id="projet-poids">1</span>
+                                        <span id="projet-statut-detail" style="margin-left: 15px;"></span> <!-- Added status span -->
                                         <button class="btn-modifier-poids" id="btn-modifier-poids">
                                             <i class="fas fa-edit"></i> Modifier le poids
                                         </button>
@@ -476,9 +477,7 @@
                                     <div class="contribution-header">
                                         <h3>Associés affectés au projet</h3>
                                         <!-- Removed Add Associate Button and Dropdown Container -->
-                                        <button class="btn-egaliser" id="btn-egaliser">
-                                            <i class="fas fa-equals"></i> Égaliser
-                                        </button>
+                                        <!-- Removed Egaliser Button -->
                                     </div>
 
                                     <div class="contribution-warning" id="warning-contributions" style="display: none;">
@@ -613,7 +612,7 @@
             document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
             // document.getElementById('btn-modifier-poids').addEventListener('click', modifierPoids); // À réimplémenter si besoin
             // Removed btnAjouterAssocie listener
-            // document.getElementById('btn-egaliser').addEventListener('click', egaliserContributions); // À réimplémenter si besoin
+            // Removed btn-egaliser listener
 
             // Fermeture des modales
             document.querySelectorAll('.modal-close').forEach(button => {
@@ -712,6 +711,14 @@
           document.getElementById('projet-titre').textContent = projet.titre;
           document.getElementById('projet-dates').textContent = projet.annee;
           document.getElementById('projet-poids').textContent = projet.poids;
+
+          // Populate the status badge in the details section
+          const statutDetailSpan = document.getElementById('projet-statut-detail');
+          if (statutDetailSpan) {
+              const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'valide' ? 'Validé' : projet.statut);
+              const statutClass = projet.statut === 'en-cours' ? 'en-cours' : (projet.statut === 'valide' ? 'valide' : 'inactif');
+              statutDetailSpan.innerHTML = `<span class="status-badge ${statutClass}">${statutLibelle}</span>`;
+          }
 
           // Populate currentAssignments from fetched data
           currentAssignments = {}; // Start fresh
@@ -872,10 +879,14 @@
                 if (professionnel) {
                     const div = document.createElement('div');
                     div.className = 'associe-item'; // Reuse existing style
+                    // Construct display string safely
+                    let roleDisplay = role === 'responsable' ? 'Responsable' : 'Contributeur';
+                    let professionDisplay = professionnel.profession ? `${professionnel.profession} - ` : ''; // Only add profession if it exists
+
                     div.innerHTML = `
                         <div class="associe-info">
-                            <span class="associe-name">${professionnel.nom} ${professionnel.prenom}</span>
-                            <span class="associe-role">${role === 'responsable' ? 'Responsable' : 'Contributeur'}</span>
+                            <span class="associe-name">${professionnel.nom}</span>
+                            <span class="associe-role">${professionDisplay}${roleDisplay}</span> <!-- Safer display -->
                         </div>
                         <!-- Add remove button or other actions later if needed -->
                     `;
@@ -903,8 +914,8 @@
 
                 div.innerHTML = `
                     <div class="modal-associe-info">
-                        <span class="associe-name">${pro.nom} ${pro.prenom || ''}</span>
-                        <span class="associe-role">${pro.profession || ''}</span>
+                        <span class="associe-name">${pro.nom}</span> <!-- Simplified modal display -->
+                        <!-- Removed profession display from modal for simplicity -->
                     </div>
                     <div class="role-toggles">
                         <span class="role-toggle ${currentRole === 'responsable' ? 'active' : ''}" data-role="responsable">Responsable</span>
@@ -961,11 +972,7 @@
             }
         }
 
-        function egaliserContributions() {
-             if (!projetSelectionne) return;
-             // TODO: Logique pour égaliser les contributions
-             alert("Égalisation des contributions à implémenter.");
-        }
+        // Removed egaliserContributions function stub
         */
 
     </script>
