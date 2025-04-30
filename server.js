@@ -23,6 +23,8 @@ const projetsRouter = require('./api/projets');
 const parametresRepartitionRouter = require('./api/parametresRepartition'); // Importer le nouveau routeur
 const authRouter = require('./api/auth'); // Importer le routeur d'authentification
 
+const authenticateToken = require('./middleware/authenticateToken'); // Importer le middleware d'authentification
+
 const nodeEnv = process.env.NODE_ENV; // Will be 'development' based on the .env file
 const jwtSecret = process.env.JWT_SECRET; // Will be 'your_super_secret_...'
 
@@ -64,13 +66,15 @@ app.use(express.static('.', {
     }
 }));
 
-// Routes API
-app.use('/api/rcpMeetings', rcpMeetingsRouter);
-app.use('/api/revenus', revenusRouter);
-app.use('/api/charges', chargesRouter);
-app.use('/api/professionnels', professionnelsRouter);
-app.use('/api/projets', projetsRouter);
-app.use('/api/parametresRepartition', parametresRepartitionRouter); // Utiliser le routeur dédié
+// Routes API - Protected routes use authenticateToken middleware
+app.use('/api/rcpMeetings', authenticateToken, rcpMeetingsRouter);
+app.use('/api/revenus', authenticateToken, revenusRouter);
+app.use('/api/charges', authenticateToken, chargesRouter);
+app.use('/api/professionnels', authenticateToken, professionnelsRouter);
+app.use('/api/projets', authenticateToken, projetsRouter);
+app.use('/api/parametresRepartition', authenticateToken, parametresRepartitionRouter); // Utiliser le routeur dédié
+
+// Public authentication routes
 app.use('/api/auth', authRouter); // Utiliser le routeur d'authentification
 
 // Synchronisation de la base de données et démarrage du serveur

@@ -6,7 +6,24 @@ class DataService {
         this.data = null;
         this.lastFetch = null;
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
-        this.loadAllData();
+        // Initial data load will now be handled after successful login redirect
+        // this.loadAllData(); 
+    }
+
+    // Helper function to handle fetch responses and authentication errors
+    async handleResponse(response) {
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                console.error('Authentication failed. Redirecting to login.');
+                localStorage.removeItem('token'); // Clear invalid token
+                window.location.href = 'login.html'; // Redirect
+                // Throw an error to stop further processing in the calling function
+                throw new Error('Authentication required.'); 
+            }
+            // For other non-OK responses, throw a standard HTTP error
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
     }
 
     async loadAllData() {
@@ -34,143 +51,137 @@ class DataService {
             return this.data;
         } catch (error) {
             console.error('Erreur lors du chargement des données:', error);
-            alert('Erreur lors du chargement des données. Détails: ' + error.message);
-            this.data = {
-                revenus: [],
-                charges: [],
-                rcpMeetings: [],
-                professionnels: [],
-                parametresRepartition: {
-                    partFixe: 50,
-                    facteurCogerant: 1.7,
-                    partRCP: 25,
-                    partProjets: 25
-                },
-                projets: []
-            };
-            return this.data;
+            // Only show alert if it's not an authentication error handled by handleResponse
+            if (error.message !== 'Authentication required.') {
+                 alert('Erreur lors du chargement des données. Détails: ' + error.message);
+            }
+            
+            // Return default empty data on error, but only if not redirecting
+            if (error.message !== 'Authentication required.') {
+                this.data = {
+                    revenus: [],
+                    charges: [],
+                    rcpMeetings: [],
+                    professionnels: [],
+                    parametresRepartition: {
+                        partFixe: 50,
+                        facteurCogerant: 1.7,
+                        partRCP: 25,
+                        partProjets: 25
+                    },
+                    projets: []
+                };
+                 return this.data;
+            }
+             // If it was an auth error, the redirect is happening, no need to return data
+             throw error; // Re-throw the auth error to stop the promise chain
         }
     }
 
     async loadProfessionnels() {
         try {
-            const response = await fetch(`${this.baseUrl}/professionnels`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/professionnels`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des professionnels:', error);
-            throw error;
+            throw error; // Re-throw to be caught by loadAllData or other callers
         }
     }
 
     // Updated to accept an optional year parameter
-    async loadCharges(year = null) { 
+    async loadCharges(year = null) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             let url = `${this.baseUrl}/charges`;
             if (year) {
                 url += `?year=${year}`; // Append year query parameter if provided
             }
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const response = await fetch(url, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des charges:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async loadRevenus() {
         try {
-            const response = await fetch(`${this.baseUrl}/revenus`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/revenus`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des revenus:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async loadRcpMeetings() {
         try {
+            const headers = window.getAuthenticatedHeaders();
             // Include associated professionals when loading all meetings for the main table display
-            const response = await fetch(`${this.baseUrl}/rcpMeetings?include=professionnels`); 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const response = await fetch(`${this.baseUrl}/rcpMeetings?include=professionnels`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des réunions RCP:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     // Function to load a single RCP meeting by ID, including associated professionals
     async getRcpMeeting(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             // Include associated professionals when fetching a single meeting
-            const response = await fetch(`${this.baseUrl}/rcpMeetings/${id}?include=professionnels`); 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const response = await fetch(`${this.baseUrl}/rcpMeetings/${id}?include=professionnels`, { headers });
+             // Handle 404 specifically before general response handling
+            if (response.status === 404) {
+                console.warn(`Réunion RCP avec ID ${id} non trouvée.`);
+                return null; // Return null if not found
             }
-            const meetingData = await response.json();
-            console.log('DataService fetched meeting data:', meetingData); // Log the fetched data
-            return meetingData;
+            return await this.handleResponse(response);
         } catch (error) {
             console.error(`Erreur lors du chargement de la réunion RCP avec ID ${id}:`, error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async loadProjets() {
         try {
-            const response = await fetch(`${this.baseUrl}/projets`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/projets`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des projets:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async loadParametresRepartition() {
         try {
-            const response = await fetch(`${this.baseUrl}/parametresRepartition`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/parametresRepartition`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des paramètres de répartition:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     // Function to load a single Project by ID, including associated professionals
     async loadProjetById(id) {
         try {
-            const response = await fetch(`${this.baseUrl}/projets/${id}`); // API endpoint includes associations now
-            if (!response.ok) {
-                // Handle 404 specifically
-                if (response.status === 404) {
-                    console.warn(`Projet avec ID ${id} non trouvé.`);
-                    return null; // Return null if not found
-                }
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/projets/${id}`, { headers }); // API endpoint includes associations now
+             // Handle 404 specifically before general response handling
+            if (response.status === 404) {
+                console.warn(`Projet avec ID ${id} non trouvé.`);
+                return null; // Return null if not found
             }
-            const projetData = await response.json();
-            console.log('DataService fetched projet data:', projetData); // Log the fetched data
-            return projetData;
+            return await this.handleResponse(response);
         } catch (error) {
             console.error(`Erreur lors du chargement du projet avec ID ${id}:`, error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
@@ -216,7 +227,7 @@ class DataService {
 
     async saveRevenu(revenu) {
         try {
-            let response;
+            const headers = window.getAuthenticatedHeaders();
             let method = 'POST';
             let url = `${this.baseUrl}/revenus`;
             
@@ -226,28 +237,24 @@ class DataService {
                 url = `${this.baseUrl}/revenus/${revenu.id}`;
             }
             
-            response = await fetch(url, {
+            const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(revenu)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde du revenu:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async saveCharge(charge) {
         try {
-            let response;
+            const headers = window.getAuthenticatedHeaders();
             let method = 'POST';
             let url = `${this.baseUrl}/charges`;
             
@@ -257,28 +264,24 @@ class DataService {
                 url = `${this.baseUrl}/charges/${charge.id}`;
             }
             
-            response = await fetch(url, {
+            const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(charge)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde de la charge:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async saveRcpMeeting(meeting) {
         try {
-            let response;
+            const headers = window.getAuthenticatedHeaders();
             let method = 'POST';
             let url = `${this.baseUrl}/rcpMeetings`;
             
@@ -288,28 +291,24 @@ class DataService {
                 url = `${this.baseUrl}/rcpMeetings/${meeting.id}`;
             }
             
-            response = await fetch(url, {
+            const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(meeting)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde de la réunion:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async saveProjet(projet) {
         try {
-            let response;
+            const headers = window.getAuthenticatedHeaders();
             let method = 'POST';
             let url = `${this.baseUrl}/projets`;
             
@@ -319,28 +318,24 @@ class DataService {
                 url = `${this.baseUrl}/projets/${projet.id}`;
             }
             
-            response = await fetch(url, {
+            const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(projet)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde du projet:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async saveProfessionnel(professionnel) {
         try {
-            let response;
+            const headers = window.getAuthenticatedHeaders();
             let method = 'POST';
             let url = `${this.baseUrl}/professionnels`;
             
@@ -350,142 +345,128 @@ class DataService {
                 url = `${this.baseUrl}/professionnels/${professionnel.id}`;
             }
             
-            response = await fetch(url, {
+            const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(professionnel)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde du professionnel:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async saveParametresRepartition(parametres) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/parametresRepartition`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...headers, 'Content-Type': 'application/json' }, // Merge headers
                 body: JSON.stringify(parametres)
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await this.handleResponse(response);
             await this.loadAllData(); // Recharger toutes les données pour refléter les changements
             return result;
         } catch (error) {
             console.error('Erreur lors de la sauvegarde des paramètres:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async deleteRevenu(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/revenus/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: headers // Add headers to delete requests
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await this.loadAllData(); // Recharger toutes les données pour refléter les changements
+            return await this.handleResponse(response);
+             // Note: loadAllData is called after successful delete in the calling code, not here
         } catch (error) {
             console.error('Erreur lors de la suppression du revenu:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async deleteCharge(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/charges/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                 headers: headers // Add headers to delete requests
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await this.loadAllData(); // Recharger toutes les données pour refléter les changements
+            return await this.handleResponse(response);
+             // Note: loadAllData is called after successful delete in the calling code, not here
         } catch (error) {
             console.error('Erreur lors de la suppression de la charge:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async deleteRcpMeeting(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/rcpMeetings/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                 headers: headers // Add headers to delete requests
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await this.loadAllData(); // Recharger toutes les données pour refléter les changements
+            return await this.handleResponse(response);
+             // Note: loadAllData is called after successful delete in the calling code, not here
         } catch (error) {
             console.error('Erreur lors de la suppression de la réunion:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async deleteProjet(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/projets/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                 headers: headers // Add headers to delete requests
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await this.loadAllData(); // Recharger toutes les données pour refléter les changements
+            return await this.handleResponse(response);
+             // Note: loadAllData is called after successful delete in the calling code, not here
         } catch (error) {
             console.error('Erreur lors de la suppression du projet:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     async deleteProfessionnel(id) {
         try {
+            const headers = window.getAuthenticatedHeaders();
             const response = await fetch(`${this.baseUrl}/professionnels/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                 headers: headers // Add headers to delete requests
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            await this.loadAllData(); // Recharger toutes les données pour refléter les changements
+            return await this.handleResponse(response);
+             // Note: loadAllData is called after successful delete in the calling code, not here
         } catch (error) {
             console.error('Erreur lors de la suppression du professionnel:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 
     // Function to load RCP presence data per professional
     async loadRcpPresenceData() {
         try {
-            const response = await fetch(`${this.baseUrl}/rcpMeetings/presence`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/rcpMeetings/presence`, { headers });
+            return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors du chargement des données de présence RCP:', error);
-            throw error;
+            throw error; // Re-throw
         }
     }
 }

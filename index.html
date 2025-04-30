@@ -25,6 +25,7 @@
                     <li><a href="templates/projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="templates/repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li><a href="templates/parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+                    <li><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li> <!-- Logout button -->
                 </ul>
             </nav>
         </div>
@@ -131,6 +132,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Authentication -->
+    <script type="module" src="js/auth.js"></script>
+
     <!-- Configuration -->
     <script type="module" src="js/config/config.js"></script>
     
@@ -439,7 +443,7 @@
                  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                  ctx.textAlign = 'center';
                  ctx.fillStyle = 'red';
-                 ctx.fillText("Erreur graphique", ctx.canvas.width/2, ctx.canvas.height/2);
+                 ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
             }
         }
 
