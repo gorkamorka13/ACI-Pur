@@ -380,14 +380,44 @@
             
             const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes]));
 
-            // TODO: Calculate precisely the points Projets par associé
-            const pointsProjetsParAssocie = {}; // Ex: { associeId: points, ... }
-            const totalPointsProjets = nbAssocies; // Placeholder (needs actual project logic)
-            
-            professionnels.forEach(p => {
-                pointsProjetsParAssocie[p.id] = 1; // Placeholder
-            });
+            // --- Calculate Project Implication Scores ---
+            const projets = globalData.projets || [];
+            const implicationScores = new Map(); // { associeId: score }
+            professionnels.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores
 
+            const responsableWeight = 2;
+            const contributeurWeight = 1;
+            let totalImplicationPoints = 0;
+
+            projets.forEach(projet => {
+                const poids = projet.poids || 0;
+
+                // Process Responsables
+                if (Array.isArray(projet.Responsables)) {
+                    projet.Responsables.forEach(resp => {
+                        if (implicationScores.has(resp.id)) {
+                            const scoreToAdd = poids * responsableWeight;
+                            implicationScores.set(resp.id, implicationScores.get(resp.id) + scoreToAdd);
+                            totalImplicationPoints += scoreToAdd;
+                        }
+                    });
+                }
+
+                // Process Contributeurs
+                if (Array.isArray(projet.Contributeurs)) {
+                    projet.Contributeurs.forEach(contrib => {
+                        if (implicationScores.has(contrib.id)) {
+                            const isAlsoResponsable = projet.Responsables?.some(r => r.id === contrib.id);
+                            if (!isAlsoResponsable) {
+                                const scoreToAdd = poids * contributeurWeight;
+                                implicationScores.set(contrib.id, implicationScores.get(contrib.id) + scoreToAdd);
+                                totalImplicationPoints += scoreToAdd;
+                            }
+                        }
+                    });
+                }
+            });
+            // --- End Project Implication Calculation ---
 
             const data = {
                 labels: professionnels.map(p => p.nom),
@@ -415,9 +445,16 @@
                         },
                         {
                             label: `Part Projets (${params.partProjets}%)`,
-                        data: professionnels.map(p => (montantPartProjets / totalPointsProjets) * (pointsProjetsParAssocie[p.id] || 0)),
-                        backgroundColor: '#FFC107',
-                        stack: 'Stack 0',
+                            // Distribute montantPartProjets based on calculated implication scores
+                            data: professionnels.map(p => {
+                                const individualScore = implicationScores.get(p.id) || 0;
+                                if (totalImplicationPoints === 0) {
+                                    return 0; // Avoid division by zero
+                                }
+                                return (montantPartProjets * (individualScore / totalImplicationPoints));
+                            }),
+                            backgroundColor: '#FFC107',
+                            stack: 'Stack 0',
                         }
                     ]
             };
