@@ -228,12 +228,57 @@ header {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.chart-container h3, .recent-activities h3 {
-    font-size: 18px;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ecf0f1;
+.parametres-content {
+    display: flex;
+    gap: 20px; /* Space between parameters grid and chart */
+    align-items: flex-start; /* Align items to the top */
+}
+
+.parametres-grid {
+    flex: 1; /* Allow grid to take available space */
+    min-width: 300px; /* Ensure grid doesn't get too small */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust grid columns for better responsiveness */
+    gap: 15px; /* Adjust gap */
+    margin-top: 0; /* Remove top margin */
+}
+
+.parametres-chart-container {
+    flex: 1; /* Allow chart container to take available space */
+    max-width: 300px; /* Limit chart size */
+    min-width: 200px; /* Ensure chart doesn't get too small */
+    height: 250px; /* Set a fixed height for the chart */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.parametres-chart-container canvas {
+    max-height: 100%; /* Ensure canvas fits within container height */
+    max-width: 100%; /* Ensure canvas fits within container width */
+}
+
+
+/* Responsive */
+@media (max-width: 992px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+    }
+
+    .parametres-content {
+        flex-direction: column; /* Stack parameters and chart on smaller screens */
+        align-items: center; /* Center items when stacked */
+    }
+
+    .parametres-grid {
+        width: 100%; /* Allow grid to take full width when stacked */
+        min-width: auto; /* Remove min-width constraint */
+    }
+
+    .parametres-chart-container {
+        max-width: 250px; /* Adjust max-width for smaller screens */
+        height: 200px; /* Adjust height for smaller screens */
+    }
 }
 
 .chart {

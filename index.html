@@ -94,28 +94,33 @@
                             <canvas class="chart" id="repartition-chart"></canvas>
                         </div>
                     </div>
-                    <div class="recent-activities">
+                    <div class="recent-activities parametres-section">
                         <h3>Paramètres de répartition actuels</h3>
-                        <div class="parametres-grid">
-                            <div class="parametre-card">
-                                <div class="parametre-title">Part fixe</div>
-                                <div class="parametre-subtitle">Du revenu net</div>
-                                <div class="parametre-value" id="param-part-fixe">50%</div>
+                        <div class="parametres-content">
+                            <div class="parametres-grid">
+                                <div class="parametre-card">
+                                    <div class="parametre-title">Part fixe</div>
+                                    <div class="parametre-subtitle">Du revenu net</div>
+                                    <div class="parametre-value" id="param-part-fixe">50%</div>
+                                </div>
+                                <div class="parametre-card">
+                                    <div class="parametre-title">Facteur cogérant</div>
+                                    <div class="parametre-subtitle">Associés gérants</div>
+                                    <div class="parametre-value" id="param-facteur-cogerant">×1.7</div>
+                                </div>
+                                <div class="parametre-card">
+                                    <div class="parametre-title">Part RCP</div>
+                                    <div class="parametre-subtitle">Du revenu net</div>
+                                    <div class="parametre-value" id="param-part-rcp">25%</div>
+                                </div>
+                                <div class="parametre-card">
+                                    <div class="parametre-title">Part Projets</div>
+                                    <div class="parametre-subtitle">Du revenu net</div>
+                                    <div class="parametre-value" id="param-part-projets">25%</div>
+                                </div>
                             </div>
-                            <div class="parametre-card">
-                                <div class="parametre-title">Facteur cogérant</div>
-                                <div class="parametre-subtitle">Associés gérants</div>
-                                <div class="parametre-value" id="param-facteur-cogerant">×1.7</div>
-                            </div>
-                            <div class="parametre-card">
-                                <div class="parametre-title">Part RCP</div>
-                                <div class="parametre-subtitle">Du revenu net</div>
-                                <div class="parametre-value" id="param-part-rcp">25%</div>
-                            </div>
-                            <div class="parametre-card">
-                                <div class="parametre-title">Part Projets</div>
-                                <div class="parametre-subtitle">Du revenu net</div>
-                                <div class="parametre-value" id="param-part-projets">25%</div>
+                            <div class="parametres-chart-container">
+                                <canvas id="parametres-pie-chart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -147,10 +152,11 @@
         import { dataService } from './js/services/DataService.js';
 
         let globalData = null;
-        let repartitionChart = null; // Keep a reference to the chart
+        let repartitionChart = null; // Keep a reference to the repartition chart
+        let parametresPieChart = null; // Keep a reference to the parameters pie chart
 
-        // Fonction pour mettre à jour les statistiques et le graphique
-        async function updateStatsAndChart() {
+        // Fonction pour mettre à jour les statistiques et les graphiques
+        async function updateStatsAndCharts() {
             try {
                 const currentYear = new Date().getFullYear();
 
@@ -234,13 +240,24 @@
                 // Mise à jour du graphique de répartition
                 updateRepartitionChart();
 
+                // Mise à jour du graphique des paramètres
+                updateParametresPieChart();
+
             } catch (error) {
-                console.error('Erreur lors de la mise à jour des statistiques et du graphique:', error);
+                console.error('Erreur lors de la mise à jour des statistiques et des graphiques:', error);
                 // Afficher un message d'erreur plus ciblé si possible
                 // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
-                const chartElement = document.getElementById('repartition-chart');
-                 if (chartElement) {
-                     const ctx = chartElement.getContext('2d');
+                const repartitionChartElement = document.getElementById('repartition-chart');
+                 if (repartitionChartElement) {
+                     const ctx = repartitionChartElement.getContext('2d');
+                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                     ctx.textAlign = 'center';
+                     ctx.fillStyle = 'red';
+                     ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
+                 }
+                 const parametresChartElement = document.getElementById('parametres-pie-chart');
+                 if (parametresChartElement) {
+                     const ctx = parametresChartElement.getContext('2d');
                      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                      ctx.textAlign = 'center';
                      ctx.fillStyle = 'red';
@@ -421,6 +438,70 @@
                  // Afficher une erreur dans le canvas si la création échoue
                  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                  ctx.textAlign = 'center';
+                 ctx.fillStyle = 'red';
+                 ctx.fillText("Erreur graphique", ctx.canvas.width/2, ctx.canvas.height/2);
+            }
+        }
+
+        // Fonction pour afficher le graphique des paramètres de répartition
+        function updateParametresPieChart() {
+            // Vérifier si les paramètres sont chargés
+            if (!globalData || !globalData.parametresRepartition) {
+                console.warn('Paramètres de répartition manquants pour le graphique (index.html), annulation de la mise à jour.');
+                return;
+            }
+
+            const chartElement = document.getElementById('parametres-pie-chart');
+            if (!chartElement) {
+                console.error("Élément canvas 'parametres-pie-chart' non trouvé.");
+                return;
+            }
+            const ctx = chartElement.getContext('2d');
+
+            const params = globalData.parametresRepartition;
+
+            // Préparation des données pour le graphique
+            const data = {
+                labels: ['Part Fixe', 'Part RCP', 'Part Projets'],
+                datasets: [{
+                    data: [params.partFixe || 0, params.partRCP || 0, params.partProjets || 0],
+                    backgroundColor: ['#2196F3', '#4CAF50', '#FFC107'], // Matching colors with the bar chart
+                    borderWidth: 1
+                }]
+            };
+
+            // Détruire l'ancien graphique s'il existe
+            if (parametresPieChart instanceof Chart) {
+                parametresPieChart.destroy();
+            }
+
+            try {
+                 parametresPieChart = new Chart(ctx, {
+                     type: 'pie',
+                     data: data,
+                     options: {
+                         responsive: true,
+                         maintainAspectRatio: false,
+                         plugins: {
+                             legend: {
+                                 position: 'top',
+                             },
+                             tooltip: {
+                                 callbacks: {
+                                     label: function(context) {
+                                         const label = context.label || '';
+                                         const value = context.raw || 0;
+                                         return `${label}: ${value}%`;
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 });
+            } catch (chartError) {
+                 console.error("Erreur lors de la création du graphique Chart.js (parametres-pie-chart):", chartError);
+                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                 ctx.textAlign = 'center';
                  ctx.fillText("Erreur graphique", ctx.canvas.width/2, ctx.canvas.height/2);
             }
         }
@@ -428,7 +509,7 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            updateStatsAndChart(); // Call the combined function
+            updateStatsAndCharts(); // Call the combined function
 
             // Attach export button listener
             const exportBtn = document.getElementById('exportDataBtn');
@@ -439,7 +520,7 @@
             }
 
             // Rafraîchissement périodique
-            setInterval(updateStatsAndChart, 30000); // Update stats and chart periodically
+            setInterval(updateStatsAndCharts, 30000); // Update stats and charts periodically
         });
 
         // Fonction d'export (pour la maintenance)
