@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureConnect - Connexion</title>
+    <title>Inscription</title>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <style>
         * {
@@ -190,35 +190,27 @@
     <div class="main-content">
         <div class="login-container">
             <div class="login-header">
-                <h2>Connexion</h2>
-                <p>Entrez vos identifiants pour accéder à votre compte</p>
+                <h2>Inscription</h2>
+                <p>Créez votre compte</p>
             </div>
             
-            <form class="login-form" id="loginForm">
+            <form class="login-form" id="registerForm">
                 <div class="form-group">
-                    <label for="loginIdentifier">Nom d'utilisateur</label>
-                    <input type="text" id="loginIdentifier" name="loginIdentifier" required>
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerUsername">Nom d'utilisateur:</label>
+                    <input type="text" id="registerUsername" name="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mot de passe:</label>
+                    <input type="password" id="registerPassword" name="registerPassword" required>
                 </div>
                 
-                <div class="form-group">
-                    <label for="loginPassword">Mot de passe</label>
-                    <input type="password" id="loginPassword" name="loginPassword" required>
-                </div>
-                
-                <!-- <div class="login-options">
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember" name="remember">
-                        <label for="remember">Se souvenir de moi</label>
-                    </div>
-                    <a href="#" class="forgot-password">Mot de passe oublié?</a>
-                </div> -->
-                
-                <button type="submit" class="btn-login">Se connecter</button>
+                <button type="submit" class="btn-login">S'inscrire</button>
             </form>
             <div id="message"></div>
-            <div class="register-link">
-                <p>Vous n'avez pas de compte? <a href="register.html">Inscrivez-vous maintenant</a></p>
-            </div>
         </div>
     </div>
     

@@ -1,16 +1,6 @@
-
-Vérifier les formules, en particulier le poids de l'implication projets.
-Créer une formule implication avec des paramètres modifiables : dialogbox, inputs, à enregistrer dans la bdd, peut-être par projet ?
-Voir si la part projet est intégrée à la validation ou en cours
-
-Vérifier l'application des charges au calcul du bilan (par année ?). Voir si le bilan doit être fait par année d'ailleurs.
- 
-login et password de connexion en consultation ou en modification (use JWT ?). 
-
-Sauvegarde de la bdd (Parametres-Sauvegarde et export automatique, manuelle ?)
- 
-Paramètres généraux (couleurs, fonts, ou autres paramètres)
- 
-Initial Questions & Information Gathering:
- 
-Application portable (?)
+ok.Now i want to implement the navbar functionalities: Accueil, Fonctionalités, A propos, Contact
+1) Accueil: should point to the login.html page
+2) Fonctionalités should display a dialogbox with the content of README functionalities
+3) A propos: a dialog box with the title MSP Gestion and centered the name of the developper: Dr Florian ESPARSA, it also should contain the favicon, the version, the date
+4) the contatc should be a dialog box ready to be implemented to send a message with the email of the sender to a mailbox to florian.esparsa@gmail.com. 
+MAke a plan, and tell me any improvment to think about for these 4 steps.

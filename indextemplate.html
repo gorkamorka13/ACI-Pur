@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureConnect - Connexion</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -196,28 +195,28 @@
             
             <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label for="loginIdentifier">Nom d'utilisateur</label>
-                    <input type="text" id="loginIdentifier" name="loginIdentifier" required>
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="loginPassword">Mot de passe</label>
-                    <input type="password" id="loginPassword" name="loginPassword" required>
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required>
                 </div>
                 
-                <!-- <div class="login-options">
+                <div class="login-options">
                     <div class="remember-me">
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">Se souvenir de moi</label>
                     </div>
                     <a href="#" class="forgot-password">Mot de passe oublié?</a>
-                </div> -->
+                </div>
                 
                 <button type="submit" class="btn-login">Se connecter</button>
             </form>
-            <div id="message"></div>
+            
             <div class="register-link">
-                <p>Vous n'avez pas de compte? <a href="register.html">Inscrivez-vous maintenant</a></p>
+                <p>Vous n'avez pas de compte? <a href="#">Inscrivez-vous maintenant</a></p>
             </div>
         </div>
     </div>
@@ -226,6 +225,26 @@
         <p>&copy; 2025 MSP Gestion. Tous droits réservés.</p>
     </footer>
 
-    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Normalement, vous enverriez les identifiants à un serveur pour l'authentification
+            // Pour cette démo, nous affichons simplement une alerte
+            alert(`Tentative de connexion avec le nom d'utilisateur: ${username}`);
+            
+            // Exemple simple de validation
+            if (username === 'admin' && password === 'password123') {
+                alert('Connexion réussie! Redirection vers le tableau de bord...');
+                // La redirection se ferait ici dans une application réelle
+                // window.location.href = 'tableau-de-bord.html';
+            } else {
+                alert('Identifiants invalides. Veuillez réessayer.');
+            }
+        });
+    </script>
 </body>
 </html>
