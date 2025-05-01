@@ -22,6 +22,7 @@ const professionnelsRouter = require('./api/professionnels');
 const projetsRouter = require('./api/projets');
 const parametresRepartitionRouter = require('./api/parametresRepartition'); // Importer le nouveau routeur
 const authRouter = require('./api/auth'); // Importer le routeur d'authentification
+const associatesReportRouter = require('./api/associates/report'); // Importer le routeur du rapport des associés
 
 const authenticateToken = require('./middleware/authenticateToken'); // Importer le middleware d'authentification
 
@@ -73,6 +74,19 @@ app.use('/api/charges', authenticateToken, chargesRouter);
 app.use('/api/professionnels', authenticateToken, professionnelsRouter);
 app.use('/api/projets', authenticateToken, projetsRouter);
 app.use('/api/parametresRepartition', authenticateToken, parametresRepartitionRouter); // Utiliser le routeur dédié
+// Add route for associates report
+app.get('/api/associates/report', authenticateToken, async (req, res) => {
+    try {
+        const pdfBuffer = await associatesReportRouter.generateAssociatesReportPDF();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="associates_report.pdf"');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Error generating associates report:', error);
+        res.status(500).send('Error generating report');
+    }
+});
+
 
 // Public authentication routes
 app.use('/api/auth', authRouter); // Utiliser le routeur d'authentification

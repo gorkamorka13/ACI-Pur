@@ -236,7 +236,7 @@
             <div class="tabs">
                 <button class="tab active">Facteurs de répartition</button>
                 <button class="tab">Paramètres généraux</button>
-                <button class="tab">Sauvegarde et export</button>
+                <button class="tab">Génération de rapports</button>
             </div>
 
             <div class="content-section" id="facteurs-repartition-section">
@@ -301,9 +301,9 @@
                 <!-- Add general settings content here -->
             </div>
 
-            <!-- Section Sauvegarde et export -->
+            <!-- Section Génération de rapports -->
             <div class="content-section" id="sauvegarde-export-section" style="display: none;">
-                <h2 class="section-title">Sauvegarde et export</h2>
+                <h2 class="section-title">Génération de rapports</h2>
                 <p class="section-subtitle">Gérez la sauvegarde et l'exportation des données.</p>
                 <!-- Add backup and export content here -->
             </div>
@@ -338,22 +338,13 @@
 
         // Function to handle report download
         async function downloadReport(reportType) {
-            // Placeholder for associates report until backend is ready
-            if (reportType === 'associates') {
-                console.log(`Placeholder: Would request /api/associates/report`);
-                if (window.showAlert) {
-                    window.showAlert('La génération du rapport des associés n\'est pas encore implémentée.', 'info');
-                } else {
-                    alert('La génération du rapport des associés n\'est pas encore implémentée.');
-                }
-                return; // Stop execution for associates report for now
-            }
-
             try {
                 const token = localStorage.getItem('token');
                 // Determine endpoint based on report type
                 let endpoint = '';
-                if (reportType === 'charges') {
+                if (reportType === 'associates') {
+                    endpoint = '/api/associates/report'; // Call the backend endpoint for associates report
+                } else if (reportType === 'charges') {
                     endpoint = '/api/charges/report/pdf';
                 } else if (reportType === 'revenus') {
                     endpoint = '/api/revenus/report/pdf';
@@ -557,25 +548,42 @@
             sliderRCP.addEventListener('input', handleVariableSliderInput);
             sliderProjets.addEventListener('input', handleVariableSliderInput);
             document.querySelector('.btn-save').addEventListener('click', handleSaveClick); // Utiliser une fonction nommée
-            document.querySelectorAll('.tab').forEach(tab => {
+            // Get all tabs and content sections
+            const tabs = document.querySelectorAll('.tab');
+            const contentSections = document.querySelectorAll('.content-section');
+            const exportModal = document.getElementById('modal-export-reports'); // Get the export modal
+
+            // Add click listeners to tabs
+            tabs.forEach((tab, index) => {
                 tab.addEventListener('click', function() {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    console.log(`Tab clicked: ${this.textContent}`);
+                    // Remove active class from all tabs and hide all content sections
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contentSections.forEach(section => section.style.display = 'none');
+
+                    // Add active class to the clicked tab
                     this.classList.add('active');
-                    // Ajouter ici la logique pour afficher/masquer le contenu des onglets si nécessaire
+
+                    // Display the corresponding content section or open the modal
+                    if (this.textContent.trim() === 'Génération de rapports') {
+                        console.log("Génération de rapports tab clicked. Attempting to open modal.");
+                        if (exportModal) {
+                            exportModal.style.display = 'block'; // Open the modal
+                            console.log("Export modal display set to block.");
+                        } else {
+                            console.error("Export modal element not found when clicking tab.");
+                        }
+                    } else {
+                        // Show the content section based on index (adjust if order changes)
+                        // Assuming the order of tabs matches the order of content sections
+                        if (contentSections[index]) {
+                             contentSections[index].style.display = 'block';
+                        } else {
+                             console.error(`Content section not found for tab index ${index}`);
+                        }
+                    }
                 });
             });
-            
-            // Modify the click handler for the "Sauvegarde et export" tab to open the new modal
-            const sauvegardeExportTab = document.querySelectorAll('.tab')[2];
-            const exportModal = document.getElementById('modal-export-reports'); // Get the new modal element
-            if (sauvegardeExportTab && exportModal) {
-                sauvegardeExportTab.removeEventListener('click', downloadReport); // Remove old handler
-                sauvegardeExportTab.addEventListener('click', function() {
-                    exportModal.style.display = 'block'; // Open the modal
-                });
-            } else {
-                console.error("Sauvegarde et export tab or export modal not found.");
-            }
 
             // Add event listener for the download button in the new modal
             const btnDownloadReports = document.getElementById('btn-download-reports');
@@ -584,12 +592,16 @@
             const checkboxAssociates = document.getElementById('checkbox-associates-report'); // Get the new checkbox
             const exportModalClose = document.querySelector('#modal-export-reports .modal-close');
 
-            // Check if all necessary elements exist
-            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && exportModalClose) {
+            // Check if all necessary elements exist before adding listeners
+            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && exportModal && exportModalClose) {
+                console.log("Export modal elements found, attaching listeners.");
                 btnDownloadReports.addEventListener('click', function() {
+                    console.log("Download reports button clicked.");
                     const downloadCharges = checkboxCharges.checked;
                     const downloadRevenus = checkboxRevenus.checked;
                     const downloadAssociates = checkboxAssociates.checked; // Check the new checkbox
+
+                    console.log(`Charges selected: ${downloadCharges}, Revenues selected: ${downloadRevenus}, Associates selected: ${downloadAssociates}`);
 
                     if (downloadCharges) {
                         downloadReport('charges');
@@ -598,7 +610,8 @@
                         downloadReport('revenus');
                     }
                     if (downloadAssociates) {
-                        downloadReport('associates'); // Call downloadReport with 'associates'
+                        // Call downloadReport with 'associates' - placeholder logic is inside downloadReport
+                        downloadReport('associates');
                     }
 
                     // Close the modal after initiating downloads/actions
@@ -607,22 +620,25 @@
 
                 // Add event listener to close modal when clicking outside or on close button
                  exportModalClose.addEventListener('click', function() {
+                     console.log("Export modal close button clicked.");
                      exportModal.style.display = 'none';
                  });
 
                  exportModal.addEventListener('click', function(e) {
                      if (e.target === exportModal) {
+                         console.log("Clicked outside export modal, closing.");
                          exportModal.style.display = 'none';
                      }
                  });
 
             } else {
                 // Log specific missing elements for easier debugging
-                console.error("Export modal elements not found:", {
+                console.error("Export modal elements not found. Cannot attach listeners.", {
                     btnDownloadReports: !!btnDownloadReports,
                     checkboxCharges: !!checkboxCharges,
                     checkboxRevenus: !!checkboxRevenus,
                     checkboxAssociates: !!checkboxAssociates,
+                    exportModal: !!exportModal,
                     exportModalClose: !!exportModalClose
                 });
             }
