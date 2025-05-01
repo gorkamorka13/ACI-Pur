@@ -182,6 +182,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            overflow-y: auto; /* Allow scrolling if content overflows */
         }
 
         .dialog-content {
@@ -192,6 +193,7 @@
             width: 90%;
             max-width: 600px;
             position: relative; /* For close button */
+            margin: 2rem 0; /* Add margin for scroll */
         }
 
         .dialog-content h3 {
@@ -202,6 +204,15 @@
 
         .dialog-content p {
             margin-bottom: 1rem;
+        }
+        
+        .dialog-content ul {
+            margin-left: 20px;
+            margin-bottom: 1rem;
+        }
+        
+        .dialog-content li {
+            margin-bottom: 0.5rem;
         }
 
         .dialog-close {
@@ -323,7 +334,32 @@
         <div class="dialog-content">
             <span class="dialog-close" id="closeFonctionnalites">&times;</span>
             <h3>Fonctionnalités</h3>
-            <p>Contenu des fonctionnalités (à partir de README.md)</p>
+            <p>
+                <strong>MSP Gestion - Gestion des Accords Cadres Interprofessionnels (ACI)</strong><br>
+                Application web conçue pour les Maisons de Santé Pluriprofessionnelles (MSP) afin de simplifier la gestion et la répartition des financements issus de l'Accord Cadre Interprofessionnel (ACI).
+            </p>
+            <h4>Objectif</h4>
+            <p>
+                L'ACI vise à valoriser le travail en équipe et les actions coordonnées des professionnels de santé au sein des MSP. Cette application a pour but de :
+            </p>
+            <ul>
+                <li>Centraliser les informations relatives aux activités financées par l'ACI.</li>
+                <li>Faciliter le suivi des revenus, des charges, et des différentes activités (projets, réunions).</li>
+                <li>Automatiser la répartition des fonds ACI entre les professionnels selon des critères paramétrables.</li>
+                <li>Offrir une meilleure visibilité sur l'utilisation des fonds et la contribution de chacun.</li>
+            </ul>
+            <h4>Fonctionnalités Principales</h4>
+            <ul>
+                <li><strong>Gestion des Revenus ACI:</strong> Enregistrement et suivi des différentes sources de revenus liées à l'ACI.</li>
+                <li><strong>Gestion des Charges:</strong> Suivi des dépenses engagées dans le cadre des activités ACI.</li>
+                <li><strong>Gestion des Associés et Professionnels:</strong> Répertoire des professionnels de santé membres de la MSP participant aux activités ACI.</li>
+                <li><strong>Suivi des Réunions de Coordination Pluriprofessionnelles (RCP):</strong> Enregistrement des dates, participants et éventuellement des points clés des réunions pertinentes pour l'ACI.</li>
+                <li><strong>Gestion des Projets et Missions:</strong> Suivi des projets spécifiques financés ou co-financés par l'ACI, incluant leur description, budget, et participants.</li>
+                <li><strong>Répartition Automatique des Revenus:</strong> Calcul automatisé de la distribution des fonds ACI restants (après déduction des charges) entre les professionnels, basé sur les règles définies.</li>
+                <li><strong>Paramétrage des Critères de Répartition:</strong> Interface permettant de configurer les règles et pondérations pour la répartition des fonds (ex: participation aux réunions, implication dans les projets, etc.).</li>
+                <li><strong>Visualisation:</strong> (Potentiellement via Chart.js ou similaire) Graphiques et tableaux de bord pour visualiser les données financières et la répartition.</li>
+            </ul>
+            <!-- Sections Technologies, Installation, Utilisation, Déploiement, Licence peuvent être ajoutées si nécessaire -->
         </div>
     </div>
 
