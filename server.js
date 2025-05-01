@@ -87,6 +87,20 @@ app.get('/api/associates/report', authenticateToken, async (req, res) => {
     }
 });
 
+// Add route for projets report
+app.get('/api/projets/report/pdf', authenticateToken, async (req, res) => {
+    try {
+        const { generateProjetsReportPDF } = require('./api/projets/report');
+        const pdfBuffer = await generateProjetsReportPDF();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="projets_report.pdf"');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Error generating projets report:', error);
+        res.status(500).send('Error generating report');
+    }
+});
+
 
 // Public authentication routes
 app.use('/api/auth', authRouter); // Utiliser le routeur d'authentification

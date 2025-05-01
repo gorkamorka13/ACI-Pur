@@ -349,16 +349,15 @@
                 } else if (reportType === 'revenus') {
                     endpoint = '/api/revenus/report/pdf';
                 } else if (reportType === 'projets') {
-                     // Placeholder for projets report until backend is ready
-                     console.log(`Placeholder: Would request /api/projets/report/pdf`);
-                     if (window.showAlert) {
-                         window.showAlert('La génération du rapport des projets et missions n\'est pas encore implémentée.', 'info');
-                     } else {
-                         alert('La génération du rapport des projets et missions n\'est pas encore implémentée.');
-                     }
-                     return; // Stop execution for projets report for now
+                    endpoint = '/api/projets/report/pdf'; // Set the correct endpoint for projets report
                 } else {
                     console.error(`Unknown report type: ${reportType}`);
+                    return;
+                }
+
+                // Only proceed if endpoint is set
+                if (!endpoint) {
+                    console.error(`Endpoint not set for report type: ${reportType}`);
                     return;
                 }
 
