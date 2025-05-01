@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureConnect - Connexion</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" sizes="any">
     <style>
         * {
             margin: 0;
@@ -39,6 +39,7 @@
             text-decoration: none;
             margin-left: 1.5rem;
             font-size: 1rem;
+            cursor: pointer; /* Add cursor pointer for better UX */
         }
         
         .hero {
@@ -168,16 +169,107 @@
             padding: 1rem;
             margin-top: auto;
         }
+
+        /* Dialog Box Styles */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .dialog-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            position: relative; /* For close button */
+        }
+
+        .dialog-content h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .dialog-content p {
+            margin-bottom: 1rem;
+        }
+
+        .dialog-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Contact Form Styles */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .contact-form label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            box-sizing: border-box; /* Important for padding */
+        }
+
+        .contact-form textarea {
+            resize: vertical; /* Allow vertical resizing */
+        }
+
+        .contact-form button {
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .contact-form button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">MSP Gestion</div>
         <div class="nav-links">
-            <a href="#">Accueil</a>
-            <a href="#">Fonctionnalités</a>
-            <a href="#">À propos</a>
-            <a href="#">Contact</a>
+            <a href="#" class="nav-link" data-page="accueil">Accueil</a>
+            <a href="#" class="nav-link" data-page="fonctionnalites">Fonctionnalités</a>
+            <a href="#" class="nav-link" data-page="a-propos">À propos</a>
+            <a href="#" class="nav-link" data-page="contact">Contact</a>
         </div>
     </nav>
     
@@ -226,6 +318,136 @@
         <p>&copy; 2025 MSP Gestion. Tous droits réservés.</p>
     </footer>
 
+    <!-- Dialog Boxes -->
+    <div class="dialog-overlay" id="fonctionnalitesDialog">
+        <div class="dialog-content">
+            <span class="dialog-close" id="closeFonctionnalites">&times;</span>
+            <h3>Fonctionnalités</h3>
+            <p>Contenu des fonctionnalités (à partir de README.md)</p>
+        </div>
+    </div>
+
+    <div class="dialog-overlay" id="aProposDialog">
+        <div class="dialog-content">
+            <span class="dialog-close" id="closeAPropos">&times;</span>
+            <h3>MSP Gestion</h3>
+            <p>Développeur: Dr Florian ESPARSA</p>
+            <p>Version: 1.0.0</p>
+            <p>Date: 01/05/2025</p>
+        </div>
+    </div>
+
+    <div class="dialog-overlay" id="contactDialog">
+        <div class="dialog-content">
+            <span class="dialog-close" id="closeContact">&times;</span>
+            <h3>Contact</h3>
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="contactEmail">Votre email:</label>
+                    <input type="email" id="contactEmail" name="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Votre message:</label>
+                    <textarea id="contactMessage" name="contactMessage" rows="4" required></textarea>
+                </div>
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
     <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navbar Functionality
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const page = event.target.dataset.page;
+                    switch (page) {
+                        case 'accueil':
+                            window.location.href = 'login.html';
+                            break;
+                        case 'fonctionnalites':
+                            openDialog('fonctionnalitesDialog');
+                            // Populate with README content later
+                            break;
+                        case 'a-propos':
+                            openDialog('aProposDialog');
+                            break;
+                        case 'contact':
+                            openDialog('contactDialog');
+                            break;
+                    }
+                });
+            });
+
+            // Close Dialogs
+            document.querySelectorAll('.dialog-close').forEach(closeButton => {
+                closeButton.addEventListener('click', (event) => {
+                    const dialogId = event.target.closest('.dialog-content').parentNode.id;
+                    closeDialog(dialogId);
+                });
+            });
+
+            // Open Dialog Function
+            function openDialog(dialogId) {
+                const dialog = document.getElementById(dialogId);
+                if (dialog) {
+                    dialog.style.display = 'flex';
+                }
+            }
+
+            // Close Dialog Function
+            function closeDialog(dialogId) {
+                const dialog = document.getElementById(dialogId);
+                if (dialog) {
+                    dialog.style.display = 'none';
+                }
+            }
+
+            // --- Contact Form Submission (Client-side only) ---
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const contactEmail = document.getElementById('contactEmail').value;
+                    const contactMessage = document.getElementById('contactMessage').value;
+
+                    // Basic validation
+                    if (!contactEmail || !contactMessage) {
+                        alert('Veuillez remplir tous les champs.');
+                        return;
+                    }
+
+                    // In a real application, you would send this data to a server-side endpoint
+                    // to handle sending the email.  Since we don't have access to the server,
+                    // we'll just display an alert.
+                    alert(`Message envoyé (simulé) de ${contactEmail}:\n${contactMessage}`);
+                    closeDialog('contactDialog');
+                });
+            }
+
+            // --- Login Form Submission (Existing code) ---
+            document.getElementById('loginForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const username = document.getElementById('loginIdentifier').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Normalement, vous enverriez les identifiants à un serveur pour l'authentification
+                // Pour cette démo, nous affichons simplement une alerte
+                alert(`Tentative de connexion avec le nom d'utilisateur: ${username}`);
+                
+                // Exemple simple de validation
+                if (username === 'admin' && password === 'password123') {
+                    alert('Connexion réussie! Redirection vers le tableau de bord...');
+                    // La redirection se ferait ici dans une application réelle
+                    // window.location.href = 'tableau-de-bord.html';
+                } else {
+                    alert('Identifiants invalides. Veuillez réessayer.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
