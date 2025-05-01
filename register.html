@@ -273,6 +273,7 @@
             <a href="#" class="nav-link" data-page="fonctionnalites">Fonctionnalités</a>
             <a href="#" class="nav-link" data-page="a-propos">À propos</a>
             <a href="#" class="nav-link" data-page="contact">Contact</a>
+            <a href="/assets/plaquette_MSP_2019_web.pdf" target="_blank" class="nav-link">Plaquette MSP</a>
         </div>
     </nav>
     
@@ -359,10 +360,11 @@
             // Navbar Functionality
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (event) => {
-                    event.preventDefault();
                     const page = event.target.dataset.page;
-                    switch (page) {
-                        case 'accueil':
+                    if (page) { // Only prevent default if data-page exists
+                        event.preventDefault();
+                        switch (page) {
+                            case 'accueil':
                             window.location.href = 'login.html';
                             break;
                         case 'fonctionnalites':
@@ -374,8 +376,21 @@
                             break;
                         case 'contact':
                             openDialog('contactDialog');
-                            break;
+                                window.location.href = 'login.html';
+                                break;
+                            case 'fonctionnalites':
+                                openDialog('fonctionnalitesDialog');
+                                // Populate with README content later
+                                break;
+                            case 'a-propos':
+                                openDialog('aProposDialog');
+                                break;
+                            case 'contact':
+                                openDialog('contactDialog');
+                                break;
+                        }
                     }
+                    // If no data-page, default link behavior occurs (e.g., opening PDF)
                 });
             });
 
