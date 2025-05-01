@@ -348,6 +348,15 @@
                     endpoint = '/api/charges/report/pdf';
                 } else if (reportType === 'revenus') {
                     endpoint = '/api/revenus/report/pdf';
+                } else if (reportType === 'projets') {
+                     // Placeholder for projets report until backend is ready
+                     console.log(`Placeholder: Would request /api/projets/report/pdf`);
+                     if (window.showAlert) {
+                         window.showAlert('La génération du rapport des projets et missions n\'est pas encore implémentée.', 'info');
+                     } else {
+                         alert('La génération du rapport des projets et missions n\'est pas encore implémentée.');
+                     }
+                     return; // Stop execution for projets report for now
                 } else {
                     console.error(`Unknown report type: ${reportType}`);
                     return;
@@ -589,19 +598,23 @@
             const btnDownloadReports = document.getElementById('btn-download-reports');
             const checkboxCharges = document.getElementById('checkbox-charges-report');
             const checkboxRevenus = document.getElementById('checkbox-revenus-report');
-            const checkboxAssociates = document.getElementById('checkbox-associates-report'); // Get the new checkbox
+            const checkboxAssociates = document.getElementById('checkbox-associates-report'); // Get the associates checkbox
+            const checkboxProjets = document.getElementById('checkbox-projets-report'); // Get the new projets checkbox
             const exportModalClose = document.querySelector('#modal-export-reports .modal-close');
 
             // Check if all necessary elements exist before adding listeners
-            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && exportModal && exportModalClose) {
+            // Updated the if condition to include checkboxProjets
+            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && checkboxProjets && exportModal && exportModalClose) {
                 console.log("Export modal elements found, attaching listeners.");
                 btnDownloadReports.addEventListener('click', function() {
                     console.log("Download reports button clicked.");
                     const downloadCharges = checkboxCharges.checked;
                     const downloadRevenus = checkboxRevenus.checked;
-                    const downloadAssociates = checkboxAssociates.checked; // Check the new checkbox
+                    const downloadAssociates = checkboxAssociates.checked;
+                    const downloadProjets = checkboxProjets.checked; // Check the new projets checkbox
 
-                    console.log(`Charges selected: ${downloadCharges}, Revenues selected: ${downloadRevenus}, Associates selected: ${downloadAssociates}`);
+                    // Updated console log
+                    console.log(`Charges selected: ${downloadCharges}, Revenues selected: ${downloadRevenus}, Associates selected: ${downloadAssociates}, Projets selected: ${downloadProjets}`);
 
                     if (downloadCharges) {
                         downloadReport('charges');
@@ -610,8 +623,10 @@
                         downloadReport('revenus');
                     }
                     if (downloadAssociates) {
-                        // Call downloadReport with 'associates' - placeholder logic is inside downloadReport
                         downloadReport('associates');
+                    }
+                    if (downloadProjets) {
+                        downloadReport('projets'); // Call downloadReport for projets
                     }
 
                     // Close the modal after initiating downloads/actions
@@ -700,6 +715,11 @@
                     <input type="checkbox" id="checkbox-associates-report">
                     <label for="checkbox-associates-report">Rapport des Associés</label>
                 </div>
+                <!-- Add checkbox for Projets Report -->
+                <div>
+                    <input type="checkbox" id="checkbox-projets-report">
+                    <label for="checkbox-projets-report">Rapport des Projets et Missions</label>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="btn-download-reports" class="btn btn-primary">Télécharger</button>
@@ -710,3 +730,31 @@
 
 </body>
 </html>
+
+</file_content>
+
+Now that you have the latest state of the file, try the operation again with fewer, more precise SEARCH blocks. For large files especially, it may be prudent to try to limit yourself to <5 SEARCH/REPLACE blocks at a time, then wait for the user to respond with the result of the operation before following up with another replace_in_file call to make additional edits.
+(If you run into this error 3 times in a row, you may use the write_to_file tool as a fallback.)
+</error><environment_details>
+# VSCode Visible Files
+templates/parametres.html
+
+# VSCode Open Tabs
+api/charges/index.js
+index.html
+api/professionnels/index.js
+server.js
+api/associates/report.js
+templates/parametres.html
+js/services/DataService.js
+api/charges/report.js
+
+# Current Time
+5/2/2025, 12:09:55 AM (Europe/Paris, UTC+2:00)
+
+# Context Window Usage
+90,532 / 1,048.576K tokens used (9%)
+
+# Current Mode
+ACT MODE
+</environment_details>
