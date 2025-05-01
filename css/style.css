@@ -44,14 +44,18 @@ body {
 }
 
 .logo {
-    padding: 0 20px;
+    padding: 20px; /* Adjusted padding for better spacing */
     margin-bottom: 30px;
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center items */
 }
 
 .logo h1 {
-    margin: 0;
+    margin: 0; /* Remove default margin */
     font-size: 1.5em;
     font-weight: 600;
+    color: white; /* Ensure text color is white */
+    line-height: 1; /* Adjust line height if needed */
 }
 
 .sidebar nav ul {
