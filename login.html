@@ -387,7 +387,8 @@
                 <img src="/assets/favicon.ico" alt="MSP Gestion Logo" style="width: 50px; height: 50px; margin-bottom: 1rem;">
                 <h3>Contact</h3>
             </div>
-            <form class="contact-form" id="contactForm">
+            <form class="contact-form" action="https://api.web3forms.com/submit" method="POST" >
+                <input type="hidden" name="access_key" value="3c4c8aad-afd8-42f1-b170-1696bc34bd00">
                 <div class="form-group">
                     <label for="contactEmail">Votre email:</label>
                     <input type="email" id="contactEmail" name="contactEmail" required>
@@ -443,7 +444,7 @@
                 }
             }
 
-            // Close Dialog Function
+            //Close Dialog Function
             function closeDialog(dialogId) {
                 const dialog = document.getElementById(dialogId);
                 if (dialog) {
@@ -451,30 +452,25 @@
                 }
             }
 
-            // --- Contact Form Submission (Client-side only) ---
-            const contactForm = document.getElementById('contactForm');
+   
+            /* const contactForm = document.getElementById('contactForm');
             if (contactForm) {
                 contactForm.addEventListener('submit', (event) => {
                     event.preventDefault();
                     const contactEmail = document.getElementById('contactEmail').value;
                     const contactMessage = document.getElementById('contactMessage').value;
 
-                    // Basic validation
+
                     if (!contactEmail || !contactMessage) {
                         alert('Veuillez remplir tous les champs.');
                         return;
                     }
 
-                    // In a real application, you would send this data to a server-side endpoint
-                    // to handle sending the email.  Since we don't have access to the server,
-                    // we'll just display an alert.
+
                     alert(`Message envoyé (simulé) de ${contactEmail}:\n${contactMessage}`);
                     closeDialog('contactDialog');
                 });
-            }
-
-            // --- Login Form Submission (Existing code) ---
-
+            }*/
         });
     </script>
 </body>
