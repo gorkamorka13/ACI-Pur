@@ -338,9 +338,30 @@
 
         // Function to handle report download
         async function downloadReport(reportType) {
+            // Placeholder for associates report until backend is ready
+            if (reportType === 'associates') {
+                console.log(`Placeholder: Would request /api/associates/report`);
+                if (window.showAlert) {
+                    window.showAlert('La génération du rapport des associés n\'est pas encore implémentée.', 'info');
+                } else {
+                    alert('La génération du rapport des associés n\'est pas encore implémentée.');
+                }
+                return; // Stop execution for associates report for now
+            }
+
             try {
                 const token = localStorage.getItem('token');
-                const endpoint = reportType === 'charges' ? '/api/charges/report/pdf' : '/api/revenus/report/pdf'; // Assuming a charges report endpoint exists
+                // Determine endpoint based on report type
+                let endpoint = '';
+                if (reportType === 'charges') {
+                    endpoint = '/api/charges/report/pdf';
+                } else if (reportType === 'revenus') {
+                    endpoint = '/api/revenus/report/pdf';
+                } else {
+                    console.error(`Unknown report type: ${reportType}`);
+                    return;
+                }
+
                 const response = await fetch(endpoint, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -560,12 +581,15 @@
             const btnDownloadReports = document.getElementById('btn-download-reports');
             const checkboxCharges = document.getElementById('checkbox-charges-report');
             const checkboxRevenus = document.getElementById('checkbox-revenus-report');
+            const checkboxAssociates = document.getElementById('checkbox-associates-report'); // Get the new checkbox
             const exportModalClose = document.querySelector('#modal-export-reports .modal-close');
 
-            if (btnDownloadReports && checkboxCharges && checkboxRevenus && exportModalClose) {
+            // Check if all necessary elements exist
+            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && exportModalClose) {
                 btnDownloadReports.addEventListener('click', function() {
                     const downloadCharges = checkboxCharges.checked;
                     const downloadRevenus = checkboxRevenus.checked;
+                    const downloadAssociates = checkboxAssociates.checked; // Check the new checkbox
 
                     if (downloadCharges) {
                         downloadReport('charges');
@@ -573,8 +597,11 @@
                     if (downloadRevenus) {
                         downloadReport('revenus');
                     }
+                    if (downloadAssociates) {
+                        downloadReport('associates'); // Call downloadReport with 'associates'
+                    }
 
-                    // Close the modal after initiating downloads
+                    // Close the modal after initiating downloads/actions
                     exportModal.style.display = 'none';
                 });
 
@@ -590,7 +617,14 @@
                  });
 
             } else {
-                console.error("Export modal elements not found.");
+                // Log specific missing elements for easier debugging
+                console.error("Export modal elements not found:", {
+                    btnDownloadReports: !!btnDownloadReports,
+                    checkboxCharges: !!checkboxCharges,
+                    checkboxRevenus: !!checkboxRevenus,
+                    checkboxAssociates: !!checkboxAssociates,
+                    exportModalClose: !!exportModalClose
+                });
             }
 
 
@@ -644,6 +678,11 @@
                 <div>
                     <input type="checkbox" id="checkbox-revenus-report" checked>
                     <label for="checkbox-revenus-report">Rapport de Revenus</label>
+                </div>
+                <!-- Add checkbox for Associates Report -->
+                <div>
+                    <input type="checkbox" id="checkbox-associates-report">
+                    <label for="checkbox-associates-report">Rapport des Associés</label>
                 </div>
             </div>
             <div class="modal-footer">
