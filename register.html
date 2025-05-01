@@ -418,27 +418,6 @@
                     closeDialog('contactDialog');
                 });
             }
-
-            // --- Login Form Submission (Existing code) ---
-            document.getElementById('loginForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const username = document.getElementById('loginIdentifier').value;
-                const password = document.getElementById('loginPassword').value;
-                
-                // Normalement, vous enverriez les identifiants à un serveur pour l'authentification
-                // Pour cette démo, nous affichons simplement une alerte
-                alert(`Tentative de connexion avec le nom d'utilisateur: ${username}`);
-                
-                // Exemple simple de validation
-                if (username === 'admin' && password === 'password123') {
-                    alert('Connexion réussie! Redirection vers le tableau de bord...');
-                    // La redirection se ferait ici dans une application réelle
-                    // window.location.href = 'tableau-de-bord.html';
-                } else {
-                    alert('Identifiants invalides. Veuillez réessayer.');
-                }
-            });
         });
     </script>
 </body>

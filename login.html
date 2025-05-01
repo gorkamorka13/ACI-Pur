@@ -328,12 +328,15 @@
     </div>
 
     <div class="dialog-overlay" id="aProposDialog">
-        <div class="dialog-content">
+        <div class="dialog-content login-container">
             <span class="dialog-close" id="closeAPropos">&times;</span>
-            <h3>MSP Gestion</h3>
-            <p>Développeur: Dr Florian ESPARSA</p>
-            <p>Version: 1.0.0</p>
-            <p>Date: 01/05/2025</p>
+            <div class="login-header">
+                <img src="/assets/favicon.ico" alt="MSP Gestion Logo" style="width: 50px; height: 50px; margin-bottom: 1rem;">
+                <h3>MSP Gestion</h3>
+            </div>
+            <p style="text-align: center;">Développeur: Dr Florian ESPARSA</p>
+            <p style="text-align: center;">Version: 1.0.0</p>
+            <p style="text-align: center;">Date: 01/05/2025</p>
         </div>
     </div>
 
@@ -428,25 +431,7 @@
             }
 
             // --- Login Form Submission (Existing code) ---
-            document.getElementById('loginForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const username = document.getElementById('loginIdentifier').value;
-                const password = document.getElementById('loginPassword').value;
-                
-                // Normalement, vous enverriez les identifiants à un serveur pour l'authentification
-                // Pour cette démo, nous affichons simplement une alerte
-                alert(`Tentative de connexion avec le nom d'utilisateur: ${username}`);
-                
-                // Exemple simple de validation
-                if (username === 'admin' && password === 'password123') {
-                    alert('Connexion réussie! Redirection vers le tableau de bord...');
-                    // La redirection se ferait ici dans une application réelle
-                    // window.location.href = 'tableau-de-bord.html';
-                } else {
-                    alert('Identifiants invalides. Veuillez réessayer.');
-                }
-            });
+
         });
     </script>
 </body>
