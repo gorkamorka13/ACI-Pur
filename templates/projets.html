@@ -412,7 +412,7 @@
                     <li class="active"><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
-                    <li><a href="/login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+<li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                 </ul>
             </nav>
         </div>
@@ -1013,6 +1013,14 @@
             usernameElement.textContent = username;
         } else {
             console.error("Username display element 'usernameDisplay' not found.");
+        }
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                localStorage.removeItem('token'); // Remove the JWT from localStorage
+                window.location.href = 'login.html'; // Redirect to the login page
+            });
         }
     </script>
 </body>

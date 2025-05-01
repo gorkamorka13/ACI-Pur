@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutButton.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
             localStorage.removeItem('token'); // Remove the JWT from localStorage
-            window.location.href = 'login.html'; // Redirect to the login page
+        window.location.href = '/login.html'; // Redirect to the login page
         });
     }
 

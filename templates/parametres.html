@@ -213,6 +213,7 @@
                     <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li class="active"><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
+<li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                 </ul>
             </nav>
         </div>
@@ -221,7 +222,7 @@
                 <div class="header-content">
                     <h1>Paramètres</h1>
                     <div class="user-info">
-                        <span>Administrateur</span>
+                        <span id="usernameDisplay">Administrateur</span>
                         <i class="fas fa-user-circle"></i>
                     </div>
                 </div>
@@ -503,6 +504,32 @@
         // Appel de l'initialisation (assure que le DOM est prêt car c'est un module)
         initializePage();
 
+        // Display username on load
+        const usernameElement = document.getElementById('usernameDisplay');
+        const token = localStorage.getItem('token');
+        let username = 'developpement'; // Default value
+
+        if (token) {
+            try {
+                // Decode JWT payload (second part)
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                const payload = JSON.parse(payloadJson);
+
+                if (payload && payload.username) {
+                    username = payload.username;
+                }
+            } catch (e) {
+                console.error('Failed to decode JWT token:', e);
+                // Keep default 'developpement' if decoding fails
+            }
+        }
+
+        if (usernameElement) {
+            usernameElement.textContent = username;
+        } else {
+            console.error("Username display element 'usernameDisplay' not found.");
+        }
     </script>
 </body>
 </html>
