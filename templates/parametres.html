@@ -336,31 +336,37 @@
     <script type="module">
         import { dataService } from '../js/services/DataService.js'; // Import DataService
 
-async function downloadReport() {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/revenus/report/pdf', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+        // Function to handle report download
+        async function downloadReport(reportType) {
+            try {
+                const token = localStorage.getItem('token');
+                const endpoint = reportType === 'charges' ? '/api/charges/report/pdf' : '/api/revenus/report/pdf'; // Assuming a charges report endpoint exists
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${reportType}_report.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error(`Erreur lors du téléchargement du rapport ${reportType}:`, error);
+                if (window.showAlert) {
+                    window.showAlert(`Erreur lors du téléchargement du rapport ${reportType}: ` + error.message, 'danger');
+                } else {
+                    alert(`Erreur lors du téléchargement du rapport ${reportType}: ` + error.message);
+                }
             }
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'report.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Erreur lors du téléchargement du rapport PDF:', error);
-        alert('Erreur lors du téléchargement du rapport PDF: ' + error.message);
-    }
-}
 
         // Paramètres (sera chargé depuis l'API ou utilisera les valeurs HTML par défaut)
         let parametres = null;
@@ -537,7 +543,57 @@ async function downloadReport() {
                     // Ajouter ici la logique pour afficher/masquer le contenu des onglets si nécessaire
                 });
             });
-            document.querySelectorAll('.tab')[2].addEventListener('click', downloadReport);
+            
+            // Modify the click handler for the "Sauvegarde et export" tab to open the new modal
+            const sauvegardeExportTab = document.querySelectorAll('.tab')[2];
+            const exportModal = document.getElementById('modal-export-reports'); // Get the new modal element
+            if (sauvegardeExportTab && exportModal) {
+                sauvegardeExportTab.removeEventListener('click', downloadReport); // Remove old handler
+                sauvegardeExportTab.addEventListener('click', function() {
+                    exportModal.style.display = 'block'; // Open the modal
+                });
+            } else {
+                console.error("Sauvegarde et export tab or export modal not found.");
+            }
+
+            // Add event listener for the download button in the new modal
+            const btnDownloadReports = document.getElementById('btn-download-reports');
+            const checkboxCharges = document.getElementById('checkbox-charges-report');
+            const checkboxRevenus = document.getElementById('checkbox-revenus-report');
+            const exportModalClose = document.querySelector('#modal-export-reports .modal-close');
+
+            if (btnDownloadReports && checkboxCharges && checkboxRevenus && exportModalClose) {
+                btnDownloadReports.addEventListener('click', function() {
+                    const downloadCharges = checkboxCharges.checked;
+                    const downloadRevenus = checkboxRevenus.checked;
+
+                    if (downloadCharges) {
+                        downloadReport('charges');
+                    }
+                    if (downloadRevenus) {
+                        downloadReport('revenus');
+                    }
+
+                    // Close the modal after initiating downloads
+                    exportModal.style.display = 'none';
+                });
+
+                // Add event listener to close modal when clicking outside or on close button
+                 exportModalClose.addEventListener('click', function() {
+                     exportModal.style.display = 'none';
+                 });
+
+                 exportModal.addEventListener('click', function(e) {
+                     if (e.target === exportModal) {
+                         exportModal.style.display = 'none';
+                     }
+                 });
+
+            } else {
+                console.error("Export modal elements not found.");
+            }
+
+
             console.log("Initialization complete.");
         }
 
@@ -571,5 +627,31 @@ async function downloadReport() {
             console.error("Username display element 'usernameDisplay' not found.");
         }
     </script>
+
+    <!-- New Modal for Report Export -->
+    <div class="modal" id="modal-export-reports">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Sélectionner les rapports à exporter</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Choisissez les rapports que vous souhaitez télécharger :</p>
+                <div>
+                    <input type="checkbox" id="checkbox-charges-report" checked>
+                    <label for="checkbox-charges-report">Rapport de Charges</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="checkbox-revenus-report" checked>
+                    <label for="checkbox-revenus-report">Rapport de Revenus</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-download-reports" class="btn btn-primary">Télécharger</button>
+                <button class="btn btn-secondary modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
