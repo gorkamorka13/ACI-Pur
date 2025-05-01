@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../../models');
+const { generateReport } = require('./report');
 
 // GET - Récupérer tous les revenus
 router.get('/', async (req, res) => {
@@ -101,4 +102,18 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router; 
+// GET - Générer et télécharger le rapport PDF
+router.get('/report/pdf', async (req, res) => {
+    try {
+        const pdfBuffer = await generateReport();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="report.pdf"');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('Erreur lors de la génération du rapport PDF:', error);
+        res.status(500).json({ error: 'Erreur lors de la génération du rapport PDF' });
+    }
+});
+
+module.exports = router;

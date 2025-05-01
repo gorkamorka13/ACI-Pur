@@ -239,7 +239,7 @@
                 <button class="tab">Sauvegarde et export</button>
             </div>
 
-            <div class="content-section">
+            <div class="content-section" id="facteurs-repartition-section">
                 <h2 class="section-title">Facteurs de pondération</h2>
                 <p class="section-subtitle">Définissez les facteurs qui impactent la répartition des rémunérations entre les associés.</p>
 
@@ -293,6 +293,20 @@
                     Enregistrer les modifications
                 </button>
             </div>
+
+            <!-- Section Paramètres généraux -->
+            <div class="content-section" id="parametres-generaux-section" style="display: none;">
+                <h2 class="section-title">Paramètres généraux</h2>
+                <p class="section-subtitle">Configurez les paramètres généraux de l'application.</p>
+                <!-- Add general settings content here -->
+            </div>
+
+            <!-- Section Sauvegarde et export -->
+            <div class="content-section" id="sauvegarde-export-section" style="display: none;">
+                <h2 class="section-title">Sauvegarde et export</h2>
+                <p class="section-subtitle">Gérez la sauvegarde et l'exportation des données.</p>
+                <!-- Add backup and export content here -->
+            </div>
         </div>
     </div>
 
@@ -322,9 +336,34 @@
     <script type="module">
         import { dataService } from '../js/services/DataService.js'; // Import DataService
 
+async function downloadReport() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/revenus/report/pdf', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Erreur lors du téléchargement du rapport PDF:', error);
+        alert('Erreur lors du téléchargement du rapport PDF: ' + error.message);
+    }
+}
+
         // Paramètres (sera chargé depuis l'API ou utilisera les valeurs HTML par défaut)
-        let parametres = null; 
-        
+        let parametres = null;
         // Éléments DOM
         const sliderCogerant = document.getElementById('slider-cogerant');
         const sliderRCP = document.getElementById('slider-rcp');
@@ -498,6 +537,7 @@
                     // Ajouter ici la logique pour afficher/masquer le contenu des onglets si nécessaire
                 });
             });
+            document.querySelectorAll('.tab')[2].addEventListener('click', downloadReport);
             console.log("Initialization complete.");
         }
 

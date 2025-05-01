@@ -349,6 +349,12 @@ header {
     transition: all 0.2s ease;
 }
 
+.btn-save {
+    margin-top: 20px; /* Add space above the button */
+    border-top: 1px solid var(--border-color); /* Add a top border */
+    padding-top: 20px; /* Add padding above the border */
+}
+
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
