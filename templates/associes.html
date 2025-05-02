@@ -43,6 +43,18 @@
                 </div>
             </header>
             <br>
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Nombre total d'associés</h3>
+                        <p class="total-amount" id="total-associes">0</p>
+                    </div>
+                </div>
+            </div>
+            <br>
             <div class="actions-bar">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-associe">
                     <i class="fas fa-plus"></i> Ajouter un associé
@@ -390,6 +402,18 @@
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', loadInitialData);
 
+        async function updateAssociesCount() {
+            try {
+                const professionnels = await dataService.loadProfessionnels();
+                const associesCount = professionnels.length;
+                document.getElementById('total-associes').textContent = associesCount;
+            } catch (error) {
+                console.error("Erreur lors du chargement des professionnels:", error);
+                document.getElementById('total-associes').textContent = 'Erreur';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateAssociesCount);
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

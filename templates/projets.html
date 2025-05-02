@@ -412,7 +412,7 @@
                     <li class="active"><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
-<li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    <li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                 </ul>
             </nav>
         </div>
@@ -426,7 +426,23 @@
                     </div>
                 </div>
             </header>
-
+            <br>
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Projets</h3>
+                        <p class="total-amount" id="total-projets">0</p>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="actions-bar">
+                <button class="btn btn-primary" id="btn-nouveau-projet">
+                    <i class="fas fa-plus"></i> Ajouter un projet
+                </button>
             <div class="projets-container">
                 <div class="projets-content">
                     <div class="projets-left-column">
@@ -435,9 +451,6 @@
                                 <h2>Liste des projets</h2>
                                 <p class="section-subtitle">Sélectionnez un projet pour gérer les affectations</p>
                             </div>
-                            <button class="btn-nouveau-projet" id="btn-nouveau-projet">
-                                <i class="fas fa-plus"></i> Nouveau projet
-                            </button>
                         </div>
                         <div id="liste-projets">
                             <!-- Les projets seront générés ici -->
@@ -641,6 +654,11 @@
         function renderListeProjets() {
             const container = document.getElementById('liste-projets');
             container.innerHTML = ''; // Vider la liste
+
+            const totalProjetsElement = document.getElementById('total-projets');
+            if (totalProjetsElement) {
+                totalProjetsElement.textContent = allProjets ? allProjets.length : 0;
+            }
 
             if (!allProjets || allProjets.length === 0) {
                 container.innerHTML = '<p class="no-data">Aucun projet trouvé.</p>';

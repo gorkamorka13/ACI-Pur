@@ -289,6 +289,16 @@
                         <p class="year-label">Année <span id="annee-reunions">2023</span></p>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i> <!-- Added clock icon -->
+                    </div>
+                    <div class="stat-info">
+                        <h3>Temps Total (heures)</h3> <!-- New title -->
+                        <p class="total-amount" id="total-reunions-temps">0</p> <!-- New ID -->
+                        <p class="year-label">Année <span id="annee-reunions-temps">2023</span></p> <!-- New ID -->
+                    </div>
+                </div>
             </div>
             <br>
             <div class="actions-bar">
@@ -446,12 +456,24 @@
 
             const currentYear = new Date().getFullYear();
             document.getElementById('annee-reunions').textContent = currentYear;
+            document.getElementById('annee-reunions-temps').textContent = currentYear; // Update year for time card
 
-            const totalReunions = globalData.rcpMeetings
-                .filter(reunion => new Date(reunion.date).getFullYear() === currentYear)
-                .length;
+            const meetingsThisYear = globalData.rcpMeetings
+                .filter(reunion => new Date(reunion.date).getFullYear() === currentYear);
 
+            const totalReunions = meetingsThisYear.length;
             document.getElementById('total-reunions').textContent = totalReunions;
+
+            // Calculate total duration in minutes
+            const totalDureeMinutes = meetingsThisYear.reduce((sum, reunion) => {
+                // Ensure duree is a number, default to 0 if not
+                const duration = Number(reunion.duree) || 0;
+                return sum + duration;
+            }, 0);
+
+            // Convert to hours and format to 1 decimal place
+            const totalDureeHeures = (totalDureeMinutes / 60).toFixed(1);
+            document.getElementById('total-reunions-temps').textContent = totalDureeHeures;
         }
 
         // Fonction pour initialiser le tableau des réunions
