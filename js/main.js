@@ -1,6 +1,7 @@
 import { dataService } from './services/DataService.js'; // Importer dataService
 
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('[main.js] DOMContentLoaded fired.');
     // Initialisation des menus actifs
     initActiveMenu();
 
@@ -109,7 +110,9 @@ function initModals() {
     document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
         button.addEventListener('click', function() {
             const targetSelector = this.getAttribute('data-target');
-            if (!targetSelector) return;
+            if (!targetSelector) {
+                return;
+            }
             const target = document.querySelector(targetSelector);
             if (target) {
                 target.style.display = 'block';

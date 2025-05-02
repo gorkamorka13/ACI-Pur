@@ -640,25 +640,26 @@
                    }
 
                    try {
-                       const response = await fetch('/api/charges', {
-                           method: 'POST',
-                           headers: {
-                               'Content-Type': 'application/json',
-                           },
-                           body: JSON.stringify(chargeData),
-                       });
-
-                       if (!response.ok) {
-                           const errorData = await response.json();
-                           throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
-                       }
+                       // Use dataService.saveCharge for adding a new charge (it handles authentication)
+                       // saveCharge expects an object with id, date, description, categorie, type, montant
+                       // For adding, we pass the data without an id, and dataService should handle POST
+                       const savedCharge = await dataService.saveCharge(chargeData); 
+                       console.log('Charge ajoutée:', savedCharge);
 
                        // Succès
-                       document.getElementById('modal-add-charge').classList.remove('show');
+                       // Close modal using style.display (consistent with edit modal closing)
+                       const addModal = document.getElementById('modal-add-charge');
+                       if (addModal) {
+                           addModal.style.display = 'none'; 
+                       }
                        document.getElementById('form-add-charge').reset(); // Réinitialiser le formulaire
                        // Repopulate year filter in case the new charge adds a new year, then reload data
                        populateYearFilter(); 
-                       alert('Charge ajoutée avec succès !');
+                       if (window.showAlert) {
+                           window.showAlert('Charge ajoutée avec succès!', 'success');
+                       } else {
+                           alert('Charge ajoutée avec succès !');
+                       }
 
                    } catch (error) {
                        console.error('Erreur lors de l\'ajout de la charge:', error);
@@ -719,21 +720,6 @@
             // Rafraîchissement périodique (now uses selected year)
             setInterval(loadData, 300000); // Increased interval to 5 minutes
 
-            // --- Modal Opening Logic (No listener attachment here anymore) ---
-            const openModalButton = document.querySelector('button[data-target="#modal-add-charge"]');
-            if (openModalButton) {
-                openModalButton.addEventListener('click', function() {
-                    console.log('[charges.html] Modal open button clicked.');
-                    // Just open the modal (assuming CSS or another script handles the 'show' class)
-                    document.getElementById('modal-add-charge').classList.add('show');
-                    // Clear the form when opening the modal
-                    document.getElementById('form-add-charge').reset();
-                });
-            } else {
-                console.error('[charges.html] Could not find button that opens the modal.');
-            }
-            // --- End Modal Opening Logic ---
-
         });
 
         // Display username on load
@@ -763,5 +749,6 @@
             console.error("Username display element 'usernameDisplay' not found.");
         }
     </script>
+    <script type="module" src="../js/main.js"></script>
 </body>
 </html>
