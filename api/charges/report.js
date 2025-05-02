@@ -196,7 +196,7 @@ async function generateReport(options = {}) {
  */
 function addSummarySection(doc, summary) {
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Summary', { underline: true });
+       .text('Résumé', { underline: true });
     doc.moveDown(0.5);
     
     const summaryTable = {
@@ -211,8 +211,9 @@ function addSummarySection(doc, summary) {
     
     // Table styling
     const startY = doc.y;
-    const startX = 100;
     const columnWidths = [150, 150];
+    const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
+    const startX = (doc.page.width - tableWidth) / 2; // Center the table        
     const rowHeight = 25;
     
     // Draw summary table
@@ -233,6 +234,10 @@ function addSummarySection(doc, summary) {
         doc.fontSize(10).font('Helvetica')
            .text(row[1], startX + columnWidths[0] + 5, y + 7, { width: columnWidths[1] - 10 });
     });
+        // Draw borders
+        doc.lineWidth(0.5).strokeColor('#cccccc')
+        .rect(startX, startY, columnWidths[0] + columnWidths[1], rowHeight * summaryTable.rows.length)
+        .stroke();
     
     // Move cursor to after the table
     doc.moveDown(summaryTable.rows.length * 0.75);
