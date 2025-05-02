@@ -334,7 +334,7 @@
                     <button id="btn-download-reports" class="btn btn-primary" style="margin-top: 15px;">Télécharger</button>
                 </div>
                 <!-- New Export Data Button -->
-                <button id="exportDataBtn" class="btn btn-secondary" style="margin-top: 15px;">Exporter les données</button>
+                <button id="exportDataBtn" class="btn btn-primary" style="margin-top: 15px;">Exporter les données</button>
             </div>
         </div>
     </div>
@@ -576,11 +576,51 @@
                       partProjets: parseInt(sliderProjets.value)
                  };
             }
-        
+
+            // Load all data for export functionality
+            try {
+                globalData.revenus = await dataService.loadRevenus();
+                console.log("Revenus loaded for export:", globalData.revenus);
+            } catch (error) {
+                console.error("Error loading Revenus for export:", error);
+            }
+            try {
+                globalData.charges = await dataService.loadCharges();
+                console.log("Charges loaded for export:", globalData.charges);
+            } catch (error) {
+                console.error("Error loading Charges for export:", error);
+            }
+             try {
+                globalData.associes = await dataService.loadProfessionnels();
+                console.log("Associés loaded for export:", globalData.associes);
+            } catch (error) {
+                console.error("Error loading Associés for export:", error);
+            }
+             try {
+                globalData.rcpmeetings = await dataService.loadRcpMeetings();
+                console.log("Réunions RCP loaded for export:", globalData.rcpmeetings);
+            } catch (error) {
+                console.error("Error loading Réunions RCP for export:", error);
+            }
+             try {
+                globalData.projets = await dataService.loadProjets();
+                console.log("Projets loaded for export:", globalData.projets);
+            } catch (error) {
+                console.error("Error loading Projets for export:", error);
+            }
+             try {
+                // Assuming there's a service method to load rcpPresenceData if needed for export
+                // globalData.rcpPresenceData = await dataService.loadRcpPresenceData();
+                // console.log("RCP Presence Data loaded for export:", globalData.rcpPresenceData);
+            } catch (error) {
+                console.error("Error loading RCP Presence Data for export:", error);
+            }
+
+
             // Mettre à jour l'affichage initial APRES avoir défini les valeurs des sliders
             console.log("Updating initial display...");
             updateDisplay();
-            
+
             // Attacher les écouteurs d'événements ICI, après l'initialisation
             console.log("Attaching event listeners...");
             sliderCogerant.addEventListener('input', updateDisplay);
@@ -686,6 +726,82 @@
         // Appel de l'initialisation (assure que le DOM est prêt car c'est un module)
         initializePage();
 
+        // --- Export Data Functionality ---
+        let globalData = {}; // Variable to hold all data for export
+
+        async function exportData() {
+            const selectedData = {};
+            const checkboxes = document.querySelectorAll('#exportDialog input[type="checkbox"]');
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const dataType = checkbox.id.replace('export-checkbox-', '');
+                    if (globalData[dataType]) {
+                        selectedData[dataType] = globalData[dataType];
+                    }
+                }
+            });
+
+            if (Object.keys(selectedData).length === 0) {
+                alert("Veuillez sélectionner au moins un type de données à exporter.");
+                return;
+            }
+
+            const dataStr = JSON.stringify(selectedData, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `msp_gestion_export_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Close the modal after export
+            document.getElementById('exportDialog').style.display = 'none';
+        }
+
+        // Event listeners for the export modal
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const exportDialog = document.getElementById('exportDialog');
+        const confirmExportBtn = document.getElementById('confirmExportBtn');
+        const cancelExportBtn = document.getElementById('cancelExportBtn');
+        const modalCloseButtons = exportDialog ? exportDialog.querySelectorAll('.modal-close') : [];
+
+        if (exportDataBtn && exportDialog && confirmExportBtn && cancelExportBtn) {
+            exportDataBtn.addEventListener('click', () => {
+                exportDialog.style.display = 'block';
+            });
+
+            confirmExportBtn.addEventListener('click', exportData);
+
+            cancelExportBtn.addEventListener('click', () => {
+                exportDialog.style.display = 'none';
+            });
+
+            modalCloseButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    exportDialog.style.display = 'none';
+                });
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target === exportDialog) {
+                    exportDialog.style.display = 'none';
+                }
+            });
+        } else {
+            console.error("Export modal elements not found. Cannot attach event listeners.", {
+                exportDataBtn: !!exportDataBtn,
+                exportDialog: !!exportDialog,
+                confirmExportBtn: !!confirmExportBtn,
+                cancelExportBtn: !!cancelExportBtn
+            });
+        }
+        // --- End Export Data Functionality ---
+
+
         // Display username on load
         const usernameElement = document.getElementById('usernameDisplay');
         const token = localStorage.getItem('token');
@@ -715,6 +831,47 @@
     </script>
 
     <!-- Modal for Report Export removed -->
+
+    <!-- Modal for Export Data -->
+    <div class="modal" id="exportDialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Exporter les données</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Sélectionnez les données à exporter (format JSON) :</p>
+                <div>
+                    <input type="checkbox" id="export-checkbox-revenus" checked>
+                    <label for="export-checkbox-revenus">Revenus ACI</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="export-checkbox-charges" checked>
+                    <label for="export-checkbox-charges">Charges</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="export-checkbox-associes" checked>
+                    <label for="export-checkbox-associes">Associés</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="export-checkbox-rcpmeetings" checked>
+                    <label for="export-checkbox-rcpmeetings">Réunions RCP</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="export-checkbox-projets" checked>
+                    <label for="export-checkbox-projets">Projets & Missions</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="export-checkbox-parametres" checked>
+                    <label for="export-checkbox-parametres">Paramètres de répartition</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmExportBtn" class="btn btn-primary">Exporter</button>
+                <button id="cancelExportBtn" class="btn btn-secondary modal-close">Annuler</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
