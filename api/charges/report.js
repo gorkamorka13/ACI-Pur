@@ -42,6 +42,11 @@ async function generateReport(options = {}) {
 
         // Fetch data using Sequelize
         const charges = await Charge.findAll(queryOptions);
+        // Log the fetched charges for debugging
+        console.log('Charges fetched:', charges.length, 'records found.');
+        console.log('Query options:', queryOptions); // Log the query options for debugging
+        console.log('Start date:', startDate, 'End date:', endDate); // Log the dates for debugging
+        console.log('charges:', charges);
         
         if (!charges || charges.length === 0) {
             throw new Error('Aucune donnée de charge trouvée pour la période spécifiée');
@@ -56,7 +61,7 @@ async function generateReport(options = {}) {
         // Group by categories if category field exists
         const categorySummary = {};
         charges.forEach(charge => {
-            const category = charge.category || 'Non catégorisé';
+            const category = charge.categorie || 'Non catégorisé';
             if (!categorySummary[category]) {
                 categorySummary[category] = 0;
             }
@@ -131,18 +136,6 @@ async function generateReport(options = {}) {
         });
         doc.moveDown(1);
 
-        // if (includeCharts) {
-        //     // Ajouter le graphique à barres des charges par description
-        //     addDescriptionBarChart(doc, charges);
-        //     doc.moveDown(1);
-
-        //     // Ajouter le graphique circulaire pour les catégories si disponibles
-        //     if (Object.keys(categorySummary).length > 1) {
-        //         addPieChart(doc, categorySummary);
-        //         doc.moveDown(1);
-        //     }
-        // }
-
         // Add charge table
         addChargeTable(doc, charges);
         doc.moveDown(1.5);
@@ -151,6 +144,28 @@ async function generateReport(options = {}) {
         if (Object.keys(categorySummary).length > 1) {
             addCategoryBreakdown(doc, categorySummary);
             doc.moveDown(1.5);
+        }
+
+        // Add charts at the end if includeCharts is true
+        if (includeCharts) {
+            // Add new page for charts to ensure they have enough space
+            doc.addPage();
+            
+            // Add the bar chart for charges by description
+            addDescriptionBarChart(doc, charges);
+            doc.moveDown(2);
+            console.log('Graphique des charges par description ajouté.');
+            console.log(Object.keys(categorySummary).length, 'categories trouvées.');
+            // Add the pie chart for categories if available
+            if (Object.keys(categorySummary).length > 1) {
+                // Add sufficient space or new page if needed
+                if (doc.y > doc.page.height - 350) {
+                    doc.addPage();
+                }
+                addPieChart(doc, categorySummary);
+                console.log('Graphique des charges pie ajouté.');
+                doc.moveDown(1.5);
+            }
         }
 
         // Add footer with page numbers - moved to the end after all content
@@ -227,9 +242,16 @@ function addSummarySection(doc, summary) {
  * Adds the main charge data table to the report
  */
 function addChargeTable(doc, charges) {
+    // Reset position to left margin
+    doc.x = 50;
+    
     // Add title
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Détails des Charges', { underline: true });
+       .text('Détails des Charges', { 
+           underline: true,
+           align: 'center',
+           width: doc.page.width - 100 // Ensures we have the full width to center within 
+       });
     doc.moveDown(0.5);
 
     // Define table
@@ -335,9 +357,16 @@ function addChargeTable(doc, charges) {
  * Adds category breakdown section to the report
  */
 function addCategoryBreakdown(doc, categorySummary) {
+    // Reset position to left margin
+    doc.x = 50;
+    
     // Add section title
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Charges par Catégorie', { underline: true });
+       .text('Charges par Catégorie', { 
+           underline: true, 
+           align: 'center',
+           width: doc.page.width - 100 // Ensures we have the full width to center within
+       });
     doc.moveDown(0.5);
     
     // Create category table
@@ -477,10 +506,19 @@ function formatCurrency(value) {
  * @param {Array} charges - Array d'objets charges
  */
 function addDescriptionBarChart(doc, charges) {
-    // Titre de la section
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Graphique des Charges par Description', { underline: true });
-    doc.moveDown(0.5);
+      // Reset position to left margin
+      doc.x = 50;
+    
+      // Add section title
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
+         .text('Graphique des Charges par Description', { 
+             underline: true, 
+             align: 'center',
+             width: doc.page.width - 100 // Ensures we have the full width to center within
+         });
+      doc.moveDown(0.5);
+
+
     
     // Agréger les données par description
     const descriptionData = {};
@@ -506,10 +544,11 @@ function addDescriptionBarChart(doc, charges) {
     });
     
     // Configuration du graphique
-    const chartX = 50;
+    const chartWidth = 400;
+    // Calculate the center point of the page and position the chart accordingly
+    const chartX = (doc.page.width - chartWidth) / 2;
     const chartY = doc.y + 20;
-    const chartWidth = 500;
-    const chartHeight = 200;
+    const chartHeight = 150;
     const barPadding = 10;
     
     // Trouver la valeur maximale pour l'échelle
@@ -532,12 +571,12 @@ function addDescriptionBarChart(doc, charges) {
        .stroke();
     
     // Ajouter un titre pour l'axe Y
-    doc.fontSize(8).fillColor('#333333')
-       .text('Montant (€)', chartX - 30, chartY + chartHeight / 2, {
-           width: 25,
-           align: 'center',
-           rotate: 270
-       });
+    // doc.fontSize(8).fillColor('#333333')
+    //    .text('Montant (€)', chartX - 30, chartY + chartHeight / 2, {
+    //        width: 25,
+    //        align: 'center',
+    //        rotate: 270
+    //    });
     
     // Dessiner les lignes horizontales de grille (5 lignes)
     doc.strokeColor('#cccccc').lineWidth(0.5);
@@ -605,17 +644,20 @@ function addDescriptionBarChart(doc, charges) {
     
     // Ajouter une légende pour les descriptions tronquées
     if (sortedData.some(([desc]) => desc.length > 15)) {
-        doc.moveDown(categories.length * 0.25 + 5);
+        // Move to a position below the chart
+        doc.y = chartY + chartHeight + 20; // Position after the chart and labels
+        
+        // Reset x position and use the page width for centering
+        doc.x = 50;
         doc.fontSize(8).fillColor('#666666')
-           .text('Note: Certaines descriptions ont été tronquées pour la lisibilité du graphique.', { 
+           .text('Note: Certaines descriptions ont été tronquées pour la lisibilité du graphique.', {
                align: 'center',
-               width: chartWidth,
-               indent: chartX
+               width: doc.page.width - 100 // Use page width instead of chart width
            });
     }
     
     // Mettre à jour la position du curseur
-    doc.y = chartY + chartHeight + 80; // Laisser de l'espace pour les étiquettes inclinées
+    doc.y = chartY + chartHeight + 60; // Laisser de l'espace pour les étiquettes inclinées
     
     return doc;
 }
@@ -626,9 +668,16 @@ function addDescriptionBarChart(doc, charges) {
  * @param {Object} categorySummary - Object avec les catégories et leurs montants
  */
 function addPieChart(doc, categorySummary) {
+    // Reset position to left margin
+    doc.x = 50;
+    
     // Titre de la section
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Répartition des Charges par Catégorie', { underline: true });
+       .text('Répartition des Charges par Catégorie', { 
+           underline: true,
+           align: 'center',
+           width: doc.page.width - 100 // Ensures we have the full width to center within 
+       });
     doc.moveDown(0.5);
     
     // Configuration du graphique
@@ -715,4 +764,5 @@ function addPieChart(doc, categorySummary) {
     
     return doc;
 }
+
 module.exports = { generateReport };
