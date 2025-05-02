@@ -587,6 +587,11 @@ header {
     cursor: pointer;
 }
 
+.modal-header .modal-close {
+    background: none;
+    background-color: transparent;
+}
+
 .modal-body {
     padding: 20px;
 }
