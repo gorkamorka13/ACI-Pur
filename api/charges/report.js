@@ -244,7 +244,6 @@ function addSummarySection(doc, summary) {
 function addChargeTable(doc, charges) {
     // Reset position to left margin
     doc.x = 50;
-    
     // Add title
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
        .text('Détails des Charges', { 
@@ -260,15 +259,16 @@ function addChargeTable(doc, charges) {
         rows: charges.map(charge => [
             formatDate(charge.date),
             charge.description,
-            charge.category || 'Non catégorisé',
+            charge.categorie || 'Non catégorisé',
             formatCurrency(charge.montant)
         ])
     };
 
     // Table styling
     const tableTop = doc.y;
-    const tableLeft = 50;
     const columnWidths = [80, 200, 100, 80];
+    const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
+    const tableLeft = (doc.page.width - tableWidth) / 2; // Center the table
     const rowHeight = 25;
     const headerHeight = 30;
     const pageHeight = doc.page.height - 150; // Leave space for footer
@@ -359,7 +359,6 @@ function addChargeTable(doc, charges) {
 function addCategoryBreakdown(doc, categorySummary) {
     // Reset position to left margin
     doc.x = 50;
-    
     // Add section title
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
        .text('Charges par Catégorie', { 
@@ -376,8 +375,9 @@ function addCategoryBreakdown(doc, categorySummary) {
     
     // Table styling
     const startY = doc.y;
-    const startX = 150;
     const columnWidths = [150, 100];
+    const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
+    const startX = (doc.page.width - tableWidth) / 2; // Center the table
     const rowHeight = 25;
     
     // Add header
@@ -492,7 +492,6 @@ function formatCurrency(value) {
 function addDescriptionBarChart(doc, charges) {
       // Reset position to left margin
       doc.x = 50;
-    
       // Add section title
       doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
          .text('Graphique des Charges par Description', { 
@@ -501,9 +500,6 @@ function addDescriptionBarChart(doc, charges) {
              width: doc.page.width - 100 // Ensures we have the full width to center within
          });
       doc.moveDown(0.5);
-
-
-    
     // Agréger les données par description
     const descriptionData = {};
     charges.forEach(charge => {

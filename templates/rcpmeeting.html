@@ -295,6 +295,9 @@
                 <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-reunion">
                     <i class="fas fa-plus"></i> Ajouter une réunion
                 </button>
+                <button class="btn btn-secondary" id="btn-generate-rcp-report">
+                    <i class="fas fa-file-pdf"></i> Générer Rapport PDF
+                </button>
                 <div class="filter-group">
                     <label for="filter-annee">Filtrer par année:</label>
                     <select id="filter-annee" class="form-control">
@@ -818,6 +821,36 @@
             setInterval(loadData, 30000);
         });
 
+        // Gestion du bouton "Générer Rapport PDF"
+        document.getElementById('btn-generate-rcp-report').addEventListener('click', async function() {
+            try {
+                // Make a GET request to the report endpoint
+                const response = await fetch('/api/rcpMeetings/report/pdf');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Get the response as a Blob
+                const pdfBlob = await response.blob();
+
+                // Create a URL for the blob
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+
+                // Open the PDF in a new tab
+                window.open(pdfUrl, '_blank');
+
+                // Clean up the object URL after the tab is likely loaded
+                // A small delay might be needed depending on browser behavior
+                setTimeout(() => URL.revokeObjectURL(pdfUrl), 100); 
+
+            } catch (error) {
+                console.error('Erreur lors de la génération du rapport PDF:', error);
+                alert(`Erreur lors de la génération du rapport PDF: ${error.message}`);
+            }
+        });
+
+
         // Display username on load
         const usernameElement = document.getElementById('usernameDisplay');
         const token = localStorage.getItem('token');
@@ -846,4 +879,3 @@
         }
     </script>
     <!-- Removed duplicate load of main.js -->
-

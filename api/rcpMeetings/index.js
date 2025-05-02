@@ -55,6 +55,32 @@ router.get('/presence', async (req, res) => {
     }
 });
 
+// GET - Générer le rapport PDF des réunions RCP
+router.get('/report/pdf', async (req, res) => {
+    try {
+        // Import the generateReport function
+        const { generateReport } = require('./report');
+
+        // You can pass options to generateReport based on query parameters if needed
+        // const options = {
+        //     startDate: req.query.startDate,
+        //     endDate: req.query.endDate,
+        //     title: 'Rapport Personnalisé de Réunions RCP'
+        // };
+
+        const pdfBuffer = await generateReport(); // Call the report generation function
+
+        // Set headers for PDF response
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=rcp_meetings_report.pdf');
+        res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error('Erreur lors de la génération du rapport PDF des réunions RCP:', error);
+        res.status(500).json({ error: 'Erreur lors de la génération du rapport PDF des réunions RCP' });
+    }
+});
+
 
 // GET - Récupérer une réunion par ID
 router.get('/:id', async (req, res) => {

@@ -1,15 +1,15 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
-const { Revenu } = require('../../models'); // Adjust the path to your models
+const { RcpMeeting } = require('../../models'); // Adjust the path to your models
 const moment = require('moment');
 
 /**
- * Génère un rapport de revenus professionnel au format PDF
+ * Génère un rapport de réunions RCP au format PDF
  * @param {Object} options - Options de configuration du rapport
- * @param {String} options.title - Titre du rapport (par défaut: 'Rapport de Revenus')
- * @param {Date} options.startDate - Filtrer les revenus à partir de cette date
- * @param {Date} options.endDate - Filtrer les revenus jusqu'à cette date
+ * @param {String} options.title - Titre du rapport (par défaut: 'Rapport de Réunions RCP')
+ * @param {Date} options.startDate - Filtrer les réunions à partir de cette date
+ * @param {Date} options.endDate - Filtrer les réunions jusqu'à cette date
  * @param {String} options.outputPath - Chemin pour sauvegarder le rapport (optionnel)
  * @param {Boolean} options.includeCharts - Inclure des graphiques visuels (par défaut: true)
  * @returns {Promise<Buffer>} Document PDF sous forme de buffer
@@ -18,7 +18,7 @@ async function generateReport(options = {}) {
     try {
         // Options par défaut
         const {
-            title = 'Rapport de Revenus',
+            title = 'Rapport de Réunions RCP',
             startDate,
             endDate,
             outputPath,
@@ -41,31 +41,38 @@ async function generateReport(options = {}) {
         }
 
         // Fetch data using Sequelize
-        const revenus = await Revenu.findAll(queryOptions);
-
-        console.log('Revenus fetched:', revenus.length, 'records found.');
+        const rcpMeetings = await RcpMeeting.findAll(queryOptions);
+        // Log the fetched rcpMeetings for debugging
+        console.log('RCP Meetings fetched:', rcpMeetings.length, 'records found.');
         console.log('Query options:', queryOptions); // Log the query options for debugging
-        console.log('Revenus:', revenus);
+        console.log('Start date:', startDate, 'End date:', endDate); // Log the dates for debugging
+        console.log('rcpMeetings:', rcpMeetings);
 
-        if (!revenus || revenus.length === 0) {
-            throw new Error('Aucune donnée de revenu trouvée pour la période spécifiée');
+        if (!rcpMeetings || rcpMeetings.length === 0) {
+            throw new Error('Aucune donnée de réunion RCP trouvée pour la période spécifiée');
         }
 
-        // Calculate summary data
-        const totalRevenue = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant), 0);
-        const averageRevenue = totalRevenue / revenus.length;
-        const mostRecentDate = new Date(Math.max(...revenus.map(rev => new Date(rev.date))));
-        const oldestDate = new Date(Math.min(...revenus.map(rev => new Date(rev.date))));
+        // Calculate summary data (Adapt this for RCP meetings)
+        // Example: Count meetings, average duration, etc.
+        const totalMeetings = rcpMeetings.length;
+        // Assuming RcpMeeting model has a 'duration' field (in minutes)
+        const totalDuration = rcpMeetings.reduce((sum, meeting) => sum + parseFloat(meeting.duree || 0), 0);
+        const averageDuration = totalMeetings > 0 ? totalDuration / totalMeetings : 0;
+        const mostRecentDate = new Date(Math.max(...rcpMeetings.map(meeting => new Date(meeting.date))));
+        const oldestDate = new Date(Math.min(...rcpMeetings.map(meeting => new Date(meeting.date))));
 
-        // Group by categories if category field exists
-        const categorySummary = {};
-        revenus.forEach(rev => {
-            const category = rev.description || 'Non catégorisé';
-            if (!categorySummary[category]) {
-                categorySummary[category] = 0;
+
+        // Group by categories if category field exists (Adapt this for RCP meetings if needed)
+        // Example: Group by topic or attendees
+        const topicSummary = {};
+        rcpMeetings.forEach(meeting => {
+            const topic = meeting.titre || 'Non spécifié';
+            if (!topicSummary[topic]) {
+                topicSummary[topic] = 0;
             }
-            categorySummary[category] += parseFloat(rev.montant);
+            topicSummary[topic]++; // Count meetings per topic
         });
+
 
         // Create a new PDF document
         const doc = new PDFDocument({
@@ -75,9 +82,9 @@ async function generateReport(options = {}) {
             bufferPages: true, // Important for correct page numbering
             info: {
                 Title: title,
-                Author: 'Système de Gestion des Revenus',
-                Subject: 'Rapport de Revenus',
-                Keywords: 'revenus, financier, rapport',
+                Author: 'Système de Gestion des Réunions RCP',
+                Subject: 'Rapport de Réunions RCP',
+                Keywords: 'RCP, réunion, rapport',
                 CreationDate: new Date()
             }
         });
@@ -114,7 +121,7 @@ async function generateReport(options = {}) {
 
         // Add report header
         doc.fontSize(24).font('Helvetica-Bold').fillColor('#333333')
-            .text(title, { align: 'center' });
+           .text(title, { align: 'center' });
         doc.moveDown(0.5);
 
         // Add report date range
@@ -123,39 +130,45 @@ async function generateReport(options = {}) {
             : `Généré le : ${formatDate(new Date())}`;
 
         doc.fontSize(10).font('Helvetica').fillColor('#666666')
-            .text(reportDateStr, { align: 'center' });
+           .text(reportDateStr, { align: 'center' });
         doc.moveDown(1);
 
-        // Add summary section
+        // Add summary section (Adapt this for RCP meetings)
         addSummarySection(doc, {
-            totalRevenue,
-            averageRevenue,
-            recordCount: revenus.length,
+            totalMeetings,
+            totalDuration,
+            averageDuration,
             dateRange: `${formatDate(oldestDate)} - ${formatDate(mostRecentDate)}`
         });
         doc.moveDown(1);
 
-
-        // Add revenue table
-        addRevenueTable(doc, revenus);
+        // Add RCP Meeting table (Adapt this for RCP meetings)
+        addRcpMeetingTable(doc, rcpMeetings);
         doc.moveDown(1.5);
 
-        // Add category breakdown if we have categories
-        if (Object.keys(categorySummary).length > 1) {
-            addCategoryBreakdown(doc, categorySummary);
+        // Add topic breakdown if we have topics (Adapt this for RCP meetings if needed)
+        if (Object.keys(topicSummary).length > 1) {
+            addTopicBreakdown(doc, topicSummary);
             doc.moveDown(1.5);
         }
 
+        // Add charts at the end if includeCharts is true (Adapt or remove charts)
         if (includeCharts) {
-            // Ajouter le graphique à barres des revenus par description
-            addDescriptionBarChart(doc, revenus);
-            doc.moveDown(1);
+            // Add new page for charts to ensure they have enough space
+            doc.addPage();
 
-            // Ajouter le graphique circulaire pour les catégories si disponibles
-            if (Object.keys(categorySummary).length > 1) {
-                addPieChart(doc, categorySummary);
-                doc.moveDown(1);
-            }
+            // Adapt or remove charts based on RCP meeting data
+            // Example: Bar chart for meetings per topic
+             if (Object.keys(topicSummary).length > 1) {
+                 addTopicBarChart(doc, topicSummary);
+                 console.log('Graphique des réunions par sujet ajouté.');
+                 doc.moveDown(2);
+             }
+
+            // Example: Pie chart for duration distribution (if applicable)
+            // addDurationPieChart(doc, rcpMeetings);
+            // console.log('Graphique de la répartition de la durée ajouté.');
+            // doc.moveDown(1.5);
         }
 
         // Add footer with page numbers - moved to the end after all content
@@ -177,24 +190,24 @@ async function generateReport(options = {}) {
         });
     } catch (error) {
         console.error('Error generating PDF report:', error);
-        throw new Error(`Échec de la génération du rapport de revenus: ${error.message}`);
+        throw new Error(`Échec de la génération du rapport de réunions RCP: ${error.message}`);
     }
 }
 
 /**
- * Adds summary section to the report
+ * Adds summary section to the report (Adapt this for RCP meetings)
  */
 function addSummarySection(doc, summary) {
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-        .text('Synthèse', { underline: true });
+       .text('Résumé', { underline: true });
     doc.moveDown(0.5);
 
     const summaryTable = {
         headers: ['Métrique', 'Valeur'],
         rows: [
-            ['Revenu Total', formatCurrency(summary.totalRevenue)],
-            ['Revenu Moyen', formatCurrency(summary.averageRevenue)],
-            ['Nombre d\'Enregistrements', summary.recordCount],
+            ['Nombre Total de Réunions', summary.totalMeetings],
+            ['Durée Totale (minutes)', summary.totalDuration.toFixed(2)],
+            ['Durée Moyenne (minutes)', summary.averageDuration.toFixed(2)],
             ['Période', summary.dateRange]
         ]
     };
@@ -202,7 +215,7 @@ function addSummarySection(doc, summary) {
     // Table styling
     const startY = doc.y;
     const startX = 100;
-    const columnWidths = [150, 150];
+    const columnWidths = [200, 100]; // Adjusted column widths
     const rowHeight = 25;
 
     // Draw summary table
@@ -213,15 +226,15 @@ function addSummarySection(doc, summary) {
         // Draw background for alternate rows
         if (i % 2 === 0) {
             doc.rect(startX, y, columnWidths[0] + columnWidths[1], rowHeight)
-                .fill('#f5f5f5').fillColor('#333333');
+               .fill('#f5f5f5').fillColor('#333333');
         }
 
         // Draw cells
         doc.fontSize(10).font('Helvetica-Bold')
-            .text(row[0], startX + 5, y + 7, { width: columnWidths[0] - 10 });
+           .text(row[0], startX + 5, y + 7, { width: columnWidths[0] - 10 });
 
         doc.fontSize(10).font('Helvetica')
-            .text(row[1], startX + columnWidths[0] + 5, y + 7, { width: columnWidths[1] - 10 });
+           .text(row[1], startX + columnWidths[0] + 5, y + 7, { width: columnWidths[1] - 10 });
     });
 
     // Move cursor to after the table
@@ -229,37 +242,35 @@ function addSummarySection(doc, summary) {
 }
 
 /**
- * Adds the main revenue data table to the report
+ * Adds the main RCP Meeting data table to the report (Adapt this for RCP meetings)
  */
-function addRevenueTable(doc, revenues) {
-    // Add title
+function addRcpMeetingTable(doc, rcpMeetings) {
     // Reset position to left margin
     doc.x = 50;
-
-    // Add section title
+    // Add title
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-        .text('Détails des Revenus', {
-            underline: true,
-            align: 'center',
-            width: doc.page.width - 100 // Ensures we have the full width to center within
-        });
+       .text('Détails des Réunions RCP', {
+           underline: true,
+           align: 'center',
+           width: doc.page.width - 100 // Ensures we have the full width to center within
+       });
     doc.moveDown(0.5);
+
     // Define table
     const table = {
-        headers: ['Date', 'Description', 'Montant'],
-        rows: revenues.map(rev => [
-            formatDate(rev.date),
-            rev.description,
-            formatCurrency(rev.montant)
+        headers: ['Date', 'Titre',  'Durée'],
+        rows: rcpMeetings.map(meeting => [
+            formatDateDay(meeting.date, true),
+            meeting.titre,
+            meeting.duree || 'N/A'
         ])
     };
 
     // Table styling
     const tableTop = doc.y;
-    const columnWidths = [80, 300, 80];
+    const columnWidths = [100, 180, 80]; // Adjusted column widths
     const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
     const tableLeft = (doc.page.width - tableWidth) / 2; // Center the table
-    // Adjusted column widths: Removed 100 for 'Catégorie', increased 'Description' width
     const rowHeight = 25;
     const headerHeight = 30;
     const pageHeight = doc.page.height - 150; // Leave space for footer
@@ -267,12 +278,12 @@ function addRevenueTable(doc, revenues) {
     // Add table headers
     doc.font('Helvetica-Bold').fillColor('#ffffff');
     doc.rect(tableLeft, tableTop, columnWidths.reduce((sum, w) => sum + w, 0), headerHeight)
-        .fill('#007bff');
+       .fill('#007bff');
 
     let xPos = tableLeft;
     table.headers.forEach((header, i) => {
         doc.fillColor('#ffffff')
-            .text(header, xPos + 5, tableTop + 10, { width: columnWidths[i] - 10 });
+           .text(header, xPos + 5, tableTop + 10, { width: columnWidths[i] - 10 });
         xPos += columnWidths[i];
     });
 
@@ -289,12 +300,12 @@ function addRevenueTable(doc, revenues) {
             // Add headers on new page
             doc.font('Helvetica-Bold').fillColor('#ffffff');
             doc.rect(tableLeft, currentY, columnWidths.reduce((sum, w) => sum + w, 0), headerHeight)
-                .fill('#007bff');
+               .fill('#007bff');
 
             xPos = tableLeft;
             table.headers.forEach((header, i) => {
                 doc.fillColor('#ffffff')
-                    .text(header, xPos + 5, currentY + 10, { width: columnWidths[i] - 10 });
+                   .text(header, xPos + 5, currentY + 10, { width: columnWidths[i] - 10 });
                 xPos += columnWidths[i];
             });
 
@@ -305,26 +316,26 @@ function addRevenueTable(doc, revenues) {
         // Draw row background
         const rowColor = rowIndex % 2 === 0 ? '#f9f9f9' : '#ffffff';
         doc.rect(tableLeft, currentY, columnWidths.reduce((sum, w) => sum + w, 0), rowHeight)
-            .fill(rowColor).fillColor('#333333');
+           .fill(rowColor).fillColor('#333333');
 
         // Draw row data
         xPos = tableLeft;
         row.forEach((cell, cellIndex) => {
-            const align = cellIndex === row.length - 1 ? 'right' : 'left';
+            const align = cellIndex === row.length - 1 ? 'right' : 'left'; // Align duration to the right
             const cellPadding = align === 'right' ? 15 : 5;
 
-            doc.font(cellIndex === 0 ? 'Helvetica' : 'Helvetica')
-                .fontSize(9)
-                .text(
-                    cell,
-                    xPos + cellPadding,
-                    currentY + 8,
-                    {
-                        width: columnWidths[cellIndex] - (cellPadding * 2),
-                        align: align,
-                        ellipsis: true
-                    }
-                );
+            doc.font(cellIndex === 0 ? 'Helvetica' : 'Helvetica') // Keep date as Helvetica
+               .fontSize(9)
+               .text(
+                   cell,
+                   xPos + cellPadding,
+                   currentY + 8,
+                   {
+                       width: columnWidths[cellIndex] - (cellPadding * 2),
+                       align: align,
+                       ellipsis: true
+                   }
+               );
             xPos += columnWidths[cellIndex];
         });
 
@@ -345,64 +356,64 @@ function addRevenueTable(doc, revenues) {
 }
 
 /**
- * Adds category breakdown section to the report
+ * Adds topic breakdown section to the report (Adapt this for RCP meetings)
  */
-function addCategoryBreakdown(doc, categorySummary) {
+function addTopicBreakdown(doc, topicSummary) {
+    // Reset position to left margin
+    doc.x = 50;
     // Add section title
-        // Reset position to left margin
-        doc.x = 50;
-        // Add title
-        doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-           .text('Détails des Charges', { 
-               underline: true,
-               align: 'center',
-               width: doc.page.width - 100 // Ensures we have the full width to center within 
-           });
-        doc.moveDown(1);
+    doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
+       .text('Réunions par Sujet', {
+           underline: true,
+           align: 'center',
+           width: doc.page.width - 100 // Ensures we have the full width to center within
+       });
+    doc.moveDown(0.5);
 
-    // Create category table
-    const categoryData = Object.entries(categorySummary)
-        .sort((a, b) => b[1] - a[1]) // Sort by amount descending
-        .map(([category, amount]) => [category, formatCurrency(amount)]);
+    // Create topic table
+    const topicData = Object.entries(topicSummary)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        .map(([topic, count]) => [topic, count]);
 
     // Table styling
     const startY = doc.y;
-    const columnWidths = [150, 100];
+    const columnWidths = [150, 60]; // Adjusted column widths
     const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
     const startX = (doc.page.width - tableWidth) / 2; // Center the table
     const rowHeight = 25;
 
     // Add header
     doc.rect(startX, startY, columnWidths[0] + columnWidths[1], rowHeight)
-        .fill('#007bff');
+       .fill('#007bff');
 
     doc.fillColor('#ffffff').fontSize(11).font('Helvetica-Bold')
-        .text('Catégorie', startX + 5, startY + 7, { width: columnWidths[0] - 10 })
-        .text('Montant', startX + columnWidths[0] + 5, startY + 7, { width: columnWidths[1] - 10, align: 'right' });
+       .text('Titre', startX + 5, startY + 7, { width: columnWidths[0] - 10 })
+       .text('Nombre', startX + columnWidths[0] -10, startY + 7, { width: columnWidths[1] - 10, align: 'left' });
 
     // Add rows
     doc.fillColor('#333333');
-    categoryData.forEach((row, i) => {
+    topicData.forEach((row, i) => {
         const y = startY + (i + 1) * rowHeight;
 
         // Draw background for alternate rows
         doc.rect(startX, y, columnWidths[0] + columnWidths[1], rowHeight)
-            .fill(i % 2 === 0 ? '#f9f9f9' : '#ffffff');
+           .fill(i % 2 === 0 ? '#f9f9f9' : '#ffffff');
 
         // Draw cells
         doc.fillColor('#333333').fontSize(10).font('Helvetica')
-            .text(row[0], startX + 5, y + 7, { width: columnWidths[0] - 10 })
-            .text(row[1], startX + columnWidths[0] + 5, y + 7, { width: columnWidths[1] - 10, align: 'right' });
+           .text(row[0], startX + 5, y + 7, { width: columnWidths[0] - 10 })
+           .text(row[1], startX + columnWidths[0] + 5, y + 7, { width: columnWidths[1] - 10, align: 'right' });
     });
 
     // Draw borders
     doc.lineWidth(0.5).strokeColor('#cccccc')
-        .rect(startX, startY, columnWidths[0] + columnWidths[1], rowHeight * (categoryData.length + 1))
-        .stroke();
+       .rect(startX, startY, columnWidths[0] + columnWidths[1], rowHeight * (topicData.length + 1))
+       .stroke();
 
     // Move cursor to after the table
-    doc.y = startY + rowHeight * (categoryData.length + 1) + 20;
+    doc.y = startY + rowHeight * (topicData.length + 1) + 20;
 }
+
 
 /**
  * Adds footer with page numbers to the document
@@ -441,8 +452,17 @@ function formatDate(date, includeTime = false) {
         : momentDate.format('DD/MM/YYYY');
 }
 
+function formatDateDay(date, includeTime = false) {
+    if (!date) return 'N/A';
+
+    const momentDate = moment(date);
+    return includeTime
+        ? momentDate.format('DD/MM/YYYY')
+        : momentDate.format('DD/MM/YYYY');
+}
+
 /**
- * Formats a currency value for display in French format
+ * Formats a currency value for display in French format (Not directly applicable to RCP meetings, but keeping for potential future use or adaptation)
  */
 function formatCurrency(value) {
     if (value === null || value === undefined) return 'N/A';
@@ -477,44 +497,37 @@ function formatCurrency(value) {
 }
 
 /**
- * Ajoute un graphique à barres montrant les revenus par description
+ * Ajoute un graphique à barres montrant les réunions par sujet (Adapted for RCP meetings)
  * @param {PDFDocument} doc - Document PDF
- * @param {Array} revenus - Array d'objets revenus
+ * @param {Object} topicSummary - Object avec les sujets et leurs comptes
  */
-function addDescriptionBarChart(doc, revenus) {
-    // Titre de la section
-    // Reset position to left margin
-    doc.x = 50;
-    // Add title
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-        .text('Graphique des Revenus par Description', {
-            underline: true,
-            align: 'center',
-            width: doc.page.width - 100 // Ensures we have the full width to center within 
-        });
-    doc.moveDown(0.5);
+function addTopicBarChart(doc, topicSummary) {
+      // Reset position to left margin
+      doc.x = 50;
 
-    // Agréger les données par description
-    const descriptionData = {};
-    revenus.forEach(rev => {
-        const description = rev.description || 'Sans description';
-        if (!descriptionData[description]) {
-            descriptionData[description] = 0;
-        }
-        descriptionData[description] += parseFloat(rev.montant);
-    });
+      // Add section title
+      doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
+         .text('Graphique des Réunions par Sujet', {
+             underline: true,
+             align: 'center',
+             width: doc.page.width - 100 // Ensures we have the full width to center within
+         });
+      doc.moveDown(0.5);
 
-    // Limiter à 10 descriptions maximum pour la lisibilité
-    let sortedData = Object.entries(descriptionData)
-        .sort((a, b) => b[1] - a[1]) // Trier par montant décroissant
+
+    // Agréger les données par sujet (already done in topicSummary)
+
+    // Limiter à 10 sujets maximum pour la lisibilité
+    let sortedData = Object.entries(topicSummary)
+        .sort((a, b) => b[1] - a[1]) // Trier par count décroissant
         .slice(0, 10); // Prendre les 10 premiers
 
     // Créer un objet avec les données limitées
     const limitedData = {};
-    sortedData.forEach(([desc, montant]) => {
-        // Tronquer les descriptions trop longues
-        const shortDesc = desc.length > 15 ? desc.substring(0, 15) + '...' : desc;
-        limitedData[shortDesc] = montant;
+    sortedData.forEach(([topic, count]) => {
+        // Tronquer les sujets trop longs
+        const shortTopic = topic.length > 15 ? topic.substring(0, 15) + '...' : topic;
+        limitedData[shortTopic] = count;
     });
 
     // Configuration du graphique
@@ -535,35 +548,36 @@ function addDescriptionBarChart(doc, revenus) {
 
     // Dessiner le fond du graphique
     doc.rect(chartX - 10, chartY - 10, chartWidth + 20, chartHeight + 40)
-        .fill('#f8f8f8');
+       .fill('#f8f8f8');
 
     // Dessiner les axes
     doc.lineWidth(1).strokeColor('#333333')
-        .moveTo(chartX, chartY)
-        .lineTo(chartX, chartY + chartHeight)
-        .lineTo(chartX + chartWidth, chartY + chartHeight)
-        .stroke();
+       .moveTo(chartX, chartY)
+       .lineTo(chartX, chartY + chartHeight)
+       .lineTo(chartX + chartWidth, chartY + chartHeight)
+       .stroke();
 
     // Ajouter un titre pour l'axe Y
-    // doc.fontSize(8).fillColor('#333333')
-    //     .text('Montant (€)', chartX - 30, chartY + chartHeight / 2, {
-    //         width: 25,
-    //         align: 'center',
-    //         rotate: 270
-    //     });
+    doc.fontSize(8).fillColor('#333333')
+       .text('Nombre de Réunions', chartX - 45, chartY + chartHeight / 2, {
+           width: 40,
+           align: 'right',
+           rotate: 0 // Keep text horizontal
+       });
+
 
     // Dessiner les lignes horizontales de grille (5 lignes)
     doc.strokeColor('#cccccc').lineWidth(0.5);
     for (let i = 0; i <= 5; i++) {
         const y = chartY + chartHeight - (i * chartHeight / 5);
         doc.moveTo(chartX, y)
-            .lineTo(chartX + chartWidth, y)
-            .stroke();
+           .lineTo(chartX + chartWidth, y)
+           .stroke();
 
         // Ajouter les valeurs sur l'axe Y
-        const value = (maxValue * i / 5);
+        const value = Math.round(maxValue * i / 5); // Round the count
         doc.fillColor('#666666').fontSize(8)
-            .text(formatCurrency(value), chartX - 45, y - 5, { width: 40, align: 'right' });
+           .text(value, chartX - 45, y - 5, { width: 40, align: 'right' });
     }
 
     // Dessiner les barres
@@ -580,165 +594,65 @@ function addDescriptionBarChart(doc, revenus) {
 
         // Dessiner la barre
         doc.fillColor(barColor)
-            .rect(barX, barY, barWidth, barHeight)
-            .fill();
+           .rect(barX, barY, barWidth, barHeight)
+           .fill();
 
         // Ajouter une bordure à la barre
         doc.lineWidth(0.5).strokeColor('#333333')
-            .rect(barX, barY, barWidth, barHeight)
-            .stroke();
+           .rect(barX, barY, barWidth, barHeight)
+           .stroke();
 
-        // Ajouter l'étiquette de catégorie (description)
+        // Ajouter l'étiquette de catégorie (sujet)
         doc.fillColor('#333333')
-            .fontSize(7)
-            .text(category, barX - barPadding / 2, chartY + chartHeight + 5, {
-                width: barWidth + barPadding,
-                align: 'center',
-                angle: 45 // Incliner le texte pour une meilleure lisibilité
-            });
+           .fontSize(7)
+           .text(category, barX - barPadding/2, chartY + chartHeight + 5, {
+               width: barWidth + barPadding,
+               align: 'center',
+               angle: 45 // Incliner le texte pour une meilleure lisibilité
+           });
 
         // Ajouter la valeur au-dessus de la barre
         if (barHeight > 15) { // Seulement si la barre est assez haute
             doc.fillColor('#ffffff')
-                .fontSize(8)
-                .text(formatCurrency(value), barX, barY + barHeight / 2 - 5, {
-                    width: barWidth,
-                    align: 'center'
-                });
+               .fontSize(8)
+               .text(value, barX, barY + barHeight/2 - 5, {
+                   width: barWidth,
+                   align: 'center'
+               });
         } else {
             // Sinon mettre la valeur au-dessus de la barre
             doc.fillColor('#333333')
-                .fontSize(8)
-                .text(formatCurrency(value), barX, barY - 15, {
-                    width: barWidth,
-                    align: 'center'
-                });
+               .fontSize(8)
+               .text(value, barX, barY - 15, {
+                   width: barWidth,
+                   align: 'center'
+               });
         }
     });
 
-    // Ajouter une légende pour les descriptions tronquées
-    if (sortedData.some(([desc]) => desc.length > 15)) {
+    // Ajouter une légende pour les sujets tronqués
+    if (sortedData.some(([topic]) => topic.length > 15)) {
         // Move to a position below the chart
         doc.y = chartY + chartHeight + 20; // Position after the chart and labels
-        
+
         // Reset x position and use the page width for centering
         doc.x = 50;
         doc.fontSize(8).fillColor('#666666')
-           .text('Note: Certaines descriptions ont été tronquées pour la lisibilité du graphique.', {
+           .text('Note: Certains sujets ont été tronqués pour la lisibilité du graphique.', {
                align: 'center',
                width: doc.page.width - 100 // Use page width instead of chart width
            });
     }
 
     // Mettre à jour la position du curseur
-    doc.y = chartY + chartHeight + 80; // Laisser de l'espace pour les étiquettes inclinées
+    doc.y = chartY + chartHeight + 60; // Laisser de l'espace pour les étiquettes inclinées
 
     return doc;
 }
 
 /**
- * Ajoute un graphique circulaire (camembert) montrant la répartition des revenus par catégorie
- * @param {PDFDocument} doc - Document PDF
- * @param {Object} categorySummary - Object avec les catégories et leurs montants
+ * Ajoute un graphique circulaire (camembert) montrant la répartition des charges par catégorie (Removed as it's not directly applicable to RCP meetings)
  */
-function addPieChart(doc, categorySummary) {
-    // Titre de la section
+// function addPieChart(doc, categorySummary) { ... } // Removed
 
-    // Reset position to left margin
-    doc.x = 50;
-
-    // Add title
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-        .text('Répartition des Revenus par Catégorie', {
-            underline: true,
-            align: 'center',
-            width: doc.page.width - 100 // Ensures we have the full width to center within 
-        });
-    doc.moveDown(0.5);
-
-
-    // Configuration du graphique
-    const centerX = 300;
-    const centerY = doc.y + 130;
-    const radius = 100;
-
-    // Calculer le total pour les pourcentages
-    const total = Object.values(categorySummary).reduce((sum, val) => sum + val, 0);
-
-    // Définir les couleurs
-    const colors = [
-        '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f',
-        '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab'
-    ];
-
-    // Dessiner le camembert
-    let startAngle = 0;
-    let colorIndex = 0;
-    const legend = [];
-
-    for (const [category, amount] of Object.entries(categorySummary)) {
-        const portion = amount / total;
-        const endAngle = startAngle + portion * Math.PI * 2;
-
-        // Dessiner le secteur
-        doc.fillColor(colors[colorIndex % colors.length]);
-
-        // Dessiner un secteur avec un léger décalage pour l'effet "explosion" (pour les grands secteurs)
-        const explode = portion > 0.2 ? 10 : 0;
-        const midAngle = startAngle + (endAngle - startAngle) / 2;
-        const offsetX = explode * Math.cos(midAngle);
-        const offsetY = explode * Math.sin(midAngle);
-
-        // Déplacer au centre
-        doc.moveTo(centerX + offsetX, centerY + offsetY);
-        // Tracer le secteur
-        doc.arc(centerX + offsetX, centerY + offsetY, radius, startAngle, endAngle, false);
-        // Revenir au centre
-        doc.lineTo(centerX + offsetX, centerY + offsetY);
-        doc.fill();
-
-        // Ajouter à la légende
-        legend.push({
-            category: category,
-            amount: amount,
-            color: colors[colorIndex % colors.length],
-            percentage: portion * 100,
-            startAngle: startAngle,
-            endAngle: endAngle
-        });
-
-        // Mettre à jour pour le prochain secteur
-        startAngle = endAngle;
-        colorIndex++;
-    }
-
-    // Ajouter la légende
-    const legendX = 50;
-    const legendY = centerY + radius + 30;
-
-    doc.fontSize(10).font('Helvetica-Bold')
-        .text('Légende', legendX, legendY);
-    doc.moveDown(0.5);
-
-    legend.forEach((item, index) => {
-        const itemY = doc.y;
-
-        // Carré de couleur
-        doc.fillColor(item.color)
-            .rect(legendX, itemY, 10, 10)
-            .fill();
-
-        // Texte
-        doc.fillColor('#333333').font('Helvetica')
-            .text(
-                `${item.category}: ${formatCurrency(item.amount)} (${item.percentage.toFixed(1)}%)`,
-                legendX + 15, itemY, { continued: false }
-            );
-    });
-
-    // Mettre à jour la position du curseur
-    doc.moveDown(2);
-
-    return doc;
-}
 module.exports = { generateReport };

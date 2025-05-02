@@ -309,11 +309,11 @@
                 <div id="report-selection-frame" style="display: none; margin-top: 20px; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px;">
                     <p>Choisissez les rapports que vous souhaitez télécharger :</p>
                     <div>
-                        <input type="checkbox" id="checkbox-charges-report" checked>
+                        <input type="checkbox" id="checkbox-charges-report">
                         <label for="checkbox-charges-report">Rapport de Charges</label>
                     </div>
                     <div>
-                        <input type="checkbox" id="checkbox-revenus-report" checked>
+                        <input type="checkbox" id="checkbox-revenus-report">
                         <label for="checkbox-revenus-report">Rapport de Revenus</label>
                     </div>
                     <!-- Add checkbox for Associates Report -->
@@ -326,8 +326,15 @@
                         <input type="checkbox" id="checkbox-projets-report">
                         <label for="checkbox-projets-report">Rapport des Projets et Missions</label>
                     </div>
+                    <!-- Add checkbox for RCP Meetings Report -->
+                    <div>
+                        <input type="checkbox" id="checkbox-rcp-meetings-report">
+                        <label for="checkbox-rcp-meetings-report">Rapport Réunions RCP</label>
+                    </div>
                     <button id="btn-download-reports" class="btn btn-primary" style="margin-top: 15px;">Télécharger</button>
                 </div>
+                <!-- New Export Data Button -->
+                <button id="exportDataBtn" class="btn btn-secondary" style="margin-top: 15px;">Exporter les données</button>
             </div>
         </div>
     </div>
@@ -372,6 +379,8 @@
                     endpoint = '/api/revenus/report/pdf';
                 } else if (reportType === 'projets') {
                     endpoint = '/api/projets/report/pdf'; // Set the correct endpoint for projets report
+                } else if (reportType === 'rcp-meetings') { // Add case for RCP meetings report
+                    endpoint = '/api/rcpMeetings/report/pdf';
                 } else {
                     console.error(`Unknown report type: ${reportType}`);
                     return;
@@ -626,11 +635,10 @@
             const checkboxRevenus = document.getElementById('checkbox-revenus-report');
             const checkboxAssociates = document.getElementById('checkbox-associates-report'); // Get the associates checkbox
             const checkboxProjets = document.getElementById('checkbox-projets-report'); // Get the new projets checkbox
-            // const exportModalClose = document.querySelector('#modal-export-reports .modal-close'); // Removed
+            const checkboxRcpMeetings = document.getElementById('checkbox-rcp-meetings-report'); // Get the new RCP meetings checkbox
 
             // Check if all necessary elements exist before adding listeners
-            // Updated the if condition to remove exportModal and exportModalClose checks
-            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && checkboxProjets) {
+            if (btnDownloadReports && checkboxCharges && checkboxRevenus && checkboxAssociates && checkboxProjets && checkboxRcpMeetings) { // Include the new checkbox
                 console.log("Report selection frame elements found, attaching download listener.");
                 btnDownloadReports.addEventListener('click', function() {
                     console.log("Download reports button clicked.");
@@ -638,9 +646,10 @@
                     const downloadRevenus = checkboxRevenus.checked;
                     const downloadAssociates = checkboxAssociates.checked;
                     const downloadProjets = checkboxProjets.checked; // Check the new projets checkbox
+                    const downloadRcpMeetings = checkboxRcpMeetings.checked; // Check the new RCP meetings checkbox
 
-                    // Updated console log
-                    console.log(`Charges selected: ${downloadCharges}, Revenues selected: ${downloadRevenus}, Associates selected: ${downloadAssociates}, Projets selected: ${downloadProjets}`);
+                    // Updated console log to include RCP meetings
+                    console.log(`Charges selected: ${downloadCharges}, Revenues selected: ${downloadRevenus}, Associates selected: ${downloadAssociates}, Projets selected: ${downloadProjets}, RCP Meetings selected: ${downloadRcpMeetings}`);
 
                     if (downloadCharges) {
                         downloadReport('charges');
@@ -654,13 +663,10 @@
                     if (downloadProjets) {
                         downloadReport('projets'); // Call downloadReport for projets
                     }
-
-                    // No need to close modal anymore
-                    // exportModal.style.display = 'none';
+                    if (downloadRcpMeetings) { // Call downloadReport for RCP meetings if checked
+                        downloadReport('rcp-meetings');
+                    }
                 });
-
-                // Removed event listeners for closing modal
-
             } else {
                 // Log specific missing elements for easier debugging
                 console.error("Report selection frame elements not found. Cannot attach download listener.", {
@@ -668,8 +674,8 @@
                     checkboxCharges: !!checkboxCharges,
                     checkboxRevenus: !!checkboxRevenus,
                     checkboxAssociates: !!checkboxAssociates,
-                    checkboxProjets: !!checkboxProjets
-                    // Removed exportModal and exportModalClose checks
+                    checkboxProjets: !!checkboxProjets,
+                    checkboxRcpMeetings: !!checkboxRcpMeetings // Include the new checkbox in the log
                 });
             }
 
@@ -712,31 +718,3 @@
 
 </body>
 </html>
-
-</file_content>
-
-Now that you have the latest state of the file, try the operation again with fewer, more precise SEARCH blocks. For large files especially, it may be prudent to try to limit yourself to <5 SEARCH/REPLACE blocks at a time, then wait for the user to respond with the result of the operation before following up with another replace_in_file call to make additional edits.
-(If you run into this error 3 times in a row, you may use the write_to_file tool as a fallback.)
-</error><environment_details>
-# VSCode Visible Files
-templates/parametres.html
-
-# VSCode Open Tabs
-api/charges/index.js
-index.html
-api/professionnels/index.js
-server.js
-api/associates/report.js
-templates/parametres.html
-js/services/DataService.js
-api/charges/report.js
-
-# Current Time
-5/2/2025, 12:09:55 AM (Europe/Paris, UTC+2:00)
-
-# Context Window Usage
-90,532 / 1,048.576K tokens used (9%)
-
-# Current Mode
-ACT MODE
-</environment_details>
