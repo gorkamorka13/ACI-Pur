@@ -143,14 +143,14 @@ async function generateProjetsReportPDF() {
                 doc.strokeColor("#cccccc").lineWidth(0.5).moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).stroke();
                 doc.moveDown();
             }
-        }
+         }
 
-        // --- End PDF Content ---
+         // --- End PDF Content ---
 
-        // Add footer with page numbers
-        addFooter(doc);
+         // Add footer with page numbers
+         addFooter(doc);
 
-        doc.end();
+         doc.end();
 
         // Wait for PDF generation to complete
         await new Promise(resolve => doc.on('end', resolve));
@@ -234,44 +234,27 @@ function addSummarySection(doc, summary) {
     doc.y = startY + rowHeight * summaryTable.rows.length + 20; // Update Y position
 }
 
-
 /**
- * Adds footer with page numbers to the document
+ * Adds footer with page numbers to each page
  */
 function addFooter(doc) {
-    const range = doc.bufferedPageRange(); // Get page range
-    const totalPages = range.count;
-
-    for (let i = range.start; i < range.start + totalPages; i++) {
+    const range = doc.bufferedPageRange(); // Get the range of buffered pages
+    for (let i = range.start; i < range.count; i++) {
         doc.switchToPage(i);
 
-        // Add footer divider
-        doc.lineWidth(0.5).strokeColor('#cccccc')
-           .moveTo(50, doc.page.height - 50)
-           .lineTo(doc.page.width - 50, doc.page.height - 50)
-           .stroke();
-
-        // Add page number
-        doc.fontSize(8).fillColor('#666666').font('Helvetica')
-           .text(
-               `Page ${i + 1} sur ${totalPages}`,
-               50,
-               doc.page.height - 40,
-               { align: 'center', width: doc.page.width - 100 }
-           );
-
-        // Add generation timestamp
-        doc.fontSize(8).fillColor('#666666').font('Helvetica')
-           .text(
-               `Généré le ${moment(new Date()).format('DD/MM/YYYY HH:mm:ss')}`,
-               50,
-               doc.page.height - 30,
-               { align: 'center', width: doc.page.width - 100 }
-           );
-    }
-     // Ensure we switch back to the last page if needed
-    if (totalPages > 0) {
-        doc.switchToPage(totalPages - 1);
+        // Add page number at the bottom center
+        const oldBottomMargin = doc.page.margins.bottom;
+        doc.page.margins.bottom = 0 // Allow drawing near the bottom
+        doc.fontSize(8).fillColor('#666666').text(
+            `Page ${i + 1} sur ${range.count}`,
+            0, // x position (0 for full width)
+            doc.page.height - 30, // y position (near bottom)
+            {
+                align: 'center',
+                width: doc.page.width // Use full page width for centering
+            }
+        );
+        doc.page.margins.bottom = oldBottomMargin; // Restore the bottom margin
     }
 }
 

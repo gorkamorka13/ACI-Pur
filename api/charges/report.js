@@ -417,40 +417,24 @@ function addCategoryBreakdown(doc, categorySummary) {
  * This is a completely rewritten function to fix the pagination issues
  */
 function addFooter(doc) {
-    // Get the total page count
-    const totalPages = doc.bufferedPageRange().count;
-    
-    // Add footer to each page
-    for (let i = 0; i < totalPages; i++) {
+    const range = doc.bufferedPageRange(); // Get the range of buffered pages
+    for (let i = range.start; i < range.count; i++) {
         doc.switchToPage(i);
-        
-        // Add footer divider
-        doc.lineWidth(0.5).strokeColor('#cccccc')
-           .moveTo(50, doc.page.height - 50)
-           .lineTo(doc.page.width - 50, doc.page.height - 50)
-           .stroke();
-        
-        // Add page number - now with correct total page count
-        doc.fontSize(8).fillColor('#666666').font('Helvetica')
-           .text(
-               `Page ${i + 1} sur ${totalPages}`, 
-               50, 
-               doc.page.height - 40, 
-               { align: 'center', width: doc.page.width - 100 }
-           );
-        
-        // Add generation timestamp
-        doc.fontSize(8).fillColor('#666666').font('Helvetica')
-           .text(
-               `Généré le ${formatDate(new Date(), true)}`, 
-               50, 
-               doc.page.height - 30, 
-               { align: 'center', width: doc.page.width - 100 }
-           );
+
+        // Add page number at the bottom center
+        const oldBottomMargin = doc.page.margins.bottom;
+        doc.page.margins.bottom = 0 // Allow drawing near the bottom
+        doc.fontSize(8).fillColor('#666666').text(
+            `Page ${i + 1} sur ${range.count}`,
+            0, // x position (0 for full width)
+            doc.page.height - 30, // y position (near bottom)
+            {
+                align: 'center',
+                width: doc.page.width // Use full page width for centering
+            }
+        );
+        doc.page.margins.bottom = oldBottomMargin; // Restore the bottom margin
     }
-    
-    // Return to the last page to continue
-    doc.switchToPage(totalPages - 1);
 }
 
 /**
