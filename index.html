@@ -551,6 +551,9 @@
             const cancelExportBtn = document.getElementById('cancelExportBtn');
             const exportRevenusCheckbox = document.getElementById('exportRevenus');
             const exportChargesCheckbox = document.getElementById('exportCharges');
+            const exportAssociesCheckbox = document.getElementById('exportAssocies');  
+            const exportProjetsCheckbox = document.getElementById('exportProjets'); // Added checkbox for projects
+            const exportRCPCheckbox = document.getElementById('exportRCP'); // Added checkbox for RCP          
 
             // Show the modal when the export button is clicked
             // Show the modal when the export button is clicked
@@ -581,8 +584,11 @@
                 confirmExportBtn.addEventListener('click', () => {
                     const includeRevenus = exportRevenusCheckbox.checked;
                     const includeCharges = exportChargesCheckbox.checked;
+                    const includeAssocies = exportAssociesCheckbox.checked; // Get the value of the checkbox
+                    const includeProjets = exportProjetsCheckbox.checked; // Get the value of the checkbox for projects
+                    const includeRCP = exportRCPCheckbox.checked; // Get the value of the checkbox for RCP
                     exportDialog.style.display = 'none'; // Hide the modal
-                    exportData(includeRevenus, includeCharges); // Call export function with options
+                    exportData(includeRevenus, includeCharges, includeAssocies, includeProjets, includeRCP); // Call export function with options
                 });
             } else {
                 console.error("Bouton de confirmation 'confirmExportBtn' non trouvé.");
@@ -601,7 +607,7 @@
         });
 
         // Fonction d'export (modifiée pour accepter les options)
-        function exportData(includeRevenus, includeCharges) {
+        function exportData(includeRevenus, includeCharges, includeAssocies, includeProjets, includeRCP) {
             if (!globalData) {
                 console.warn("Aucune donnée globale disponible pour l'exportation.");
                 return;
@@ -615,6 +621,15 @@
             if (includeCharges && globalData.charges) {
                 dataToExport.charges = globalData.charges;
             }
+            if (includeAssocies && globalData.professionnels) {
+                dataToExport.associes = globalData.professionnels.filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'));
+            }
+            if (includeRCP && globalData.rcpMeetings) {
+                dataToExport.rcpMeetings = globalData.rcpMeetings;
+            }
+            if (includeProjets && globalData.projets) {
+                dataToExport.projets = globalData.projets;
+            }   
 
             // If no data is selected, maybe show a message or export an empty object
             if (Object.keys(dataToExport).length === 0) {
@@ -648,6 +663,14 @@
                 <label>
                     <input type="checkbox" id="exportCharges" checked> Charges
                 </label>
+                <label>
+                    <input type="checkbox" id="exportAssocies" checked> Associés
+                </label>          
+                <label>
+                    <input type="checkbox" id="exportRCP" checked> RCP
+                </label>
+                <label>
+                    <input type="checkbox" id="exportProjets" checked> Projets
             </div>
             <div class="modal-actions">
                 <button id="confirmExportBtn">Exporter</button>
