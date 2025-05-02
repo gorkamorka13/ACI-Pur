@@ -22,6 +22,7 @@ async function generateProjetsReportPDF() {
             ],
             order: [['titre', 'ASC']], // Order by project title
         });
+        console.log('projets:', projets);
 
         // 2. Create PDF Document
         const doc = new PDFDocument({
@@ -72,8 +73,16 @@ async function generateProjetsReportPDF() {
            .text(`Généré le : ${moment(new Date()).format('DD/MM/YYYY HH:mm:ss')}`, { align: 'center' });
         doc.moveDown(1);
 
+        // Calculate project counts by status
+        const projetsValidesCount = projets.filter(p => p.statut === 'valide').length;
+        const projetsEnCoursCount = projets.filter(p => p.statut === 'en-cours').length;
+
         // Add summary section (e.g., total number of projects, breakdown by status)
-        addSummarySection(doc, { totalProjets: projets.length });
+        addSummarySection(doc, { 
+            totalProjets: projets.length,
+            projetsValides: projetsValidesCount,
+            projetsEnCours: projetsEnCoursCount
+        });
         doc.moveDown(1);
 
         // Iterate through each project
@@ -183,8 +192,8 @@ async function generateProjetsReportPDF() {
  */
 function addSummarySection(doc, summary) {
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#333333')
-       .text('Résumé', 50, doc.y, { 
-           underline: true, 
+       .text('Résumé', 50, doc.y, {
+           underline: true,
            align: 'left',
            width: doc.page.width - 100
         });
@@ -193,14 +202,17 @@ function addSummarySection(doc, summary) {
     const summaryTable = {
         headers: ['Métrique', 'Valeur'],
         rows: [
-            ['Nombre Total de Projets', summary.totalProjets]
+            ['Nombre Total de Projets', summary.totalProjets],
+            ['Projets Validés', summary.projetsValides || 0],
+            ['Projets En Cours', summary.projetsEnCours || 0]
         ]
     };
 
     // Table styling
     const startY = doc.y;
-    const startX = 100;
     const columnWidths = [200, 100];
+    const tableWidth = columnWidths.reduce((sum, w) => sum + w, 0);
+    const startX = (doc.page.width - tableWidth) / 2; // Center the table    
     const rowHeight = 25;
 
     // Draw summary table
