@@ -295,9 +295,6 @@
                 <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-reunion">
                     <i class="fas fa-plus"></i> Ajouter une réunion
                 </button>
-                <button class="btn btn-secondary" id="btn-generate-rcp-report">
-                    <i class="fas fa-file-pdf"></i> Générer Rapport PDF
-                </button>
                 <div class="filter-group">
                     <label for="filter-annee">Filtrer par année:</label>
                     <select id="filter-annee" class="form-control">
@@ -683,12 +680,13 @@
 
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            
+        document.addEventListener('DOMContentLoaded', async function() { // Made async to await loadData
+            await loadData(); // Wait for data to load
+            generateAndDisplayReport(); // Call the report function after data is loaded
+
             // Gestion du filtre par année
             document.getElementById('filter-annee').addEventListener('change', initTableReunions);
-            
+
             // Generic modal close handling is now done by js/main.js
             // Remove the inline generic handler to avoid conflicts.
 
@@ -821,8 +819,8 @@
             setInterval(loadData, 30000);
         });
 
-        // Gestion du bouton "Générer Rapport PDF"
-        document.getElementById('btn-generate-rcp-report').addEventListener('click', async function() {
+        // Function to generate and display the PDF report
+        async function generateAndDisplayReport() {
             try {
                 // Make a GET request to the report endpoint
                 const response = await fetch('/api/rcpMeetings/report/pdf');
@@ -842,13 +840,14 @@
 
                 // Clean up the object URL after the tab is likely loaded
                 // A small delay might be needed depending on browser behavior
-                setTimeout(() => URL.revokeObjectURL(pdfUrl), 100); 
+                setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
 
             } catch (error) {
                 console.error('Erreur lors de la génération du rapport PDF:', error);
-                alert(`Erreur lors de la génération du rapport PDF: ${error.message}`);
+                // Optionally alert the user, but maybe less intrusive on page load
+                // alert(`Erreur lors de la génération du rapport PDF: ${error.message}`);
             }
-        });
+        }
 
 
         // Display username on load
