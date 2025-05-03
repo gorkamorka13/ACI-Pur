@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const fs = require('fs'); // Import fs module
 const app = express();
 const port = 3000;
 const os = require('os');
@@ -103,6 +104,17 @@ app.get('/api/projets/report/pdf', authenticateToken, async (req, res) => {
 
 // Public authentication routes
 app.use('/api/auth', authRouter); // Utiliser le routeur d'authentification
+
+// Ensure images directory exists
+const imagesDir = path.join(__dirname, 'images'); // Use 'images' directory name
+if (!fs.existsSync(imagesDir)){
+    fs.mkdirSync(imagesDir, { recursive: true });
+    console.log(`Created directory: ${imagesDir}`);
+}
+
+// Serve static files for avatars from 'images' directory
+app.use('/images', express.static(imagesDir)); // Use 'images' directory variable
+
 
 // Synchronisation de la base de données et démarrage du serveur
 db.sequelize.sync().then(() => {

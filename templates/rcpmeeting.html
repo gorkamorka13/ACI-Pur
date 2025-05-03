@@ -272,8 +272,9 @@
                 <div class="header-content">
                     <h1>Réunions RCP</h1>
                     <div class="user-info">
-                        <span id="usernameDisplay">Administrateur</span>
-                        <i class="fas fa-user-circle"></i>
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <span id="usernameDisplay">Utilisateur</span>
+                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
                 </div>
             </header>
@@ -416,6 +417,7 @@
 </body>
 </html>
     <script type="module" src="../js/main.js"></script>
+    <script src="../js/ui/updateHeader.js">\</script>
     <script type="module">
         import { dataService } from '/js/services/DataService.js';
 

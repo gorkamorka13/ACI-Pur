@@ -34,8 +34,9 @@
                 <div class="header-content">
                     <h1>Tableau de bord</h1>
                     <div class="user-info">
-                        <span id="usernameDisplay">Administrateur</span> <!-- Added ID here -->
-                        <i class="fas fa-user-circle"></i>
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <span id="usernameDisplay">Utilisateur</span>
+                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
                 </div>
             </header>
@@ -513,10 +514,13 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            // Display username on load
+            // Display username and avatar on load
             const usernameElement = document.getElementById('usernameDisplay');
+            const avatarElement = document.getElementById('userAvatar'); // Get avatar element
+            const defaultAvatar = '/images/default_avatar.png'; // Default avatar path using new route
             const token = localStorage.getItem('token');
-            let username = 'developpement'; // Default value
+            let username = 'Utilisateur'; // Default value if no token or error
+            let avatarSrc = defaultAvatar; // Default avatar src
 
             if (token) {
                 try {
@@ -525,19 +529,37 @@
                     const payloadJson = atob(payloadBase64);
                     const payload = JSON.parse(payloadJson);
 
-                    if (payload && payload.username) {
-                        username = payload.username;
+                    // Set username and avatar from payload if available
+                    if (payload) {
+                        if (payload.username) {
+                            username = payload.username;
+                        }
+                        // Use avatar from payload if it exists, otherwise keep default
+                        if (payload.avatar) {
+                            avatarSrc = payload.avatar;
+                        }
                     }
                 } catch (e) {
                     console.error('Failed to decode JWT token:', e);
-                    // Keep default 'developpement' if decoding fails
+                    // Keep default username and avatar if decoding fails
                 }
             }
 
+            // Update DOM elements
             if (usernameElement) {
                 usernameElement.textContent = username;
             } else {
                 console.error("Username display element 'usernameDisplay' not found.");
+            }
+            if (avatarElement) {
+                avatarElement.src = avatarSrc;
+                // Optional: Add error handling for the image itself
+                avatarElement.onerror = () => {
+                    console.warn(`Failed to load avatar image: ${avatarSrc}. Falling back to default.`);
+                    avatarElement.src = defaultAvatar; // Set to default on error
+                };
+            } else {
+                console.error("Avatar display element 'userAvatar' not found.");
             }
 
 

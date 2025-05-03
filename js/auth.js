@@ -14,22 +14,31 @@ document.addEventListener('DOMContentLoaded', () => {
         registerForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Prevent default form submission
 
-            const email = document.getElementById('registerEmail').value;
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
+            const emailInput = document.getElementById('registerEmail');
+            const usernameInput = document.getElementById('registerUsername');
+            const passwordInput = document.getElementById('registerPassword');
+            const avatarInput = document.getElementById('registerAvatar'); // Get avatar input
+
+            const formData = new FormData(); // Create FormData
+            formData.append('email', emailInput.value);
+            formData.append('username', usernameInput.value);
+            formData.append('password', passwordInput.value);
+
+            // Append avatar file only if selected
+            if (avatarInput.files.length > 0) {
+                formData.append('avatar', avatarInput.files[0]);
+            }
 
             displayMessage('Registering...');
 
             try {
+                // Send FormData - DO NOT set Content-Type header manually
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, username, password }),
+                    body: formData, // Send FormData object
                 });
 
-                const data = await response.json();
+                const data = await response.json(); // Still expect JSON response
 
                 if (response.ok) {
                     displayMessage(data.message || 'Registration successful!');

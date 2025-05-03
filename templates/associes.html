@@ -37,8 +37,9 @@
                 <div class="header-content">
                     <h1>Gestion des Associés</h1>
                     <div class="user-info">
-                        <span id="usernameDisplay">Administrateur</span>
-                        <i class="fas fa-user-circle"></i>
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <span id="usernameDisplay">Utilisateur</span>
+                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
                 </div>
             </header>
@@ -446,5 +447,6 @@
         });
     </script>
     <script type="module" src="../js/main.js"></script> <!-- Load main JS as module -->
+    <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
 </body>
 </html>

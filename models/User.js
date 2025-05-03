@@ -24,6 +24,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   }, {
     // Optional: Model options like timestamps, table name, etc.
     // timestamps: true,
