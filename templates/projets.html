@@ -1040,6 +1040,7 @@
                 localStorage.removeItem('token'); // Remove the JWT from localStorage
                 window.location.href = 'login.html'; // Redirect to the login page
         });
+    } // <-- Added missing closing brace for 'if (logoutButton)'
     </script>
     <script type="module" src="../js/main.js"></script>
     <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->

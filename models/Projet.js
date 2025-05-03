@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     statut: {
-      type: DataTypes.ENUM('en-cours', 'terminé', 'annulé'),
+      type: DataTypes.ENUM('en-cours', 'valide'), // Updated to match frontend usage
       allowNull: false
     }
   }, {
