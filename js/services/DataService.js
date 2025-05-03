@@ -21,7 +21,12 @@ class DataService {
                 throw new Error('Authentication required.'); 
             }
             // For other non-OK responses, throw a standard HTTP error
-            throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // Check if the response is 204 No Content
+        if (response.status === 204) {
+            // Return null or undefined, or resolve the promise without a value
+            return null; // Or return undefined;
         }
         return response.json();
     }
