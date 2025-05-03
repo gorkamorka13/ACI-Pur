@@ -338,7 +338,7 @@
                 <!-- New Export Data Button -->
                 <button id="exportDataBtn" class="btn btn-primary" style="margin-top: 15px;">Exporter les données</button>
             </div>
-            <!-- Section GGestion des utilisateurs -->
+            <!-- Section Gestion des utilisateurs -->
             <div class="content-section" id="Gestion-utilisateurs-section">
                 <h2 class="section-title">Gestion des utilisateurs</h2>
                 <p class="section-subtitle">Gérez les utilisateurs de l'application.</p>
@@ -774,6 +774,7 @@
             list.style.padding = '0';
 
             users.forEach(user => {
+                console.log('Processing user:', user); // Add console log here
                 const listItem = document.createElement('li');
                 listItem.style.display = 'flex';
                 listItem.style.alignItems = 'center';
@@ -782,24 +783,43 @@
                 listItem.style.border = '1px solid #eee';
                 listItem.style.borderRadius = '4px';
 
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `user-checkbox-${user.id}`; // Assign a unique ID
+                checkbox.value = user.id;
+                checkbox.style.marginRight = '10px'; // Add some space between checkbox and avatar
+                checkbox.style.verticalAlign = 'middle'; // Align checkbox vertically
+
                 const avatar = document.createElement('img');
-                // Use default avatar if user.avatar is missing or invalid
-                avatar.src = user.avatar ? `/images/${user.avatar}` : '/images/default_avatar.png'; 
+                // Use user.avatar directly if it exists, otherwise use default.
+                // The user.avatar field seems to already contain the '/images/' path.
+                avatar.src = user.avatar ? user.avatar : '/images/default_avatar.png';
                 avatar.alt = `Avatar de ${user.email}`;
                 avatar.style.width = '40px';
                 avatar.style.height = '40px';
                 avatar.style.borderRadius = '50%';
                 avatar.style.marginRight = '15px';
+                avatar.style.verticalAlign = 'middle'; // Align avatar vertically
                 // Add error handling for broken image links
-                avatar.onerror = function() { this.src = '/images/default_avatar.png'; }; 
+                avatar.onerror = function() { this.src = '/images/default_avatar.png'; };
 
                 const emailSpan = document.createElement('span');
                 emailSpan.textContent = user.email;
                 emailSpan.style.fontSize = '0.9em';
                 emailSpan.style.color = '#333';
+                emailSpan.style.verticalAlign = 'middle'; // Align email vertically
+                emailSpan.style.marginRight = '10px'; // Add some space after email
 
+                const usernameSpan = document.createElement('span');
+                usernameSpan.textContent = `(${user.username || 'N/A'})`; // Display username, fallback if missing
+                usernameSpan.style.fontSize = '0.8em';
+                usernameSpan.style.color = '#666';
+                usernameSpan.style.verticalAlign = 'middle';
+
+                listItem.appendChild(checkbox); // Add checkbox first
                 listItem.appendChild(avatar);
                 listItem.appendChild(emailSpan);
+                listItem.appendChild(usernameSpan); // Add username span
                 list.appendChild(listItem);
             });
 

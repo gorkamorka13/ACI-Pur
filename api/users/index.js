@@ -6,7 +6,7 @@ const { User } = require('../../models'); // Adjust path as needed based on your
 router.get('/', async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: ['id', 'email', 'avatar'] // Select only necessary fields
+            attributes: ['id', 'email', 'username', 'avatar'] // Include username
         });
         res.json(users);
     } catch (error) {
