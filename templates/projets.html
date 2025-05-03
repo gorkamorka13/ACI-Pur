@@ -496,7 +496,7 @@
                                     <ul style="margin-top: 5px; padding-left: 20px;">
                                         <li>Score = Somme sur tous les projets [ (Poids du Projet * 2 si Responsable) + (Poids du Projet * 1 si Contributeur) ]</li>
                                         <li>Un professionnel ne compte qu'une fois par projet (la responsabilité prime sur la contribution).</li>
-                                        <li>Forule dans repartition.html aux lignes 391-420.</li>
+                                        <li>Formule de répartition dans repartition.html aux lignes 391-420.</li>
                                     </ul>
                                 </div>
 
@@ -530,6 +530,7 @@
     <div class="modal" id="modal-projet">
         <div class="modal-content">
             <div class="modal-header">
+                <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
                 <h3 class="modal-title">Nouveau projet</h3>
                 <button class="modal-close">&times;</button>
             </div>
@@ -606,8 +607,7 @@
 
                 // Afficher la liste initiale des projets
                 renderListeProjets();
-                // Removed renderAssociesDropdown call
-
+   
                 // Si un projet était sélectionné, le réafficher
                 if (projetSelectionne) {
                     const projetActuel = allProjets.find(p => p.id === projetSelectionne.id);
@@ -637,8 +637,6 @@
             // Boutons de détail (si le projet est sélectionné)
             document.getElementById('btn-modifier').addEventListener('click', handleModifierProjet);
             document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
-            // document.getElementById('btn-modifier-poids').addEventListener('click', modifierPoids); // À réimplémenter si besoin
-            // Removed btnAjouterAssocie listener
             // Removed btn-egaliser listener
 
             // Fermeture des modales
@@ -692,7 +690,7 @@
                 div.addEventListener('click', () => {
                     document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
                     div.classList.add('selected');
-              // REMOVED: projetSelectionne = projet; (afficherDetailsProjet will set the global variable after fetching full data)
+                    
               // Fetch detailed data including associations when a project is clicked
               afficherDetailsProjet(projet.id);
           });

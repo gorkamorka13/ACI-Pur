@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,13 @@
     <!-- Ajout de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
+                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <h1>MSP Gestion</h1>
             </div>
             <nav>
                 <ul>
@@ -25,7 +28,8 @@
                     <li><a href="templates/projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="templates/repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li><a href="templates/parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
-                    <li><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li> <!-- Logout button -->
+                    <li><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    <!-- Logout button -->
                 </ul>
             </nav>
         </div>
@@ -34,7 +38,8 @@
                 <div class="header-content">
                     <h1>Tableau de bord</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
+                            style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
                         <span id="usernameDisplay">Utilisateur</span>
                         <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
@@ -131,7 +136,7 @@
         </div>
     </div>
 
-    
+
     <div class="dialog-overlay" id="fonctionnalitesDialog">
         <div class="dialog-content">
             <div class="dialog-banner">
@@ -147,25 +152,25 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Authentication -->
     <script type="module" src="js/auth.js"></script>
 
     <!-- Configuration -->
     <script type="module" src="js/config/config.js"></script>
-    
+
     <!-- Utilitaires -->
     <script type="module" src="js/utils/dateUtils.js"></script>
     <script type="module" src="js/utils/validationUtils.js"></script>
-    
+
     <!-- Services -->
     <script type="module" src="js/services/DataService.js"></script>
     <script type="module" src="js/services/AssocieService.js"></script>
-    
+
     <!-- Migration - Désactivé -->
     <!-- <script type="module" src="js/migration/migrationService.js"></script> -->
     <!-- <script type="module" src="js/migration/index.js"></script> -->
-    
+
     <!-- Application -->
     <script type="module" src="js/main.js"></script>
     <script type="module">
@@ -268,21 +273,21 @@
                 // Afficher un message d'erreur plus ciblé si possible
                 // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
                 const repartitionChartElement = document.getElementById('repartition-chart');
-                 if (repartitionChartElement) {
-                     const ctx = repartitionChartElement.getContext('2d');
-                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                     ctx.textAlign = 'center';
-                     ctx.fillStyle = 'red';
-                     ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
-                 }
-                 const parametresChartElement = document.getElementById('parametres-pie-chart');
-                 if (parametresChartElement) {
-                     const ctx = parametresChartElement.getContext('2d');
-                     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                     ctx.textAlign = 'center';
-                     ctx.fillStyle = 'red';
-                     ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
-                 }
+                if (repartitionChartElement) {
+                    const ctx = repartitionChartElement.getContext('2d');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'red';
+                    ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                }
+                const parametresChartElement = document.getElementById('parametres-pie-chart');
+                if (parametresChartElement) {
+                    const ctx = parametresChartElement.getContext('2d');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'red';
+                    ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                }
             }
         }
 
@@ -290,8 +295,8 @@
         function updateRepartitionChart() {
             // Vérifier si les données nécessaires sont chargées
             if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges || !globalData.rcpPresenceData || !globalData.projets) {
-                 console.warn('Données manquantes pour le graphique de répartition (index.html), annulation de la mise à jour.');
-                 return;
+                console.warn('Données manquantes pour le graphique de répartition (index.html), annulation de la mise à jour.');
+                return;
             }
 
             const chartElement = document.getElementById('repartition-chart');
@@ -370,43 +375,43 @@
                     });
                 }
             });
-             totalImplicationPoints = totalImplicationPoints || 1; // Avoid division by zero
+            totalImplicationPoints = totalImplicationPoints || 1; // Avoid division by zero
             // --- End Project Implication Calculation ---
 
 
             // Préparation des données pour le graphique
             const data = {
                 labels: associesActifs.map(pro => pro.nom),
-                    datasets: [
-                        {
-                            label: `Part Fixe (${params.partFixe || 0}%)`,
+                datasets: [
+                    {
+                        label: `Part Fixe (${params.partFixe || 0}%)`,
                         data: associesActifs.map(pro =>
                             (montantPartFixe / pointsFixePonderes) * ((pro.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1)
                         ),
-                            backgroundColor: '#2196F3',
+                        backgroundColor: '#2196F3',
                         stack: 'Stack 0',
-                        },
-                        {
-                            label: `Part RCP (${params.partRCP || 0}%)`,
-                            // Distribute montantPartRCP based on presence minutes
-                            data: associesActifs.map(p => {
-                                const presenceMinutes = presenceMap.get(p.id) || 0;
-                                return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
-                            }),
-                            backgroundColor: '#4CAF50',
-                            stack: 'Stack 0',
-                        },
-                        {
-                            label: `Part Projets (${params.partProjets || 0}%)`,
-                         // Distribute montantPartProjets based on calculated implication scores
+                    },
+                    {
+                        label: `Part RCP (${params.partRCP || 0}%)`,
+                        // Distribute montantPartRCP based on presence minutes
                         data: associesActifs.map(p => {
-                                const individualScore = implicationScores.get(p.id) || 0;
-                                return (montantPartProjets * (individualScore / totalImplicationPoints));
-                            }),
-                            backgroundColor: '#FFC107',
-                            stack: 'Stack 0',
-                        }
-                    ]
+                            const presenceMinutes = presenceMap.get(p.id) || 0;
+                            return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
+                        }),
+                        backgroundColor: '#4CAF50',
+                        stack: 'Stack 0',
+                    },
+                    {
+                        label: `Part Projets (${params.partProjets || 0}%)`,
+                        // Distribute montantPartProjets based on calculated implication scores
+                        data: associesActifs.map(p => {
+                            const individualScore = implicationScores.get(p.id) || 0;
+                            return (montantPartProjets * (individualScore / totalImplicationPoints));
+                        }),
+                        backgroundColor: '#FFC107',
+                        stack: 'Stack 0',
+                    }
+                ]
             };
 
             // Détruire l'ancien graphique s'il existe
@@ -415,51 +420,51 @@
             }
 
             try {
-                 repartitionChart = new Chart(ctx, {
-                     type: 'bar',
-                     data: data, // Utiliser les données préparées
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                         plugins: {
-                             title: { display: true, text: 'Répartition estimée des rémunérations' }, // Titre ajouté
-                             legend: {
-                                 position: 'top'
-                             },
-                             tooltip: {
-                                 callbacks: {
-                                     label: function(context) {
-                                         return context.dataset.label + ': ' + dataService.formatMontant(context.raw);
-                                     }
-                                 }
-                             }
-                         },
-                    scales: {
-                        x: {
-                            stacked: true,
-                            grid: {
-                                display: false
+                repartitionChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data, // Utiliser les données préparées
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'Répartition estimée des rémunérations' }, // Titre ajouté
+                            legend: {
+                                position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.dataset.label + ': ' + dataService.formatMontant(context.raw);
+                                    }
+                                }
                             }
                         },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return dataService.formatMontant(value);
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return dataService.formatMontant(value);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
             } catch (chartError) {
-                 console.error("Erreur lors de la création du graphique Chart.js (index.html):", chartError);
-                 // Afficher une erreur dans le canvas si la création échoue
-                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                 ctx.textAlign = 'center';
-                 ctx.fillStyle = 'red';
-                 ctx.fillText("Erreur chargement données.", ctx.canvas.width/2, ctx.canvas.height/2);
+                console.error("Erreur lors de la création du graphique Chart.js (index.html):", chartError);
+                // Afficher une erreur dans le canvas si la création échoue
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'red';
+                ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
             }
         }
 
@@ -496,39 +501,39 @@
             }
 
             try {
-                 parametresPieChart = new Chart(ctx, {
-                     type: 'pie',
-                     data: data,
-                     options: {
-                         responsive: true,
-                         maintainAspectRatio: false,
-                         plugins: {
-                             legend: {
-                                 position: 'top',
-                             },
-                             tooltip: {
-                                 callbacks: {
-                                     label: function(context) {
-                                         const label = context.label || '';
-                                         const value = context.raw || 0;
-                                         return `${label}: ${value}%`;
-                                     }
-                                 }
-                             }
-                         }
-                     }
-                 });
+                parametresPieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        return `${label}: ${value}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             } catch (chartError) {
-                 console.error("Erreur lors de la création du graphique Chart.js (parametres-pie-chart):", chartError);
-                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                 ctx.textAlign = 'center';
-                 ctx.fillText("Erreur graphique", ctx.canvas.width/2, ctx.canvas.height/2);
+                console.error("Erreur lors de la création du graphique Chart.js (parametres-pie-chart):", chartError);
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillText("Erreur graphique", ctx.canvas.width / 2, ctx.canvas.height / 2);
             }
         }
 
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Display username and avatar on load
             const usernameElement = document.getElementById('usernameDisplay');
             const avatarElement = document.getElementById('userAvatar'); // Get avatar element
@@ -585,4 +590,5 @@
         });
     </script>
 </body>
+
 </html>
