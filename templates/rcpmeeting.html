@@ -263,7 +263,7 @@
                     <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
-<li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    <li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
                 </ul>
             </nav>
         </div>
@@ -336,6 +336,7 @@
     <div class="modal" id="modal-add-reunion">
         <div class="modal-content">
             <div class="modal-header">
+                <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
                 <h3 class="modal-title">Ajouter une réunion</h3>
                 <button class="modal-close">&times;</button>
             </div>
@@ -706,7 +707,7 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', async function() { // Made async to await loadData
             await loadData(); // Wait for data to load
-            generateAndDisplayReport(); // Call the report function after data is loaded
+            //generateAndDisplayReport(); // Call the report function after data is loaded
 
             // Gestion du filtre par année
             document.getElementById('filter-annee').addEventListener('change', initTableReunions);

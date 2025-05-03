@@ -575,6 +575,12 @@ header {
     align-items: center;
 }
 
+.modal-header img{
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+    margin-right: 1rem;
+}
+
 .modal-title {
     margin: 0;
     color: var(--text-primary);
