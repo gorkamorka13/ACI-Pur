@@ -486,6 +486,25 @@ class DataService {
             throw error; // Re-throw
         }
     }
+
+    async deleteUsers(ids) {
+        try {
+            const headers = window.getAuthenticatedHeaders();
+            const url = `${this.baseUrl}/users`; // Endpoint to delete multiple users
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ids: ids }) // Send the array of IDs in the request body
+            });
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Erreur lors de la suppression des utilisateurs:', error);
+            throw error; // Re-throw
+        }
+    }
 }
 
 const dataService = new DataService();

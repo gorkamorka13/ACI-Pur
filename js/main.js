@@ -20,6 +20,36 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Initialisation des modales
     initModals();
+
+    // Gestion du bouton de suppression d'utilisateurs
+    const deleteUserButton = document.getElementById('delete-user-button');
+    if (deleteUserButton) {
+        deleteUserButton.addEventListener('click', async function() {
+            console.log("Delete user button clicked.");
+            const userCheckboxes = document.querySelectorAll('#user-list-container input[type="checkbox"]:checked');
+            const userIdsToDelete = Array.from(userCheckboxes).map(checkbox => checkbox.value);
+
+            if (userIdsToDelete.length === 0) {
+                showAlert("Veuillez sélectionner au moins un utilisateur à supprimer.", 'warning');
+                return;
+            }
+
+            confirmAction(`Êtes-vous sûr de vouloir supprimer les utilisateurs sélectionnés (${userIdsToDelete.length}) ?`, async () => {
+                try {
+                    await dataService.deleteUsers(userIdsToDelete);
+                    showAlert("Utilisateurs supprimés avec succès.", 'success');
+                    // Refresh user list
+                    const users = await dataService.loadUsers();
+                    displayUsers(users);
+                } catch (error) {
+                    console.error("Erreur lors de la suppression des utilisateurs:", error);
+                    showAlert("Erreur lors de la suppression des utilisateurs: " + error.message, 'danger');
+                }
+            });
+        });
+    } else {
+        console.warn("Le bouton de suppression d'utilisateurs n'a pas été trouvé.");
+    }
 });
 
 // Fonction pour initialiser le menu actif
