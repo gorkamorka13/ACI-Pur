@@ -7,7 +7,8 @@
     "start": "nodemon server.js",
     "dev": "npx kill-port 3000 && nodemon server.js",
     "seed": "node database/seed.js",
-    "init-db": "node database/seed.js"
+    "init-db": "node database/seed.js",
+      "postinstall": "npm rebuild bcrypt sqlite3 canvas --build-from-source"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
