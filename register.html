@@ -45,7 +45,7 @@
         .hero {
             background: linear-gradient(135deg, #3498db, #2c3e50);
             color: white;
-            padding: 4rem 2rem;
+            padding: 3rem 1rem;
             text-align: center;
         }
         
@@ -57,7 +57,7 @@
         .hero p {
             font-size: 1.2rem;
             max-width: 600px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 1rem;
         }
         
         .main-content {
@@ -105,6 +105,7 @@
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.3s;
+            box-sizing: border-box; /* Important for padding */
         }
         
         .form-group input:focus {
@@ -132,6 +133,8 @@
         .forgot-password {
             color: #3498db;
             text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
         }
         
         .btn-login {
@@ -182,16 +185,18 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            overflow-y: auto; /* Allow scrolling if content overflows */
         }
 
         .dialog-content {
             background-color: white;
-            padding: 2rem;
+            padding: 0rem;
             border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 600px;
             position: relative; /* For close button */
+            margin: 2rem 0; /* Add margin for scroll */
         }
 
         .dialog-content h3 {
@@ -203,14 +208,22 @@
         .dialog-content p {
             margin-bottom: 1rem;
         }
+        
+        .dialog-content ul {
+            margin-left: 20px;
+            margin-bottom: 1rem;
+        }
+        
+        .dialog-content li {
+            margin-bottom: 0.5rem;
+        }
 
         .dialog-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
             font-size: 1.5rem;
-            color: #333;
+            color: white; /* Change color to white for visibility on dark banner */
             cursor: pointer;
+            z-index: 10; /* Ensure it's on top */
+            margin-left: auto; /* Push to the right in flex container */
         }
 
         /* Contact Form Styles */
@@ -260,6 +273,107 @@
         .contact-form button:hover {
             background-color: #2980b9;
         }
+
+        /* New styles for dialog banner and body */
+        .dialog-banner {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            align-items: center;
+            position: relative; /* For close button positioning */
+        }
+
+        .dialog-banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Add margin-right if needed to create space between content and close button */
+        }
+
+        .dialog-banner-content h3 {
+            margin: 0; /* Remove default margin */
+        }
+
+        .dialog-banner img {
+            width: 40px; /* Adjust size as needed */
+            height: 40px; /* Adjust size as needed */
+            margin-right: 1rem;
+        }
+
+        .dialog-banner h3 {
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            color: white; /* Ensure title is white */
+        }
+
+        .dialog-body {
+            padding: 1rem; /* Add padding to the body */
+            background-color: white; /* Ensure background is white */
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Adjust dialog-content padding */
+        .dialog-content {
+            padding: 0; /* Remove padding from dialog-content */
+        }
+
+        /* New styles for contact dialog */
+        .login-header.dialog-banner {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .login-header.dialog-banner .dialog-banner-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .login-header.dialog-banner .dialog-banner-content img {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+        }
+
+        .login-header.dialog-banner .dialog-banner-content h3 {
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            color: white;
+        }
+
+        .dialog-body {
+            padding: 1rem;
+            background-color: white;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .dialog-close {
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        /* Adjust dialog-content padding */
+        .dialog-content {
+            padding: 0; /* Remove padding from dialog-content */
+        }
+
     </style>
 </head>
 <body>
@@ -318,43 +432,83 @@
         <p>&copy; 2025 MSP Gestion. Tous droits réservés.</p>
     </footer>
 
-    <!-- Dialog Boxes -->
-    <div class="dialog-overlay" id="fonctionnalitesDialog">
-        <div class="dialog-content">
-            <span class="dialog-close" id="closeFonctionnalites">&times;</span>
-            <h3>Fonctionnalités</h3>
-            <p>Contenu des fonctionnalités (à partir de README.md)</p>
-        </div>
-    </div>
-
+        <!-- READMEDialog Boxes -->
+        <div class="dialog-overlay" id="fonctionnalitesDialog">
+            <div class="dialog-content">
+                <div class="dialog-banner">
+                    <div class="dialog-banner-content">
+                        <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
+                        <h3>Fonctionnalités</h3>
+                    </div>
+                    <span class="dialog-close" id="closeFonctionnalites">&times;</span>
+                </div>
+                <div class="dialog-body">
+                    <p><strong>MSP Gestion - Gestion des Accords Cadres Interprofessionnels (ACI)</strong><br>
+                        Application web conçue pour les Maisons de Santé Pluriprofessionnelles (MSP) 
+                        afin de simplifier la gestion et la répartition des financements issus de l'Accord Cadre Interprofessionnel (ACI).</p>
+                        <h4>Objectif</h4>
+                        <p>
+                            L'ACI vise à valoriser le travail en équipe et les actions coordonnées des professionnels de santé au sein des MSP. Cette application a pour but de :
+                        </p>
+                        <ul>
+                            <li>Centraliser les informations relatives aux activités financées par l'ACI.</li>
+                            <li>Faciliter le suivi des revenus, des charges, et des différentes activités (projets, réunions).</li>
+                            <li>Automatiser la répartition des fonds ACI entre les professionnels selon des critères paramétrables.</li>
+                            <li>Offrir une meilleure visibilité sur l'utilisation des fonds et la contribution de chacun.</li>
+                        </ul>
+                        <h4>Fonctionnalités Principales</h4>
+                        <ul>
+                            <li><strong>Gestion des Revenus ACI:</strong> Enregistrement et suivi des différentes sources de revenus liées à l'ACI.</li>
+                            <li><strong>Gestion des Charges:</strong> Suivi des dépenses engagées dans le cadre des activités ACI.</li>
+                            <li><strong>Gestion des Associés et Professionnels:</strong> Répertoire des professionnels de santé membres de la MSP participant aux activités ACI.</li>
+                            <li><strong>Suivi des Réunions de Coordination Pluriprofessionnelles (RCP):</strong> Enregistrement des dates, participants et éventuellement des points clés des réunions pertinentes pour l'ACI.</li>
+                            <li><strong>Gestion des Projets et Missions:</strong> Suivi des projets spécifiques financés ou co-financés par l'ACI, incluant leur description, budget, et participants.</li>
+                            <li><strong>Répartition Automatique des Revenus:</strong> Calcul automatisé de la distribution des fonds ACI restants (après déduction des charges) entre les professionnels, basé sur les règles définies.</li>
+                            <li><strong>Paramétrage des Critères de Répartition:</strong> Interface permettant de configurer les règles et pondérations pour la répartition des fonds (ex: participation aux réunions, implication dans les projets, etc.).</li>
+                            <li><strong>Visualisation:</strong> (Potentiellement via Chart.js ou similaire) Graphiques et tableaux de bord pour visualiser les données financières et la répartition.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>      
     <div class="dialog-overlay" id="aProposDialog">
         <div class="dialog-content">
-            <span class="dialog-close" id="closeAPropos">&times;</span>
-            <h3>MSP Gestion</h3>
-            <p>Développeur: Dr Florian ESPARSA</p>
-            <p>Version: 1.0.0</p>
-            <p>Date: 01/05/2025</p>
+            <div class="dialog-banner">
+                <div class="dialog-banner-content">
+                    <h3>MSP Gestion</h3>
+                </div>
+                <span class="dialog-close" id="closeAPropos">&times;</span>
+            </div>
+            <div class="dialog-body">
+                <p style="text-align: center;">Développeur: Dr Florian ESPARSA</p>
+                <p style="text-align: center;">Version: 1.0.0</p>
+                <p style="text-align: center;">Date: 01/05/2025</p>
+            </div>
         </div>
     </div>
 
     <div class="dialog-overlay" id="contactDialog">
         <div class="dialog-content">
-            <span class="dialog-close" id="closeContact">&times;</span>
-            <div class="login-header">
-                <img src="/assets/favicon.ico" alt="MSP Gestion Logo" style="width: 50px; height: 50px; margin-bottom: 1rem;">
-                <h3>Contact</h3>
+            <div class="login-header dialog-banner">
+                <div class="dialog-banner-content">
+                    <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
+                    <h3>Contact</h3>
+                </div>
+                <span class="dialog-close" id="closeContact">&times;</span>
             </div>
-            <form class="contact-form" id="contactForm">
-                <div class="form-group">
-                    <label for="contactEmail">Votre email:</label>
-                    <input type="email" id="contactEmail" name="contactEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="contactMessage">Votre message:</label>
-                    <textarea id="contactMessage" name="contactMessage" rows="4" required></textarea>
-                </div>
-                <button type="submit">Envoyer</button>
-            </form>
+            <div class="dialog-body">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="contactEmail">Votre email:</label>
+                        <input type="email" id="contactEmail" name="contactEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Votre message:</label>
+                        <textarea id="contactMessage" name="contactMessage" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Envoyer</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -380,18 +534,7 @@
                             break;
                         case 'contact':
                             openDialog('contactDialog');
-                                window.location.href = 'login.html';
-                                break;
-                            case 'fonctionnalites':
-                                openDialog('fonctionnalitesDialog');
-                                // Populate with README content later
-                                break;
-                            case 'a-propos':
-                                openDialog('aProposDialog');
-                                break;
-                            case 'contact':
-                                openDialog('contactDialog');
-                                break;
+                            break;
                         }
                     }
                     // If no data-page, default link behavior occurs (e.g., opening PDF)
