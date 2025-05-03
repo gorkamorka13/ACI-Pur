@@ -342,7 +342,10 @@
             <div class="content-section" id="Gestion-utilisateurs-section">
                 <h2 class="section-title">Gestion des utilisateurs</h2>
                 <p class="section-subtitle">Gérez les utilisateurs de l'application.</p>
-                <!-- Add user management content here -->
+                <div id="user-list-container">
+                    <!-- User list will be loaded here -->
+                </div>
+                <!-- Add other user management content here if needed -->
             </div>
         </div>
     </div>
@@ -642,8 +645,10 @@
 
             // Add click listeners to tabs
             tabs.forEach((tab, index) => {
-                tab.addEventListener('click', function() {
-                    console.log(`Tab clicked: ${this.textContent}`);
+                tab.addEventListener('click', async function() { // Make the handler async
+                    const tabText = this.textContent.trim();
+                    console.log(`Tab clicked: ${tabText}`);
+
                     // Remove active class from all tabs and hide all content sections
                     tabs.forEach(t => t.classList.remove('active'));
                     contentSections.forEach(section => section.style.display = 'none');
@@ -651,28 +656,47 @@
                     // Add active class to the clicked tab
                     this.classList.add('active');
 
-                    // Display the corresponding content section or the report frame
-                    if (this.textContent.trim() === 'Génération de rapports') {
-                        console.log("Génération de rapports tab clicked. Displaying report frame.");
+                    // Determine which section to show
+                    let sectionToShow = null;
+                    if (tabText === 'Facteurs de répartition') {
+                        sectionToShow = document.getElementById('facteurs-repartition-section');
+                    } else if (tabText === 'Paramètres généraux') {
+                        sectionToShow = document.getElementById('parametres-generaux-section');
+                    } else if (tabText === 'Génération de rapports') {
+                        sectionToShow = document.getElementById('sauvegarde-export-section');
+                        // Show the report selection frame within this section
                         if (reportSelectionFrame) {
-                            reportSelectionFrame.style.display = 'block'; // Show the frame
-                            // Also ensure the parent section is visible
-                            const parentSection = document.getElementById('sauvegarde-export-section');
-                            if (parentSection) parentSection.style.display = 'block';
+                            reportSelectionFrame.style.display = 'block';
                         } else {
-                            console.error("Report selection frame element not found when clicking tab.");
+                             console.error("Report selection frame element not found when clicking tab.");
                         }
+                    } else if (tabText === 'Gestion des utilisateurs') {
+                        sectionToShow = document.getElementById('Gestion-utilisateurs-section');
+                        // Load and display users when this tab is clicked
+                        try {
+                            console.log("Loading users for display...");
+                            const users = await dataService.loadUsers();
+                            console.log("Users loaded:", users);
+                            displayUsers(users); // Call the display function
+                        } catch (error) {
+                            console.error("Failed to load or display users:", error);
+                            const container = document.getElementById('user-list-container');
+                            if (container) {
+                                container.innerHTML = '<p style="color: red;">Erreur lors du chargement des utilisateurs.</p>';
+                            }
+                        }
+                    }
+
+                    // Show the determined section
+                    if (sectionToShow) {
+                        sectionToShow.style.display = 'block';
                     } else {
-                        // Hide the report frame if another tab is clicked
-                        if (reportSelectionFrame) {
-                            reportSelectionFrame.style.display = 'none';
-                        }
-                        // Show the corresponding content section based on index
-                        if (contentSections[index]) {
-                             contentSections[index].style.display = 'block';
-                        } else {
-                             console.error(`Content section not found for tab index ${index}`);
-                        }
+                        console.error(`Content section not found for tab: ${tabText}`);
+                    }
+
+                    // Hide the report frame if the "Génération de rapports" tab is not active
+                    if (tabText !== 'Génération de rapports' && reportSelectionFrame) {
+                        reportSelectionFrame.style.display = 'none';
                     }
                 });
             });
@@ -729,6 +753,57 @@
 
 
             console.log("Initialization complete.");
+        }
+
+        // Function to display users in the list container
+        function displayUsers(users) {
+            const container = document.getElementById('user-list-container');
+            if (!container) {
+                console.error("User list container not found.");
+                return;
+            }
+            container.innerHTML = ''; // Clear previous content
+
+            if (!users || users.length === 0) {
+                container.innerHTML = '<p>Aucun utilisateur trouvé.</p>';
+                return;
+            }
+
+            const list = document.createElement('ul');
+            list.style.listStyle = 'none';
+            list.style.padding = '0';
+
+            users.forEach(user => {
+                const listItem = document.createElement('li');
+                listItem.style.display = 'flex';
+                listItem.style.alignItems = 'center';
+                listItem.style.marginBottom = '10px';
+                listItem.style.padding = '10px';
+                listItem.style.border = '1px solid #eee';
+                listItem.style.borderRadius = '4px';
+
+                const avatar = document.createElement('img');
+                // Use default avatar if user.avatar is missing or invalid
+                avatar.src = user.avatar ? `/images/${user.avatar}` : '/images/default_avatar.png'; 
+                avatar.alt = `Avatar de ${user.email}`;
+                avatar.style.width = '40px';
+                avatar.style.height = '40px';
+                avatar.style.borderRadius = '50%';
+                avatar.style.marginRight = '15px';
+                // Add error handling for broken image links
+                avatar.onerror = function() { this.src = '/images/default_avatar.png'; }; 
+
+                const emailSpan = document.createElement('span');
+                emailSpan.textContent = user.email;
+                emailSpan.style.fontSize = '0.9em';
+                emailSpan.style.color = '#333';
+
+                listItem.appendChild(avatar);
+                listItem.appendChild(emailSpan);
+                list.appendChild(listItem);
+            });
+
+            container.appendChild(list);
         }
 
         // Appel de l'initialisation (assure que le DOM est prêt car c'est un module)

@@ -463,6 +463,18 @@ class DataService {
         }
     }
 
+    // Function to load Users
+    async loadUsers() {
+        try {
+            const headers = window.getAuthenticatedHeaders();
+            const response = await fetch(`${this.baseUrl}/users`, { headers }); // Assuming /api/users endpoint
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error('Erreur lors du chargement des utilisateurs:', error);
+            throw error; // Re-throw
+        }
+    }
+
     // Function to load RCP presence data per professional
     async loadRcpPresenceData() {
         try {

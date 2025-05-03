@@ -22,6 +22,7 @@ const professionnelsRouter = require('./api/professionnels');
 const projetsRouter = require('./api/projets');
 const parametresRepartitionRouter = require('./api/parametresRepartition'); // Importer le nouveau routeur
 const authRouter = require('./api/auth'); // Importer le routeur d'authentification
+const usersRouter = require('./api/users'); // Importer le routeur des utilisateurs
 const associatesReportRouter = require('./api/associates/report'); // Importer le routeur du rapport des associés
 
 const authenticateToken = require('./middleware/authenticateToken'); // Importer le middleware d'authentification
@@ -74,6 +75,7 @@ app.use('/api/charges', authenticateToken, chargesRouter);
 app.use('/api/professionnels', authenticateToken, professionnelsRouter);
 app.use('/api/projets', authenticateToken, projetsRouter);
 app.use('/api/parametresRepartition', authenticateToken, parametresRepartitionRouter); // Utiliser le routeur dédié
+app.use('/api/users', authenticateToken, usersRouter); // Utiliser le routeur des utilisateurs
 // Add route for associates report
 app.get('/api/associates/report', authenticateToken, async (req, res) => {
     try {
