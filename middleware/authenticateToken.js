@@ -9,18 +9,7 @@ if (!JWT_SECRET) {
 }
 
 function authenticateToken(req, res, next) {
-  // --- Development Bypass ---
-  if (process.env.NODE_ENV === 'development') {
-    console.log('DEV MODE: Bypassing authentication.');
-    // Define a mock user for development.
-    // You might want to fetch a real user from the DB here if needed for testing specific user data/roles.
-    // For now, a simple mock user object is sufficient.
-    req.user = { id: 'dev-user-id', email: 'dev@example.com' };
-    return next(); // Skip token check
-  }
-  // --- End Development Bypass ---
-
-  // --- Standard Production Authentication ---
+  // --- Standard Authentication ---
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -34,8 +23,21 @@ function authenticateToken(req, res, next) {
       console.error('JWT Verification Error:', err.message);
       return res.sendStatus(403); // Token is invalid or expired
     }
-    req.user = user; // Attach decoded user payload
-    next(); // proceed to the protected route
+    // Fetch the user from the database to ensure they still exist and get their current details
+    db.User.findByPk(user.id)
+      .then(foundUser => {
+        if (!foundUser) {
+          console.error('JWT Verification Error: User not found in DB.');
+          return res.sendStatus(401); // User not found
+        }
+        // Attach the actual user object from the database to the request
+        req.user = foundUser;
+        next(); // proceed to the protected route
+      })
+      .catch(dbError => {
+        console.error('Database error during JWT verification:', dbError);
+        res.sendStatus(500); // Internal server error
+      });
   });
 }
 

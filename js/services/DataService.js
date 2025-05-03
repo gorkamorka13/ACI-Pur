@@ -16,9 +16,9 @@ class DataService {
             if (response.status === 401 || response.status === 403) {
                 console.error('Authentication failed. Redirecting to login.');
                 localStorage.removeItem('token'); // Clear invalid token
-                window.location.href = 'login.html'; // Redirect
+                window.location.href = '/login.html'; // Redirect using absolute path
                 // Throw an error to stop further processing in the calling function
-                throw new Error('Authentication required.'); 
+                throw new Error('Authentication required.');
             }
             // For other non-OK responses, throw a standard HTTP error
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -499,6 +499,15 @@ class DataService {
                 },
                 body: JSON.stringify({ ids: ids }) // Send the array of IDs in the request body
             });
+
+            // Check specifically for 403 Forbidden response
+            if (response.status === 403) {
+                // Return a specific indicator instead of letting handleResponse throw an error
+                const errorData = await response.json(); // Attempt to read error message from body
+                return { status: 403, message: errorData.message || 'Forbidden' };
+            }
+
+            // For other responses (including 200, 401, 500, etc.), use the standard handler
             return await this.handleResponse(response);
         } catch (error) {
             console.error('Erreur lors de la suppression des utilisateurs:', error);

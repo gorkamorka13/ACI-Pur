@@ -1,455 +1,603 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paramètres - MSP Gestion</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
     <!-- Ajout de Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <!-- Authentication -->
-        <script type="module" src="../js/auth.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Authentication -->
+    <script type="module" src="../js/auth.js"></script>
     <style>
-        .content-section {
-            background: white;
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+      .content-section {
+        background: white;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
 
-        .alert-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
+      .alert-info {
+        background-color: #f8f9fa;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
 
-        .alert-info i {
-            color: #2196F3;
-            font-size: 1.2em;
-            margin-top: 2px;
-        }
+      .alert-info i {
+        color: #2196f3;
+        font-size: 1.2em;
+        margin-top: 2px;
+      }
 
-        .alert-info p {
-            margin: 0;
-            color: #666;
-            font-size: 0.9em;
-            line-height: 1.4;
-        }
+      .alert-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+        line-height: 1.4;
+      }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
 
-        .tab {
-            padding: 8px 16px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            color: #666;
-            transition: all 0.2s;
-        }
+      .tab {
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: #666;
+        transition: all 0.2s;
+      }
 
-        .tab.active {
-            background: #2196F3;
-            color: white;
-            border-color: #2196F3;
-        }
+      .tab.active {
+        background: #2196f3;
+        color: white;
+        border-color: #2196f3;
+      }
 
-        .tab:hover:not(.active) {
-            background: #f5f5f5;
-        }
+      .tab:hover:not(.active) {
+        background: #f5f5f5;
+      }
 
-        .section-title {
-            font-size: 1.1em;
-            color: #333;
-            margin-bottom: 8px;
-        }
+      .section-title {
+        font-size: 1.1em;
+        color: #333;
+        margin-bottom: 8px;
+      }
 
-        .section-subtitle {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 20px;
-        }
+      .section-subtitle {
+        color: #666;
+        font-size: 0.9em;
+        margin-bottom: 20px;
+      }
 
-        .repartition-bar {
-            height: 24px;
-            background: #f5f5f5;
-            border-radius: 12px;
-            display: flex;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
+      .repartition-bar {
+        height: 24px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        display: flex;
+        overflow: hidden;
+        margin-bottom: 30px;
+      }
 
-        .repartition-segment {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.85em;
-            white-space: nowrap;
-            padding: 0 10px;
-        }
+      .repartition-segment {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.85em;
+        white-space: nowrap;
+        padding: 0 10px;
+      }
 
-        .repartition-segment.part-fixe {
-            background: #2196F3;
-        }
+      .repartition-segment.part-fixe {
+        background: #2196f3;
+      }
 
-        .repartition-segment.part-rcp {
-            background: #64B5F6;
-        }
+      .repartition-segment.part-rcp {
+        background: #64b5f6;
+      }
 
-        .repartition-segment.part-projets {
-            background: #4CAF50;
-        }
+      .repartition-segment.part-projets {
+        background: #4caf50;
+      }
 
-        .slider-group {
-            margin-bottom: 25px;
-        }
+      .slider-group {
+        margin-bottom: 25px;
+      }
 
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 8px;
-        }
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+      }
 
-        .slider-label {
-            color: #333;
-            font-size: 0.9em;
-        }
+      .slider-label {
+        color: #333;
+        font-size: 0.9em;
+      }
 
-        .slider-value {
-            color: #2196F3;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
+      .slider-value {
+        color: #2196f3;
+        font-weight: 500;
+        font-size: 0.9em;
+      }
 
-        .slider-description {
-            color: #666;
-            font-size: 0.85em;
-            margin-bottom: 12px;
-        }
+      .slider-description {
+        color: #666;
+        font-size: 0.85em;
+        margin-bottom: 12px;
+      }
 
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            outline: none;
-        }
+      .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        outline: none;
+      }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #2196F3;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #2196f3;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
 
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
+      .slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
 
-        .slider-range {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8em;
-            color: #999;
-            margin-top: 8px;
-        }
+      .slider-range {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8em;
+        color: #999;
+        margin-top: 8px;
+      }
 
-        .btn-save {
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            float: right;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
+      .btn-save {
+        background: #2196f3;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        float: right;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
 
-        .btn-save:hover {
-            background: #1976D2;
-        }
+      .btn-save:hover {
+        background: #1976d2;
+      }
 
-        .btn-save i {
-            font-size: 0.9em;
-        }
+      .btn-save i {
+        font-size: 0.9em;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="sidebar">
-            <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="../index.html"><i class="fas fa-home"></i> Accueil</a></li>
-                    <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> Revenus ACI</a></li>
-                    <li><a href="associes.html"><i class="fas fa-user-md"></i> Associés</a></li>
-                    <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> Charges</a></li>
-                    <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> Réunions RCP</a></li>
-                    <li><a href="projets.html"><i class="fas fa-tasks"></i> Projets & Missions</a></li>
-                    <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> Répartition</a></li>
-                    <li class="active"><a href="parametres.html"><i class="fas fa-cog"></i> Paramètres</a></li>
-<li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-                </ul>
-            </nav>
+      <div class="sidebar">
+        <div class="logo" style="background-color: #2c3e50">
+          <img
+            src="/assets/favicon.ico"
+            alt="Logo MSP"
+            style="height: 20px; margin-right: 10px"
+          />
+          <h1>MSP Gestion</h1>
         </div>
-        <div class="main-content">
-            <header>
-                <div class="header-content">
-                    <h1>Paramètres de Répartition</h1>
-                    <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
-                        <span id="usernameDisplay">Utilisateur</span>
-                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
-                    </div>
-                </div>
-            </header>
-
-            <div class="alert-info">
-                <i class="fas fa-info-circle"></i>
-                <p>La modification des facteurs de pondération affectera directement la répartition des rémunérations entre les associés de la MSP.</p>
+        <nav>
+          <ul>
+            <li>
+              <a href="../index.html"><i class="fas fa-home"></i> Accueil</a>
+            </li>
+            <li>
+              <a href="revenus.html"
+                ><i class="fas fa-money-bill-wave"></i> Revenus ACI</a
+              >
+            </li>
+            <li>
+              <a href="associes.html"
+                ><i class="fas fa-user-md"></i> Associés</a
+              >
+            </li>
+            <li>
+              <a href="charges.html"
+                ><i class="fas fa-file-invoice-dollar"></i> Charges</a
+              >
+            </li>
+            <li>
+              <a href="rcpmeeting.html"
+                ><i class="fas fa-users"></i> Réunions RCP</a
+              >
+            </li>
+            <li>
+              <a href="projets.html"
+                ><i class="fas fa-tasks"></i> Projets & Missions</a
+              >
+            </li>
+            <li>
+              <a href="repartition.html"
+                ><i class="fas fa-chart-pie"></i> Répartition</a
+              >
+            </li>
+            <li class="active">
+              <a href="parametres.html"
+                ><i class="fas fa-cog"></i> Paramètres</a
+              >
+            </li>
+            <li>
+              <a href="../login.html" id="logoutButton"
+                ><i class="fas fa-sign-out-alt"></i> Déconnexion</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="main-content">
+        <header>
+          <div class="header-content">
+            <h1>Paramètres de Répartition</h1>
+            <div class="user-info">
+              <img
+                id="userAvatar"
+                src="/images/default_avatar.png"
+                alt="User Avatar"
+                style="
+                  width: 30px;
+                  height: 30px;
+                  border-radius: 50%;
+                  margin-right: 10px;
+                  vertical-align: middle;
+                "
+              />
+              <span id="usernameDisplay">Utilisateur</span>
+              <!-- <i class="fas fa-user-circle"></i> -->
+              <!-- Optional: Keep or remove -->
             </div>
+          </div>
+        </header>
 
-            <div class="tabs">
-                <button class="tab active">Facteurs de répartition</button>
-                <button class="tab">Paramètres généraux</button>
-                <button class="tab">Génération de rapports</button>
-                <button class="tab">Gestion des utilisateurs</button>
-            </div>
-
-            <div class="content-section" id="facteurs-repartition-section">
-                <h2 class="section-title">Facteurs de pondération</h2>
-                <p class="section-subtitle">Définissez les facteurs qui impactent la répartition des rémunérations entre les associés.</p>
-
-                <div class="repartition-bar">
-                    <div class="repartition-segment part-fixe" style="width: 50%">Part fixe: 50%</div>
-                    <div class="repartition-segment part-rcp" style="width: 25%">RCP: 25%</div>
-                    <div class="repartition-segment part-projets" style="width: 25%">Projets: 25%</div>
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-header">
-                        <span class="slider-label">Facteur cogérant</span>
-                        <span class="slider-value">×1.7</span>
-                    </div>
-                    <p class="slider-description">Pondération appliquée aux associés ayant le statut de gérant</p>
-                    <input type="range" class="slider" id="slider-cogerant" min="0.5" max="3" step="0.1" value="1.7">
-                    <div class="slider-range">
-                        <span>×0.5</span>
-                        <span>×3.0</span>
-                                </div>
-                            </div>
-
-                <div class="slider-group">
-                    <div class="slider-header">
-                        <span class="slider-label">Pourcentage RCP</span>
-                        <span class="slider-value">25%</span>
-                    </div>
-                    <p class="slider-description">Part des revenus nets attribuée en fonction de la présence aux RCP</p>
-                    <input type="range" class="slider" id="slider-rcp" min="0" max="50" value="25">
-                    <div class="slider-range">
-                        <span>0%</span>
-                        <span>50%</span>
-                            </div>
-                    </div>
-                    
-                <div class="slider-group">
-                    <div class="slider-header">
-                        <span class="slider-label">Pourcentage projets</span>
-                        <span class="slider-value">25%</span>
-                    </div>
-                    <p class="slider-description">Part des revenus nets attribuée en fonction de l'implication dans les projets</p>
-                    <input type="range" class="slider" id="slider-projets" min="0" max="75" value="25">
-                    <div class="slider-range">
-                        <span>0%</span>
-                        <span>75%</span>
-                    </div>
-                </div>
-
-                <button class="btn-save" id="save-params-button">
-                    <i class="fas fa-save"></i>
-                    Enregistrer les modifications
-                </button>
-            </div>
-
-            <!-- Section Paramètres généraux -->
-            <div class="content-section" id="parametres-generaux-section" style="display: none;">
-                <h2 class="section-title">Paramètres généraux</h2>
-                <p class="section-subtitle">Configurez les paramètres généraux de l'application.</p>
-                <!-- Add general settings content here -->
-            </div>
-
-            <!-- Section Génération de rapports -->
-            <div class="content-section" id="sauvegarde-export-section" style="display: none;">
-                <h2 class="section-title">Génération de rapports</h2>
-                <p class="section-subtitle">Gérez la sauvegarde et l'exportation des données.</p>
-                <!-- Embedded frame for report selection -->
-                <div id="report-selection-frame" style="display: none; margin-top: 20px; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px;">
-                    <p>Choisissez les rapports que vous souhaitez télécharger :</p>
-                    <div>
-                        <input type="checkbox" id="checkbox-charges-report">
-                        <label for="checkbox-charges-report">Rapport de Charges</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="checkbox-revenus-report">
-                        <label for="checkbox-revenus-report">Rapport de Revenus</label>
-                    </div>
-                    <!-- Add checkbox for Associates Report -->
-                    <div>
-                        <input type="checkbox" id="checkbox-associates-report">
-                        <label for="checkbox-associates-report">Rapport des Associés</label>
-                    </div>
-                    <!-- Add checkbox for Projets Report -->
-                    <div>
-                        <input type="checkbox" id="checkbox-projets-report">
-                        <label for="checkbox-projets-report">Rapport des Projets et Missions</label>
-                    </div>
-                    <!-- Add checkbox for RCP Meetings Report -->
-                    <div>
-                        <input type="checkbox" id="checkbox-rcp-meetings-report">
-                        <label for="checkbox-rcp-meetings-report">Rapport Réunions RCP</label>
-                    </div>
-                    <button id="btn-download-reports" class="btn btn-primary" style="margin-top: 15px;">Télécharger</button>
-                </div>
-                <!-- New Export Data Button -->
-                <button id="exportDataBtn" class="btn btn-primary" style="margin-top: 15px;">Exporter les données</button>
-            </div>
-            <!-- Section Gestion des utilisateurs -->
-            <div class="content-section" id="Gestion-utilisateurs-section">
-                <h2 class="section-title">Gestion des utilisateurs</h2>
-                <p class="section-subtitle">Gérez les utilisateurs de l'application.</p>
-                <div id="user-list-container">
-                    <!-- User list will be loaded here -->
-                </div>
-                <button class="btn-save" id="delete-user-button">
-                    <i class="fas fa-trash-alt"></i>
-                    Supprimer utilisateur
-                </button>
-                <!-- Add other user management content here if needed -->
-            </div>
+        <div class="alert-info">
+          <i class="fas fa-info-circle"></i>
+          <p>
+            La modification des facteurs de pondération affectera directement la
+            répartition des rémunérations entre les associés de la MSP.
+          </p>
         </div>
+
+        <div class="tabs">
+          <button class="tab active">Facteurs de répartition</button>
+          <button class="tab">Paramètres généraux</button>
+          <button class="tab">Génération de rapports</button>
+          <button class="tab">Gestion des utilisateurs</button>
+        </div>
+
+        <div class="content-section" id="facteurs-repartition-section">
+          <h2 class="section-title">Facteurs de pondération</h2>
+          <p class="section-subtitle">
+            Définissez les facteurs qui impactent la répartition des
+            rémunérations entre les associés.
+          </p>
+
+          <div class="repartition-bar">
+            <div class="repartition-segment part-fixe" style="width: 50%">
+              Part fixe: 50%
+            </div>
+            <div class="repartition-segment part-rcp" style="width: 25%">
+              RCP: 25%
+            </div>
+            <div class="repartition-segment part-projets" style="width: 25%">
+              Projets: 25%
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Facteur cogérant</span>
+              <span class="slider-value">×1.7</span>
+            </div>
+            <p class="slider-description">
+              Pondération appliquée aux associés ayant le statut de gérant
+            </p>
+            <input
+              type="range"
+              class="slider"
+              id="slider-cogerant"
+              min="0.5"
+              max="3"
+              step="0.1"
+              value="1.7"
+            />
+            <div class="slider-range">
+              <span>×0.5</span>
+              <span>×3.0</span>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Pourcentage RCP</span>
+              <span class="slider-value">25%</span>
+            </div>
+            <p class="slider-description">
+              Part des revenus nets attribuée en fonction de la présence aux RCP
+            </p>
+            <input
+              type="range"
+              class="slider"
+              id="slider-rcp"
+              min="0"
+              max="50"
+              value="25"
+            />
+            <div class="slider-range">
+              <span>0%</span>
+              <span>50%</span>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Pourcentage projets</span>
+              <span class="slider-value">25%</span>
+            </div>
+            <p class="slider-description">
+              Part des revenus nets attribuée en fonction de l'implication dans
+              les projets
+            </p>
+            <input
+              type="range"
+              class="slider"
+              id="slider-projets"
+              min="0"
+              max="75"
+              value="25"
+            />
+            <div class="slider-range">
+              <span>0%</span>
+              <span>75%</span>
+            </div>
+          </div>
+
+          <button class="btn-save" id="save-params-button">
+            <i class="fas fa-save"></i>
+            Enregistrer les modifications
+          </button>
+        </div>
+
+        <!-- Section Paramètres généraux -->
+        <div
+          class="content-section"
+          id="parametres-generaux-section"
+          style="display: none"
+        >
+          <h2 class="section-title">Paramètres généraux</h2>
+          <p class="section-subtitle">
+            Configurez les paramètres généraux de l'application.
+          </p>
+          <!-- Add general settings content here -->
+        </div>
+
+        <!-- Section Génération de rapports -->
+        <div
+          class="content-section"
+          id="sauvegarde-export-section"
+          style="display: none"
+        >
+          <h2 class="section-title">Génération de rapports</h2>
+          <p class="section-subtitle">
+            Gérez la sauvegarde et l'exportation des données.
+          </p>
+          <!-- Embedded frame for report selection -->
+          <div
+            id="report-selection-frame"
+            style="
+              display: none;
+              margin-top: 20px;
+              border: 1px solid #e0e0e0;
+              padding: 15px;
+              border-radius: 4px;
+            "
+          >
+            <p>Choisissez les rapports que vous souhaitez télécharger :</p>
+            <div>
+              <input type="checkbox" id="checkbox-charges-report" />
+              <label for="checkbox-charges-report">Rapport de Charges</label>
+            </div>
+            <div>
+              <input type="checkbox" id="checkbox-revenus-report" />
+              <label for="checkbox-revenus-report">Rapport de Revenus</label>
+            </div>
+            <!-- Add checkbox for Associates Report -->
+            <div>
+              <input type="checkbox" id="checkbox-associates-report" />
+              <label for="checkbox-associates-report"
+                >Rapport des Associés</label
+              >
+            </div>
+            <!-- Add checkbox for Projets Report -->
+            <div>
+              <input type="checkbox" id="checkbox-projets-report" />
+              <label for="checkbox-projets-report"
+                >Rapport des Projets et Missions</label
+              >
+            </div>
+            <!-- Add checkbox for RCP Meetings Report -->
+            <div>
+              <input type="checkbox" id="checkbox-rcp-meetings-report" />
+              <label for="checkbox-rcp-meetings-report"
+                >Rapport Réunions RCP</label
+              >
+            </div>
+            <button
+              id="btn-download-reports"
+              class="btn btn-primary"
+              style="margin-top: 15px"
+            >
+              Télécharger
+            </button>
+          </div>
+          <!-- New Export Data Button -->
+          <button
+            id="exportDataBtn"
+            class="btn btn-primary"
+            style="margin-top: 15px"
+          >
+            Exporter les données
+          </button>
+        </div>
+        <!-- Section Gestion des utilisateurs -->
+        <div class="content-section" id="Gestion-utilisateurs-section">
+          <h2 class="section-title">Gestion des utilisateurs</h2>
+          <p class="section-subtitle">
+            Gérez les utilisateurs de l'application.
+          </p>
+          <div id="user-list-container">
+            <!-- User list will be loaded here -->
+          </div>
+          <button class="btn-save" id="delete-user-button">
+            <i class="fas fa-trash-alt"></i>
+            Supprimer utilisateur
+          </button>
+          <!-- Add other user management content here if needed -->
+        </div>
+      </div>
     </div>
 
     <!-- Modal de confirmation de réinitialisation -->
     <div class="modal" id="modal-confirm-reset">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Confirmer la réinitialisation</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="warning-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Cette action va supprimer définitivement toutes les données de l'application.</p>
-                    <p>Cette opération ne peut pas être annulée.</p>
-                    <p>Êtes-vous sûr de vouloir continuer ?</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-confirm-reset" class="btn btn-danger">Oui, réinitialiser</button>
-                <button class="btn btn-secondary modal-close">Annuler</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Confirmer la réinitialisation</h3>
+          <button class="modal-close">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="warning-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>
+              Cette action va supprimer définitivement toutes les données de
+              l'application.
+            </p>
+            <p>Cette opération ne peut pas être annulée.</p>
+            <p>Êtes-vous sûr de vouloir continuer ?</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-confirm-reset" class="btn btn-danger">
+            Oui, réinitialiser
+          </button>
+          <button class="btn btn-secondary modal-close">Annuler</button>
+        </div>
+      </div>
     </div>
 
-    <script type="module" src="../js/main.js"></script> <!-- Load main JS first -->
+    <script type="module" src="../js/main.js"></script>
+    <!-- Load main JS first -->
     <script type="module">
-        // Inline script is now minimal. 
-        // All initialization logic is handled in main.js within DOMContentLoaded.
-        console.log("Inline script in parametres.html executed.");
+      // Inline script is now minimal.
+      // All initialization logic is handled in main.js within DOMContentLoaded.
+      console.log("Inline script in parametres.html executed.");
 
-        // Display username on load (Keep this small piece here or move to main.js as well)
-        const usernameElement = document.getElementById('usernameDisplay');
-        const token = localStorage.getItem('token');
-        let username = 'developpement'; // Default value
+      // Display username on load (Keep this small piece here or move to main.js as well)
+      const usernameElement = document.getElementById("usernameDisplay");
+      const token = localStorage.getItem("token");
+      let username = "developpement"; // Default value
 
-        if (token) {
-            try {
-                const payloadBase64 = token.split('.')[1];
-                const payloadJson = atob(payloadBase64);
-                const payload = JSON.parse(payloadJson);
-                if (payload && payload.username) {
-                    username = payload.username;
-                }
-            } catch (e) {
-                console.error('Failed to decode JWT token:', e);
-            }
+      if (token) {
+        try {
+          const payloadBase64 = token.split(".")[1];
+          const payloadJson = atob(payloadBase64);
+          const payload = JSON.parse(payloadJson);
+          if (payload && payload.username) {
+            username = payload.username;
+          }
+        } catch (e) {
+          console.error("Failed to decode JWT token:", e);
         }
+      }
 
-        if (usernameElement) {
-            usernameElement.textContent = username;
-        } else {
-            console.error("Username display element 'usernameDisplay' not found.");
-        }
+      if (usernameElement) {
+        usernameElement.textContent = username;
+      } else {
+        console.error("Username display element 'usernameDisplay' not found.");
+      }
     </script>
-    <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
+    <script src="../js/ui/updateHeader.js"></script>
+    <!-- Add header update script -->
 
     <!-- Modal for Report Export removed -->
 
     <!-- Modal for Export Data -->
     <div class="modal" id="exportDialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Exporter les données</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Sélectionnez les données à exporter (format JSON) :</p>
-                <div>
-                    <input type="checkbox" id="export-checkbox-revenus" checked>
-                    <label for="export-checkbox-revenus">Revenus ACI</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="export-checkbox-charges" checked>
-                    <label for="export-checkbox-charges">Charges</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="export-checkbox-associes" checked>
-                    <label for="export-checkbox-associes">Associés</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="export-checkbox-rcpmeetings" checked>
-                    <label for="export-checkbox-rcpmeetings">Réunions RCP</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="export-checkbox-projets" checked>
-                    <label for="export-checkbox-projets">Projets & Missions</label>
-                </div>
-                <div>
-                    <input type="checkbox" id="export-checkbox-parametres" checked>
-                    <label for="export-checkbox-parametres">Paramètres de répartition</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="confirmExportBtn" class="btn btn-primary">Exporter</button>
-                <button id="cancelExportBtn" class="btn btn-secondary modal-close">Annuler</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Exporter les données</h3>
+          <button class="modal-close">&times;</button>
         </div>
+        <div class="modal-body">
+          <p>Sélectionnez les données à exporter (format JSON) :</p>
+          <div>
+            <input type="checkbox" id="export-checkbox-revenus" checked />
+            <label for="export-checkbox-revenus">Revenus ACI</label>
+          </div>
+          <div>
+            <input type="checkbox" id="export-checkbox-charges" checked />
+            <label for="export-checkbox-charges">Charges</label>
+          </div>
+          <div>
+            <input type="checkbox" id="export-checkbox-associes" checked />
+            <label for="export-checkbox-associes">Associés</label>
+          </div>
+          <div>
+            <input type="checkbox" id="export-checkbox-rcpmeetings" checked />
+            <label for="export-checkbox-rcpmeetings">Réunions RCP</label>
+          </div>
+          <div>
+            <input type="checkbox" id="export-checkbox-projets" checked />
+            <label for="export-checkbox-projets">Projets & Missions</label>
+          </div>
+          <div>
+            <input type="checkbox" id="export-checkbox-parametres" checked />
+            <label for="export-checkbox-parametres"
+              >Paramètres de répartition</label
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="confirmExportBtn" class="btn btn-primary">
+            Exporter
+          </button>
+          <button id="cancelExportBtn" class="btn btn-secondary modal-close">
+            Annuler
+          </button>
+        </div>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>

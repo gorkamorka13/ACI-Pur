@@ -23,6 +23,12 @@ router.get('/', async (req, res) => {
 
 // DELETE /api/users - Delete multiple users by IDs
 router.delete('/', async (req, res) => {
+    // Check if the authenticated user is Admin
+    // Assuming user information is attached to req.user by authentication middleware
+    if (!req.user || req.user.username !== 'Admin') {
+        return res.status(403).json({ message: 'Seul l\'utilisateur "Admin" est autorisé à supprimer des utilisateurs.' });
+    }
+
     const userIds = req.body.ids; // Assuming the request body contains an array of user IDs
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
@@ -35,12 +41,14 @@ router.delete('/', async (req, res) => {
             where: {
                 id: userIds
             },
-            attributes: ['id', 'avatar'] // Only need id and avatar path
+            attributes: ['id', 'avatar', 'username'] // Include username to check for Admin again (redundant but safe)
         });
 
-        // Check if any of the users to be deleted is the 'Admin' user
+        // Check if any of the users to be deleted is the 'Admin' user (additional check)
         const adminUserIncluded = usersToDelete.some(user => user.username === 'Admin');
         if (adminUserIncluded) {
+            // Although the first check prevents non-admins from deleting Admin,
+            // this prevents Admin from accidentally including themselves in a batch delete.
             return res.status(403).json({ message: 'La suppression de l\'utilisateur "Admin" n\'est pas autorisée.' });
         }
 

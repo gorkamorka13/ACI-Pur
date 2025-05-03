@@ -37,14 +37,23 @@ document.addEventListener('DOMContentLoaded', async function() {
             confirmAction(`Êtes-vous sûr de vouloir supprimer les utilisateurs sélectionnés (${userIdsToDelete.length}) ?`, async () => {
                 console.log("Delete confirmation accepted."); // Log confirmation
                 try {
-                    await dataService.deleteUsers(userIdsToDelete);
-                    showAlert("Utilisateurs supprimés avec succès.", 'success');
-                    // Refresh user list
-                    const users = await dataService.loadUsers();
-                    console.log("Reloaded users after deletion:", users); // Log reloaded users
-                    displayUsers(users);
+                    const result = await dataService.deleteUsers(userIdsToDelete);
+
+                    // Check if the result indicates a 403 Forbidden response
+                    if (result && result.status === 403) {
+                        showAlert(result.message || "Vous n'avez pas la permission de supprimer des utilisateurs.", 'danger');
+                    } else {
+                        // If not 403, assume success (or handled elsewhere) and refresh list
+                        showAlert("Utilisateurs supprimés avec succès.", 'success');
+                        // Refresh user list
+                        const users = await dataService.loadUsers();
+                        console.log("Reloaded users after deletion:", users); // Log reloaded users
+                        displayUsers(users);
+                    }
                 } catch (error) {
                     console.error("Erreur lors de la suppression des utilisateurs:", error);
+                    // This catch block will now handle errors *not* specifically returned as { status: 403 }
+                    // This includes network errors or other API errors handled by dataService.handleResponse
                     showAlert("Erreur lors de la suppression des utilisateurs: " + error.message, 'danger');
                 }
             });
@@ -636,6 +645,7 @@ function confirmAction(message, callback) {
 
 // Function to display users in the list container
 export function displayUsers(users) {
+    console.log("displayUsers called with users:", users); // Add this log
     const container = document.getElementById('user-list-container');
     if (!container) {
         console.error("User list container not found.");
