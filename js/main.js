@@ -669,6 +669,14 @@ export function displayUsers(users) {
         checkbox.style.marginRight = '10px'; // Add some space between checkbox and avatar
         checkbox.style.verticalAlign = 'middle'; // Align checkbox vertically
 
+        // Disable checkbox if the user is 'Admin'
+        if (user.username === 'Admin') {
+            checkbox.disabled = true;
+            // Optional: Add a visual indicator (e.g., change cursor, add title)
+            listItem.style.cursor = 'not-allowed';
+            listItem.title = 'L\'utilisateur Admin ne peut pas être supprimé.';
+        }
+
         const avatar = document.createElement('img');
         // Use user.avatar directly if it exists, otherwise use default.
         // The user.avatar field seems to already contain the '/images/' path.

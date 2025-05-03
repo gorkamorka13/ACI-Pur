@@ -38,6 +38,12 @@ router.delete('/', async (req, res) => {
             attributes: ['id', 'avatar'] // Only need id and avatar path
         });
 
+        // Check if any of the users to be deleted is the 'Admin' user
+        const adminUserIncluded = usersToDelete.some(user => user.username === 'Admin');
+        if (adminUserIncluded) {
+            return res.status(403).json({ message: 'La suppression de l\'utilisateur "Admin" n\'est pas autorisée.' });
+        }
+
         // 2. Delete associated avatar files
         for (const user of usersToDelete) {
             // Check if the user has a custom avatar and it's not the default one
