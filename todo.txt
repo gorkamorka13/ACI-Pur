@@ -1,49 +1,29 @@
-Okay, I can explain the changes needed in config/database.js to switch from SQLite to MySQL without actually modifying the file.
+Mettre en place un mécanisme de réinitialisation de mot de passe est une approche beaucoup plus sécurisée pour aider les utilisateurs qui ont oublié leur mot de passe.
 
-Your current config/database.js likely looks something like this, configuring Sequelize to use SQLite:
+Voici les grandes étapes pour implémenter une fonctionnalité de réinitialisation de mot de passe :
 
-// config/database.js
-const { Sequelize } = require('sequelize');
+1. __Côté Backend (API):__
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite', // Specifies the database dialect
-  storage: './database/database.sqlite', // Path to your SQLite database file
-  logging: false, // Optional: set to true to see SQL queries
-});
+   - Créer un nouvel endpoint (par exemple, `/api/auth/request-password-reset`) où un utilisateur peut soumettre son adresse e-mail ou nom d'utilisateur.
+   - Lorsqu'une demande est reçue, vérifier que l'utilisateur existe.
+   - Générer un token de réinitialisation unique et sécurisé (par exemple, en utilisant une bibliothèque cryptographique).
+   - Stocker ce token haché (ou le token lui-même si sa durée de vie est très courte et qu'il est invalidé après usage) ainsi qu'une date d'expiration dans la base de données, associé à l'utilisateur.
+   - Envoyer un e-mail à l'adresse enregistrée de l'utilisateur contenant un lien vers une page de réinitialisation de mot de passe sur le frontend, incluant le token comme paramètre d'URL.
+   - Créer un autre endpoint (par exemple, `/api/auth/reset-password`) qui reçoit le token et le nouveau mot de passe.
+   - Sur cet endpoint, vérifier la validité du token (existe-t-il ? est-il expiré ?).
+   - Si le token est valide, hacher le nouveau mot de passe fourni par l'utilisateur et mettre à jour son mot de passe dans la base de données.
+   - Invalider le token utilisé pour qu'il ne puisse pas être réutilisé.
 
-module.exports = sequelize;
-To migrate to MySQL, you will need to change the dialect and provide connection details specific to your MySQL server. You should also install the mysql2 package, which is a recommended driver for Sequelize with MySQL.
+2. __Côté Frontend:__
 
-Here's how the relevant part of config/database.js will be changed:
+   - Ajouter un lien "Mot de passe oublié ?" sur la page de connexion.
+   - Créer une nouvelle page (par exemple, `/forgot-password.html`) avec un formulaire pour que l'utilisateur soumette son e-mail/nom d'utilisateur pour demander la réinitialisation.
+   - Créer une autre nouvelle page (par exemple, `/reset-password.html`) qui s'ouvre via le lien envoyé par e-mail. Cette page lira le token depuis l'URL et affichera un formulaire pour que l'utilisateur entre et confirme son nouveau mot de passe.
+   - Ajouter le JavaScript nécessaire pour gérer les soumissions de formulaires sur ces nouvelles pages et interagir avec les nouveaux endpoints backend.
 
-Change the dialect: The dialect property will be changed from 'sqlite' to 'mysql'.
-Replace storage with MySQL connection parameters: The storage property, which is specific to SQLite, will be removed. It will be replaced with host, port, database, username, and password properties.
-Use Environment Variables for Credentials: For security, the username and especially the password should be loaded from environment variables (e.g., using a .env file and a package like dotenv).
-After these changes, the config/database.js file will look something like this:
+Ce processus implique des modifications à la fois côté serveur et côté client, ainsi que la mise en place d'une fonctionnalité d'envoi d'e-mails si elle n'existe pas déjà.
 
-// config/database.js
-const { Sequelize } = require('sequelize');
-// Assuming you are using dotenv to load environment variables from a .env file
-// require('dotenv').config(); // Uncomment if you use dotenv
+Est-ce que ce plan correspond à ce que vous aviez en tête pour la réinitialisation de mot de passe ? Avez-vous des préférences ou des exigences spécifiques concernant l'implémentation (par exemple, quel service d'envoi d'e-mails utiliser, si vous en avez un) ?
 
-const sequelize = new Sequelize(
-  process.env.DB_DATABASE || 'aci_pur_db', // Your MySQL database name
-  process.env.DB_USERNAME || 'root',     // Your MySQL username
-  process.env.DB_PASSWORD || null,       // Your MySQL password (use environment variable!)
-  {
-    host: process.env.DB_HOST || 'localhost', // Your MySQL host
-    port: process.env.DB_PORT || 3306,       // Your MySQL port (default is 3306)
-    dialect: 'mysql', // Specifies the database dialect
-    logging: false, // Optional: set to true to see SQL queries
-    // Other options like pool, dialectOptions can be added here
-  }
-);
+Une fois que nous aurons finalisé le plan, vous pourrez passer en mode ACT pour que je commence l'implémentation.
 
-module.exports = sequelize;
-Summary of Changes:
-
-The dialect property changes from 'sqlite' to 'mysql'.
-The storage property is removed.
-New properties host, port, database, username, and password are added with your MySQL connection details.
-It's crucial to use process.env.YOUR_ENV_VAR to load sensitive information like the password from environment variables instead of hardcoding them.
-This explains the core changes needed in the configuration file. The next steps in the plan involve exporting/importing the schema and data, which are command-line operations.
