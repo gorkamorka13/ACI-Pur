@@ -1,5 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer'); // Import multer
 const path = require('path'); // Import path
@@ -8,7 +8,7 @@ const db = require('../../models'); // Adjust path based on your models/index.js
 const { generateAvatar } = require('../../js/utils/avatarGenerator'); // Import avatar generator
 const router = express.Router();
 
-const SALT_ROUNDS = 10; // Cost factor for bcrypt hashing
+const SALT_ROUNDS = 10; // Cost factor for bcryptjs hashing
 const IMAGES_DIR = path.join(__dirname, '../../images'); // Define images directory path
 const DEFAULT_AVATAR_PATH = '/images/default_avatar.png'; // Define default avatar path using new route
 
@@ -76,7 +76,7 @@ router.post('/register', upload.single('avatar'), async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    const hashedPassword = await bcryptjs.hash(password, SALT_ROUNDS);
 
     // Create user
     const newUser = await db.User.create({
@@ -153,7 +153,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Compare password with stored hash
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials.' }); // Use generic message
     }
