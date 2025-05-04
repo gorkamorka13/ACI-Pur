@@ -2,6 +2,55 @@ import { dataService } from './services/DataService.js'; // Importer dataService
 
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('[main.js] DOMContentLoaded fired.');
+
+    // --- Sidebar Toggle Logic ---
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    if (sidebarToggle && sidebar && mainContent) {
+        // Function to toggle sidebar state
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('main-content-collapsed');
+            console.log('Sidebar toggled. Collapsed:', sidebar.classList.contains('sidebar-collapsed'));
+        };
+
+        // Add click listener to the button
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        console.log('Sidebar toggle listener added.');
+
+        // Function to set initial state based on screen width
+        const setInitialSidebarState = () => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.classList.contains('sidebar-collapsed')) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    mainContent.classList.add('main-content-collapsed');
+                    console.log('Initial state set to collapsed for small screen.');
+                }
+            } else {
+                // Optional: Ensure it's expanded on larger screens if needed
+                // sidebar.classList.remove('sidebar-collapsed');
+                // mainContent.classList.remove('main-content-collapsed');
+            }
+        };
+
+        // Set initial state on load
+        setInitialSidebarState();
+
+        // Optional: Adjust state on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(setInitialSidebarState, 250); // Debounce resize event
+        });
+
+    } else {
+        console.warn('Sidebar toggle elements not found. Toggle functionality disabled.');
+    }
+    // --- End Sidebar Toggle Logic ---
+
+
     // Initialisation des menus actifs
     initActiveMenu();
 
