@@ -131,14 +131,14 @@ body {
     color: var(--text-primary);
     font-size: 1.5em;
     cursor: pointer;
-    padding: 0 15px;
-    margin-right: 5px;
+    padding: 0 10px;
+    margin-right: 10px;
     /* Add some space between button and title */
 }
 
 header {
     background-color: var(--background-white);
-    padding: 15px 30px;
+    padding: 15px 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -157,7 +157,7 @@ header {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1px;
     color: var(--text-secondary);
 }
 
