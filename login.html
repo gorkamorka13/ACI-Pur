@@ -44,6 +44,55 @@
             /* Add cursor pointer for better UX */
         }
 
+        /* Hamburger styles */
+        .hamburger {
+            display: none; /* Hidden by default */
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Ensure it's above other content */
+        }
+
+        .hamburger .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+            background-color: white;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: none; /* Hidden by default on small screens */
+                flex-direction: column;
+                background-color: #2c3e50;
+                position: absolute;
+                top: 60px; /* Adjust based on navbar height */
+                left: 0;
+                padding: 1rem 0;
+                text-align: center;
+            }
+
+            .nav-links.active {
+                display: flex; /* Show when active */
+            }
+
+            .nav-links a {
+                margin: 0.5rem 0;
+            }
+
+            .hamburger {
+                display: block; /* Show hamburger on small screens */
+            }
+        }
+
         .hero {
             background: linear-gradient(135deg, #3498db, #2c3e50);
             color: white;
@@ -366,6 +415,13 @@
             <span style="margin-left: 0.5rem;">MSP Gestion</span>
         </div>
 
+        <!-- Hamburger icon -->
+        <div class="hamburger">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
         <div class="nav-links">
             <!-- <a href="#" class="nav-link" data-page="accueil">Accueil</a> -->
             <a href="#" class="nav-link" data-page="fonctionnalites">Fonctionnalites</a>
@@ -571,6 +627,14 @@
                 }
             }
 
+        });
+
+        // Hamburger menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
         });
     </script>
 </body>
