@@ -95,6 +95,16 @@ body {
     color: white;
 }
 
+.sidebar nav a:hover,
+.sidebar nav a.highlight-menu-item {
+    background-color: rgba(255, 255, 255, 0.15); /* Slightly more prominent highlight */
+    color: white;
+}
+
+.nav-links a:hover {
+    color: red !important;
+}
+
 /* Main Content */
 .main-content {
     flex: 1;
