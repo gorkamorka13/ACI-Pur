@@ -41,22 +41,29 @@ body {
     position: fixed;
     height: 100vh;
     overflow-y: auto;
-    transition: width 0.3s ease; /* Add transition for width */
+    transition: width 0.3s ease;
+    /* Add transition for width */
 }
 
 .logo {
-    padding: 20px; /* Adjusted padding for better spacing */
+    padding: 20px;
+    /* Adjusted padding for better spacing */
     margin-bottom: 30px;
-    display: flex; /* Use flexbox for alignment */
-    align-items: center; /* Vertically center items */
+    display: flex;
+    /* Use flexbox for alignment */
+    align-items: center;
+    /* Vertically center items */
 }
 
 .logo h1 {
-    margin: 0; /* Remove default margin */
+    margin: 0;
+    /* Remove default margin */
     font-size: 1.5em;
     font-weight: 600;
-    color: white; /* Ensure text color is white */
-    line-height: 1; /* Adjust line height if needed */
+    color: white;
+    /* Ensure text color is white */
+    line-height: 1;
+    /* Adjust line height if needed */
 }
 
 .sidebar nav ul {
@@ -97,7 +104,8 @@ body {
 
 .sidebar nav a:hover,
 .sidebar nav a.highlight-menu-item {
-    background-color: rgba(255, 255, 255, 0.15); /* Slightly more prominent highlight */
+    background-color: rgba(255, 255, 255, 0.15);
+    /* Slightly more prominent highlight */
     color: white;
 }
 
@@ -110,31 +118,34 @@ body {
     flex: 1;
     margin-left: 250px;
     padding: 20px;
-    transition: margin-left 0.3s ease; /* Add transition for margin */
+    transition: margin-left 0.3s ease;
+    /* Add transition for margin */
 }
 
 /* Sidebar Toggle Button */
 .sidebar-toggle {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     background: none;
     border: none;
     color: var(--text-primary);
     font-size: 1.5em;
     cursor: pointer;
     padding: 0 15px;
-    margin-right: 10px; /* Add some space between button and title */
+    margin-right: 5px;
+    /* Add some space between button and title */
 }
 
 header {
     background-color: var(--background-white);
     padding: 15px 30px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* justify-content: space-between; */
+    align-items: left;
 }
 
 .header-content h1 {
@@ -242,14 +253,16 @@ header {
 
 .chart-container {
     /* max-width: 650px; Removed max-width */
-    margin: 0 0 2rem 0; /* Removed auto horizontal margins */
+    margin: 0 0 2rem 0;
+    /* Removed auto horizontal margins */
     background: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     /* padding: 2rem 1rem; Removed padding */
 }
 
-.chart-container, .recent-activities {
+.chart-container,
+.recent-activities {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -258,32 +271,45 @@ header {
 
 .parametres-content {
     display: flex;
-    gap: 20px; /* Space between parameters grid and chart */
-    align-items: flex-start; /* Align items to the top */
+    gap: 20px;
+    /* Space between parameters grid and chart */
+    align-items: flex-start;
+    /* Align items to the top */
 }
 
 .parametres-grid {
-    flex: 1; /* Allow grid to take available space */
-    min-width: 300px; /* Ensure grid doesn't get too small */
+    flex: 1;
+    /* Allow grid to take available space */
+    min-width: 300px;
+    /* Ensure grid doesn't get too small */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust grid columns for better responsiveness */
-    gap: 15px; /* Adjust gap */
-    margin-top: 0; /* Remove top margin */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /* Adjust grid columns for better responsiveness */
+    gap: 15px;
+    /* Adjust gap */
+    margin-top: 0;
+    /* Remove top margin */
 }
 
 .parametres-chart-container {
-    flex: 1; /* Allow chart container to take available space */
-    max-width: 300px; /* Limit chart size */
-    min-width: 200px; /* Ensure chart doesn't get too small */
-    height: 250px; /* Set a fixed height for the chart */
+    flex: 1;
+    /* Allow chart container to take available space */
+    max-width: 300px;
+    /* Limit chart size */
+    min-width: 200px;
+    /* Ensure chart doesn't get too small */
+    height: 250px;
+    /* Set a fixed height for the chart */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .parametres-chart-container canvas {
-    max-height: 100%; /* Ensure canvas fits within container height */
-    max-width: 100%; /* Ensure canvas fits within container width */
+    max-height: 100%;
+    /* Ensure canvas fits within container height */
+    max-width: 100%;
+    /* Ensure canvas fits within container width */
 }
 
 
@@ -294,25 +320,32 @@ header {
     }
 
     .parametres-content {
-        flex-direction: column; /* Stack parameters and chart on smaller screens */
-        align-items: center; /* Center items when stacked */
+        flex-direction: column;
+        /* Stack parameters and chart on smaller screens */
+        align-items: center;
+        /* Center items when stacked */
     }
 
     .parametres-grid {
-        width: 100%; /* Allow grid to take full width when stacked */
-        min-width: auto; /* Remove min-width constraint */
+        width: 100%;
+        /* Allow grid to take full width when stacked */
+        min-width: auto;
+        /* Remove min-width constraint */
     }
 
     .parametres-chart-container {
-        max-width: 250px; /* Adjust max-width for smaller screens */
-        height: 200px; /* Adjust height for smaller screens */
+        max-width: 250px;
+        /* Adjust max-width for smaller screens */
+        height: 200px;
+        /* Adjust height for smaller screens */
     }
 }
 
 .chart {
     display: block;
     max-width: 100%;
-    min-height: 300px; /* Ajout d'une hauteur minimale */
+    min-height: 300px;
+    /* Ajout d'une hauteur minimale */
     /* margin: 0 auto; Removed */
     /* Remove height, remove flex properties */
 }
@@ -374,9 +407,12 @@ header {
 }
 
 .btn-save {
-    margin-top: 20px; /* Add space above the button */
-    border-top: 1px solid var(--border-color); /* Add a top border */
-    padding-top: 20px; /* Add padding above the border */
+    margin-top: 20px;
+    /* Add space above the button */
+    border-top: 1px solid var(--border-color);
+    /* Add a top border */
+    padding-top: 20px;
+    /* Add padding above the border */
 }
 
 .btn-primary {
@@ -462,12 +498,14 @@ header {
 
 @media (max-width: 768px) {
     .sidebar-toggle {
-        display: inline-block; /* Show button on small screens */
+        display: inline-block;
+        /* Show button on small screens */
     }
 
     /* Default state on small screens (expanded) */
     .main-content {
-        margin-left: 250px; /* Keep margin for expanded state */
+        margin-left: 250px;
+        /* Keep margin for expanded state */
     }
 
     /* Collapsed state styles */
@@ -491,6 +529,47 @@ header {
     .main-content.main-content-collapsed {
         margin-left: 60px;
     }
+
+    /* Responsive Font Sizes */
+
+    body {
+        font-size: 0.9em;
+        /* Slightly smaller base font size */
+    }
+
+    .header-content h1 {
+        font-size: 1.4em;
+        /* Adjust header title font size for small screens */
+    }
+
+    h2 {
+        font-size: 1.3em;
+        /* Adjust sub-header font size */
+    }
+
+    .stat-info h3 {
+        font-size: 14px;
+        /* Adjust stat card title font size */
+    }
+
+    .total-amount {
+        font-size: 20px;
+        /* Adjust stat card amount font size */
+    }
+
+    .table th,
+    .table td {
+        padding: 10px 12px;
+        /* Adjust table padding */
+        font-size: 0.9em;
+        /* Adjust table font size */
+    }
+
+    .modal-title {
+        font-size: 1em;
+        /* Adjust modal title font size */
+    }
+
 }
 
 /* États et alertes */
@@ -582,7 +661,7 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
@@ -609,9 +688,11 @@ header {
     align-items: center;
 }
 
-.modal-header img{
-    width: 40px; /* Adjust size as needed */
-    height: 40px; /* Adjust size as needed */
+.modal-header img {
+    width: 40px;
+    /* Adjust size as needed */
+    height: 40px;
+    /* Adjust size as needed */
     margin-right: 1rem;
 }
 
@@ -648,6 +729,7 @@ header {
 .text-center {
     text-align: center;
 }
+
 
 .mt-20 {
     margin-top: 20px;
