@@ -4,7 +4,7 @@
   "description": "Application de gestion pour Maison de Santé Pluriprofessionnelle",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "dev": "npx kill-port 3000 && nodemon server.js",
     "seed": "node database/seed.js",
     "init-db": "node database/seed.js"
