@@ -1,4 +1,5 @@
 # .gitignore
 .env
+developpment
 # node_modules/
 # other ignored files...
