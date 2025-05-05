@@ -157,18 +157,26 @@ header {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 1px;
+    gap: 5px;
     color: var(--text-secondary);
 }
 
 .user-info span {
-    margin-right: 10px;
     color: #7f8c8d;
 }
 
 .user-info i {
     font-size: 20px;
     color: #3498db;
+}
+
+.user-info img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    margin-left: 5px;
+    vertical-align: middle;
 }
 
 /* Dashboard */
@@ -247,13 +255,15 @@ header {
 
 .dashboard-content {
     display: grid;
-    grid-template-columns: 1fr 2fr; /* Give the second column more space */
+    grid-template-columns: 1fr 1fr;
+    /* Make columns equal width */
     gap: 20px;
+    padding-bottom: 2rem;
 }
 
 .chart-container {
     /* max-width: 650px; Removed max-width */
-    margin: 0 0 2rem 0;
+    margin: 0 0 0 0;
     /* Removed auto horizontal margins */
     background: #fff;
     border-radius: 8px;
@@ -283,7 +293,7 @@ header {
     min-width: 300px;
     /* Ensure grid doesn't get too small */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     /* Adjust grid columns for better responsiveness */
     gap: 15px;
     /* Adjust gap */
@@ -298,11 +308,12 @@ header {
     /* Limit chart size */
     min-width: 200px;
     /* Ensure chart doesn't get too small */
-    height: 250px;
-    /* Set a fixed height for the chart */
+    /* Removed fixed height to allow stretching */
     display: flex;
     justify-content: center;
     align-items: center;
+    height: auto;
+    /* Ensure height is not fixed */
 }
 
 .parametres-chart-container canvas {
@@ -344,15 +355,15 @@ header {
 .chart {
     display: block;
     max-width: 100%;
-    min-height: 300px;
-    /* Ajout d'une hauteur minimale */
+    /* Removed min-height to allow stretching */
     /* margin: 0 auto; Removed */
     /* Remove height, remove flex properties */
 }
 
 .activity-list {
-    max-height: 300px;
-    overflow-y: auto;
+    /* Removed max-height to allow equal height */
+    overflow-y: hidden;
+    /* Hide scrollbar */
 }
 
 .no-activity {
@@ -497,9 +508,11 @@ header {
 }
 
 @media (max-width: 768px) {
-    .sidebar-toggle {
-        display: inline-block;
-        /* Show button on small screens */
+    .hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto 1rem;
+    }
     }
 
     /* Default state on small screens (expanded) */
