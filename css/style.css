@@ -323,6 +323,13 @@ header {
     /* Ensure canvas fits within container width */
 }
 
+/* Default height for chart containers */
+.chart-container > div, /* Target the direct div child containing the canvas */
+.parametres-chart-container {
+    position: relative; /* Needed for canvas positioning if not already set */
+    height: 350px; /* Default height */
+    width: 100%; /* Ensure full width */
+}
 
 /* Responsive */
 @media (max-width: 992px) {
@@ -349,6 +356,21 @@ header {
         /* Adjust max-width for smaller screens */
         height: 200px;
         /* Adjust height for smaller screens */
+    }
+
+    /* Adjust height on smaller screens if needed, otherwise default applies */
+    .parametres-chart-container {
+        max-width: 250px;
+        /* Adjust max-width for smaller screens */
+        height: 250px; /* Adjust height for smaller screens if 350px is too much */
+    }
+}
+
+/* Responsive height for larger screens */
+@media (min-width: 993px) {
+    .chart-container > div,
+    .parametres-chart-container {
+        height: 50vh; /* Taller height on larger screens */
     }
 }
 
