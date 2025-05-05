@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Authentication -->
     <script type="module" src="../js/auth.js"></script>
     <style>
@@ -30,7 +31,8 @@
         .projets-right-column {
             flex: 1;
             min-width: 0;
-            position: relative; /* Needed for absolute positioning of dropdown */
+            position: relative;
+            /* Needed for absolute positioning of dropdown */
         }
 
         .section-header {
@@ -65,7 +67,7 @@
         }
 
         .projet-item:hover {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .projet-item.selected {
@@ -185,18 +187,22 @@
         .associe-item {
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Adjusted for remove button */
-            padding: 10px 15px; /* Adjusted padding */
+            justify-content: space-between;
+            /* Adjusted for remove button */
+            padding: 10px 15px;
+            /* Adjusted padding */
             border-bottom: 1px solid #eee;
         }
+
         .associe-item:last-child {
-             border-bottom: none;
+            border-bottom: none;
         }
 
 
         .associe-info {
             flex-grow: 1;
-            margin-right: 10px; /* Space before remove button */
+            margin-right: 10px;
+            /* Space before remove button */
         }
 
         .associe-name {
@@ -207,7 +213,8 @@
         .associe-role {
             font-size: 0.9em;
             color: #666;
-            display: block; /* Ensure role is on new line if needed */
+            display: block;
+            /* Ensure role is on new line if needed */
         }
 
         .contribution-input {
@@ -276,14 +283,17 @@
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             max-height: 300px;
             overflow-y: auto;
             z-index: 1000;
             width: 250px;
-            display: none; /* Initially hidden */
-            top: 100%; /* Position below the button - adjust as needed */
-            right: 0; /* Align to the right - adjust as needed */
+            display: none;
+            /* Initially hidden */
+            top: 100%;
+            /* Position below the button - adjust as needed */
+            right: 0;
+            /* Align to the right - adjust as needed */
         }
 
         .dropdown-associes.show {
@@ -343,6 +353,7 @@
             gap: 5px;
             margin-top: 5px;
         }
+
         .role-toggle {
             padding: 3px 8px;
             border: 1px solid #ccc;
@@ -353,54 +364,71 @@
             color: #555;
             transition: background-color 0.2s, color 0.2s;
         }
+
         .role-toggle.active {
             background-color: #2196F3;
             color: white;
             border-color: #2196F3;
         }
+
         .role-toggle:not(.active):hover {
             background-color: #e0e0e0;
         }
 
         /* Style for modal assigned list */
         #modal-assigned-professionals {
-            max-height: 150px; /* Limit height */
-            overflow-y: auto; /* Add scroll if needed */
+            max-height: 150px;
+            /* Limit height */
+            overflow-y: auto;
+            /* Add scroll if needed */
             border: 1px solid #eee;
             border-radius: 4px;
             margin-top: 10px;
         }
+
         .modal-associe-item {
-             display: flex;
-             align-items: center;
-             justify-content: space-between;
-             padding: 8px 12px;
-             border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
         }
-         .modal-associe-item:last-child {
-             border-bottom: none;
-         }
-        .modal-associe-info .associe-name { font-weight: 500; }
-        .modal-associe-info .associe-role { font-size: 0.9em; color: #666; }
+
+        .modal-associe-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-associe-info .associe-name {
+            font-weight: 500;
+        }
+
+        .modal-associe-info .associe-role {
+            font-size: 0.9em;
+            color: #666;
+        }
+
         .btn-remove-associe {
             background: none;
             border: none;
-            color: #dc3545; /* Red color for removal */
+            color: #dc3545;
+            /* Red color for removal */
             cursor: pointer;
             font-size: 1.1em;
             padding: 0 5px;
         }
+
         .btn-remove-associe:hover {
             color: #a71d2a;
         }
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
+                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <h1>MSP Gestion</h1>
             </div>
             <nav>
                 <ul>
@@ -409,7 +437,8 @@
                     <li><a href="associes.html"><i class="fas fa-user-md"></i> <span>Associés</span></a></li>
                     <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> <span>Charges</span></a></li>
                     <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> <span>Réunions RCP</span></a></li>
-                    <li class="active"><a href="projets.html"><i class="fas fa-tasks"></i> <span>Projets & Missions</span></a></li>
+                    <li class="active"><a href="projets.html"><i class="fas fa-tasks"></i> <span>Projets &
+                                Missions</span></a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> <span>Répartition</span></a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
                     <li><a id="logoutButton"><i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span></a></li>
@@ -423,9 +452,9 @@
                     <button id="sidebarToggle" class="sidebar-toggle"><i class="fas fa-bars"></i></button>
                     <h1>Projets et Missions</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
+                            style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
                         <span id="usernameDisplay">Utilisateur</span>
-                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
                 </div>
             </header>
@@ -446,236 +475,246 @@
                 <button class="btn btn-primary" id="btn-nouveau-projet">
                     <i class="fas fa-plus"></i> Ajouter un projet
                 </button>
-            <div class="projets-container">
-                <div class="projets-content">
-                    <div class="projets-left-column">
-                        <div class="section-header">
-                            <div>
-                                <h2>Liste des projets</h2>
-                                <p class="section-subtitle">Sélectionnez un projet pour gérer les affectations</p>
-                            </div>
-                        </div>
-                        <div id="liste-projets">
-                            <!-- Les projets seront générés ici -->
-                        </div>
-                    </div>
-
-                    <div class="projets-right-column">
-                        <div class="details-section">
-                            <div class="details-header">
+                <div class="projets-container">
+                    <div class="projets-content">
+                        <div class="projets-left-column">
+                            <div class="section-header">
                                 <div>
-                                    <h2 class="details-title" id="projet-titre">Détails du projet</h2>
-                                    <p class="section-subtitle">Gestion des affectations et contributions</p>
-                                </div>
-                                <div class="details-actions">
-                                    <button class="btn btn-outline" id="btn-modifier">
-                                        <i class="fas fa-edit"></i> Modifier
-                                    </button>
-                                    <button class="btn btn-danger" id="btn-supprimer">
-                                        <i class="fas fa-trash"></i> Supprimer
-                                    </button>
+                                    <h2>Liste des projets</h2>
+                                    <p class="section-subtitle">Sélectionnez un projet pour gérer les affectations</p>
                                 </div>
                             </div>
-
-                            <div class="details-placeholder" id="details-placeholder">
-                                Sélectionnez un projet pour voir les détails et gérer les contributions
+                            <div id="liste-projets">
+                                <!-- Les projets seront générés ici -->
                             </div>
+                        </div>
 
-                            <div class="details-content" id="details-content">
-                                <div class="details-meta">
-                                    <span><i class="far fa-calendar"></i> <span id="projet-dates"></span></span>
-                                    <span>
-                                        <i class="fas fa-weight-hanging"></i> Poids: <span id="projet-poids">1</span>
-                                        <span id="projet-statut-detail" style="margin-left: 15px;"></span> <!-- Added status span -->
-                                        <button class="btn-modifier-poids" id="btn-modifier-poids">
-                                            <i class="fas fa-edit"></i> Modifier le poids
+                        <div class="projets-right-column">
+                            <div class="details-section">
+                                <div class="details-header">
+                                    <div>
+                                        <h2 class="details-title" id="projet-titre">Détails du projet</h2>
+                                        <p class="section-subtitle">Gestion des affectations et contributions</p>
+                                    </div>
+                                    <div class="details-actions">
+                                        <button class="btn btn-outline" id="btn-modifier">
+                                            <i class="fas fa-edit"></i> Modifier
                                         </button>
-                                    </span>
+                                        <button class="btn btn-danger" id="btn-supprimer">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="formula-explication" style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 0.9em; color: #333;">
-                                    <p style="margin: 0;"><strong>Calcul du score d'implication (utilisé dans la Répartition) :</strong></p>
-                                    <ul style="margin-top: 5px; padding-left: 20px;">
-                                        <li>Score = Somme sur tous les projets [ (Poids du Projet * 2 si Responsable) + (Poids du Projet * 1 si Contributeur) ]</li>
-                                        <li>Un professionnel ne compte qu'une fois par projet (la responsabilité prime sur la contribution).</li>
-                                        <li>Formule de répartition dans repartition.html aux lignes 391-420.</li>
-                                    </ul>
+                                <div class="details-placeholder" id="details-placeholder">
+                                    Sélectionnez un projet pour voir les détails et gérer les contributions
                                 </div>
 
-                                <div class="contribution-section">
-                                    <div class="contribution-header">
-                                        <h3>Associés affectés au projet</h3>
-                                        <!-- Removed Add Associate Button and Dropdown Container -->
-                                        <!-- Removed Egaliser Button -->
+                                <div class="details-content" id="details-content">
+                                    <div class="details-meta">
+                                        <span><i class="far fa-calendar"></i> <span id="projet-dates"></span></span>
+                                        <span>
+                                            <i class="fas fa-weight-hanging"></i> Poids: <span
+                                                id="projet-poids">1</span>
+                                            <span id="projet-statut-detail" style="margin-left: 15px;"></span>
+                                            <!-- Added status span -->
+                                            <button class="btn-modifier-poids" id="btn-modifier-poids">
+                                                <i class="fas fa-edit"></i> Modifier le poids
+                                            </button>
+                                        </span>
                                     </div>
 
-                                    <div class="contribution-warning" id="warning-contributions" style="display: none;">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        Le total des contributions n'est pas égal à 100%. Ajustez les contributions ou cliquez sur "Égaliser" pour une distribution automatique.
+                                    <div class="formula-explication"
+                                        style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 0.9em; color: #333;">
+                                        <p style="margin: 0;"><strong>Calcul du score d'implication (utilisé dans la
+                                                Répartition) :</strong></p>
+                                        <ul style="margin-top: 5px; padding-left: 20px;">
+                                            <li>Score = Somme sur tous les projets [ (Poids du Projet * 2 si
+                                                Responsable) + (Poids du Projet * 1 si Contributeur) ]</li>
+                                            <li>Un professionnel ne compte qu'une fois par projet (la responsabilité
+                                                prime sur la contribution).</li>
+                                            <li>Formule de répartition dans repartition.html aux lignes 391-420.</li>
+                                        </ul>
                                     </div>
 
-                                    <div id="liste-associes">
-                                        <!-- Les associés seront générés ici -->
+                                    <div class="contribution-section">
+                                        <div class="contribution-header">
+                                            <h3>Associés affectés au projet</h3>
+                                            <!-- Removed Add Associate Button and Dropdown Container -->
+                                            <!-- Removed Egaliser Button -->
+                                        </div>
+
+                                        <div class="contribution-warning" id="warning-contributions"
+                                            style="display: none;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Le total des contributions n'est pas égal à 100%. Ajustez les contributions
+                                            ou cliquez sur "Égaliser" pour une distribution automatique.
+                                        </div>
+
+                                        <div id="liste-associes">
+                                            <!-- Les associés seront générés ici -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Removed unused dropdown element -->
+                <!-- Removed unused dropdown element -->
+            </div>
         </div>
-    </div>
 
-    <!-- Modal Nouveau/Modifier Projet -->
-    <div class="modal" id="modal-projet">
-        <div class="modal-content">
-            <div class="modal-header">
-                <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
-                <h3 class="modal-title">Nouveau projet</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-projet">
-                    <input type="hidden" id="projet-id">
-                    <div class="form-group">
-                        <label for="projet-titre-input">Titre du projet</label>
-                        <input type="text" id="projet-titre-input" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="projet-annee">Année de réalisation</label>
-                        <select id="projet-annee" class="form-control" required>
-                            <option value="">Sélectionnez une année</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="projet-poids-input">Poids du projet</label>
-                        <input type="number" id="projet-poids-input" class="form-control" min="1" max="5" value="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="projet-statut">Statut</label>
-                        <select id="projet-statut" class="form-control" required>
-                            <option value="en-cours">En cours</option>
-                            <option value="valide">Validé</option>
-                        </select>
-                    </div>
-                    <hr> <!-- Separator -->
-                    <div class="form-group">
-                        <label>Gérer les affectations</label> <!-- Changed Label -->
-                        <div id="modal-professionals-list" style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 10px; padding: 5px;">
-                            <!-- All professionals with toggles will be listed here -->
+        <!-- Modal Nouveau/Modifier Projet -->
+        <div class="modal" id="modal-projet">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
+                    <h3 class="modal-title">Nouveau projet</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-projet">
+                        <input type="hidden" id="projet-id">
+                        <div class="form-group">
+                            <label for="projet-titre-input">Titre du projet</label>
+                            <input type="text" id="projet-titre-input" class="form-control" required>
                         </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="btn-save-projet">Enregistrer</button>
-                <button class="btn btn-danger modal-close">Annuler</button>
+                        <div class="form-group">
+                            <label for="projet-annee">Année de réalisation</label>
+                            <select id="projet-annee" class="form-control" required>
+                                <option value="">Sélectionnez une année</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="projet-poids-input">Poids du projet</label>
+                            <input type="number" id="projet-poids-input" class="form-control" min="1" max="5" value="1"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="projet-statut">Statut</label>
+                            <select id="projet-statut" class="form-control" required>
+                                <option value="en-cours">En cours</option>
+                                <option value="valide">Validé</option>
+                            </select>
+                        </div>
+                        <hr> <!-- Separator -->
+                        <div class="form-group">
+                            <label>Gérer les affectations</label> <!-- Changed Label -->
+                            <div id="modal-professionals-list"
+                                style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; margin-top: 10px; padding: 5px;">
+                                <!-- All professionals with toggles will be listed here -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="btn-save-projet">Enregistrer</button>
+                    <button class="btn btn-danger modal-close">Annuler</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script type="module" src="../js/main.js"></script>
-    <script type="module">
-        import { dataService } from '../js/services/DataService.js';
+        <script type="module" src="../js/main.js"></script>
+        <script type="module">
+            import { dataService } from '../js/services/DataService.js';
 
-        let allProjets = [];
-        let allProfessionnels = [];
-        let projetSelectionne = null;
-        let currentAssignments = {}; // { proId: 'responsable'/'contributeur', ... }
-        // Removed dropdownAssocies, btnAjouterAssocie references
-        const listeAssociesContainer = document.getElementById('liste-associes');
-        const modalProfessionalsListContainer = document.getElementById('modal-professionals-list'); // Renamed variable
-        const modalProjet = document.getElementById('modal-projet'); // Reference to the modal element
+            let allProjets = [];
+            let allProfessionnels = [];
+            let projetSelectionne = null;
+            let currentAssignments = {}; // { proId: 'responsable'/'contributeur', ... }
+            // Removed dropdownAssocies, btnAjouterAssocie references
+            const listeAssociesContainer = document.getElementById('liste-associes');
+            const modalProfessionalsListContainer = document.getElementById('modal-professionals-list'); // Renamed variable
+            const modalProjet = document.getElementById('modal-projet'); // Reference to the modal element
 
-        // Initialisation au chargement de la page
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadInitialData();
-            setupEventListeners();
-            // Removed dropdown close listener
-        });
-
-        async function loadInitialData() {
-            try {
-                // Charger projets et professionnels en parallèle
-                [allProjets, allProfessionnels] = await Promise.all([
-                    dataService.loadProjets(),
-                    dataService.loadProfessionnels()
-                ]);
-
-                // Afficher la liste initiale des projets
-                renderListeProjets();
-   
-                // Si un projet était sélectionné, le réafficher
-                if (projetSelectionne) {
-                    const projetActuel = allProjets.find(p => p.id === projetSelectionne.id);
-                    if (projetActuel) {
-                        // Pass the ID to the updated function
-                        afficherDetailsProjet(projetActuel.id); 
-                    } else {
-                        // Le projet sélectionné n'existe plus
-                        resetDetailsSection();
-                    }
-                } else {
-                    resetDetailsSection();
-                }
-
-            } catch (error) {
-                console.error("Erreur lors du chargement des données Projets:", error);
-                document.getElementById('liste-projets').innerHTML = '<p class="no-data" style="color:red;">Erreur chargement projets.</p>';
-                resetDetailsSection();
-            }
-        }
-
-        function setupEventListeners() {
-            // Boutons principaux
-            document.getElementById('btn-nouveau-projet').addEventListener('click', handleNouveauProjet);
-            document.getElementById('btn-save-projet').addEventListener('click', handleSauvegarderProjet);
-
-            // Boutons de détail (si le projet est sélectionné)
-            document.getElementById('btn-modifier').addEventListener('click', handleModifierProjet);
-            document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
-            // Removed btn-egaliser listener
-
-            // Fermeture des modales
-            document.querySelectorAll('.modal-close').forEach(button => {
-                button.addEventListener('click', () => closeModal(button.closest('.modal').id));
+            // Initialisation au chargement de la page
+            document.addEventListener('DOMContentLoaded', async function () {
+                await loadInitialData();
+                setupEventListeners();
+                // Removed dropdown close listener
             });
 
-            // Event delegation for role toggles inside the modal
-            if (modalProfessionalsListContainer) { // Use renamed variable
-                modalProfessionalsListContainer.addEventListener('click', handleAssignmentToggleInModal); // Use updated handler
+            async function loadInitialData() {
+                try {
+                    // Charger projets et professionnels en parallèle
+                    [allProjets, allProfessionnels] = await Promise.all([
+                        dataService.loadProjets(),
+                        dataService.loadProfessionnels()
+                    ]);
+
+                    // Afficher la liste initiale des projets
+                    renderListeProjets();
+
+                    // Si un projet était sélectionné, le réafficher
+                    if (projetSelectionne) {
+                        const projetActuel = allProjets.find(p => p.id === projetSelectionne.id);
+                        if (projetActuel) {
+                            // Pass the ID to the updated function
+                            afficherDetailsProjet(projetActuel.id);
+                        } else {
+                            // Le projet sélectionné n'existe plus
+                            resetDetailsSection();
+                        }
+                    } else {
+                        resetDetailsSection();
+                    }
+
+                } catch (error) {
+                    console.error("Erreur lors du chargement des données Projets:", error);
+                    document.getElementById('liste-projets').innerHTML = '<p class="no-data" style="color:red;">Erreur chargement projets.</p>';
+                    resetDetailsSection();
+                }
             }
-        }
 
-        function renderListeProjets() {
-            const container = document.getElementById('liste-projets');
-            container.innerHTML = ''; // Vider la liste
+            function setupEventListeners() {
+                // Boutons principaux
+                document.getElementById('btn-nouveau-projet').addEventListener('click', handleNouveauProjet);
+                document.getElementById('btn-save-projet').addEventListener('click', handleSauvegarderProjet);
 
-            const totalProjetsElement = document.getElementById('total-projets');
-            if (totalProjetsElement) {
-                totalProjetsElement.textContent = allProjets ? allProjets.length : 0;
+                // Boutons de détail (si le projet est sélectionné)
+                document.getElementById('btn-modifier').addEventListener('click', handleModifierProjet);
+                document.getElementById('btn-supprimer').addEventListener('click', handleSupprimerProjet);
+                // Removed btn-egaliser listener
+
+                // Fermeture des modales
+                document.querySelectorAll('.modal-close').forEach(button => {
+                    button.addEventListener('click', () => closeModal(button.closest('.modal').id));
+                });
+
+                // Event delegation for role toggles inside the modal
+                if (modalProfessionalsListContainer) { // Use renamed variable
+                    modalProfessionalsListContainer.addEventListener('click', handleAssignmentToggleInModal); // Use updated handler
+                }
             }
 
-            if (!allProjets || allProjets.length === 0) {
-                container.innerHTML = '<p class="no-data">Aucun projet trouvé.</p>';
-                return;
-            }
+            function renderListeProjets() {
+                const container = document.getElementById('liste-projets');
+                container.innerHTML = ''; // Vider la liste
 
-            allProjets.forEach(projet => {
-                const div = document.createElement('div');
-                div.className = 'projet-item' + (projetSelectionne && projet.id === projetSelectionne.id ? ' selected' : '');
-                div.setAttribute('data-id', projet.id);
+                const totalProjetsElement = document.getElementById('total-projets');
+                if (totalProjetsElement) {
+                    totalProjetsElement.textContent = allProjets ? allProjets.length : 0;
+                }
 
-                // Utiliser les noms de champs API (minuscules)
-                const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'valide' ? 'Validé' : projet.statut); // Adjusted for 'valide'
-                const statutClass = projet.statut === 'en-cours' ? 'en-cours' : (projet.statut === 'valide' ? 'valide' : 'inactif'); // Adjusted for 'valide'
+                if (!allProjets || allProjets.length === 0) {
+                    container.innerHTML = '<p class="no-data">Aucun projet trouvé.</p>';
+                    return;
+                }
 
-                div.innerHTML = `
+                allProjets.forEach(projet => {
+                    const div = document.createElement('div');
+                    div.className = 'projet-item' + (projetSelectionne && projet.id === projetSelectionne.id ? ' selected' : '');
+                    div.setAttribute('data-id', projet.id);
+
+                    // Utiliser les noms de champs API (minuscules)
+                    const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'valide' ? 'Validé' : projet.statut); // Adjusted for 'valide'
+                    const statutClass = projet.statut === 'en-cours' ? 'en-cours' : (projet.statut === 'valide' ? 'valide' : 'inactif'); // Adjusted for 'valide'
+
+                    div.innerHTML = `
                     <div class="projet-info">
                         <div class="projet-title">
                             ${projet.titre}
@@ -689,262 +728,262 @@
                     </div>
                 `;
 
-                div.addEventListener('click', () => {
-                    document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
-                    div.classList.add('selected');
-                    
-              // Fetch detailed data including associations when a project is clicked
-              afficherDetailsProjet(projet.id);
-          });
+                    div.addEventListener('click', () => {
+                        document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
+                        div.classList.add('selected');
 
-          container.appendChild(div);
-      });
-  }
+                        // Fetch detailed data including associations when a project is clicked
+                        afficherDetailsProjet(projet.id);
+                    });
 
-  function resetDetailsSection() {
-             document.getElementById('details-content').style.display = 'none';
-             document.getElementById('details-placeholder').style.display = 'block';
-             document.getElementById('btn-modifier').style.display = 'none';
-             document.getElementById('btn-supprimer').style.display = 'none';
-             document.getElementById('projet-titre').textContent = 'Détails du projet';
-             document.getElementById('liste-associes').innerHTML = ''; // Vider la liste des associés
-             projetSelectionne = null;
-             document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
-             // Removed dropdown hide logic
-       currentAssignments = {}; // Clear assignments when resetting
-  }
-
-  // Modified to accept projetId and fetch detailed data
-  async function afficherDetailsProjet(projetId) {
-      if (!projetId) {
-          resetDetailsSection();
-          return;
-      }
-
-      try {
-          // Fetch detailed project data including associations
-          const projet = await dataService.loadProjetById(projetId);
-
-          if (!projet) {
-              console.error(`Projet avec ID ${projetId} non trouvé après fetch.`);
-              resetDetailsSection();
-              alert("Le projet sélectionné n'a pas pu être chargé.");
-              return;
-          }
-
-          // Update the global selected project variable with full data
-          projetSelectionne = projet;
-
-          document.getElementById('details-placeholder').style.display = 'none';
-          document.getElementById('details-content').style.display = 'block';
-          document.getElementById('btn-modifier').style.display = 'inline-block';
-          document.getElementById('btn-supprimer').style.display = 'inline-block';
-
-          document.getElementById('projet-titre').textContent = projet.titre;
-          document.getElementById('projet-dates').textContent = projet.annee;
-          document.getElementById('projet-poids').textContent = projet.poids;
-
-          // Populate the status badge in the details section
-          const statutDetailSpan = document.getElementById('projet-statut-detail');
-          if (statutDetailSpan) {
-              const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'valide' ? 'Validé' : projet.statut);
-              const statutClass = projet.statut === 'en-cours' ? 'en-cours' : (projet.statut === 'valide' ? 'valide' : 'inactif');
-              statutDetailSpan.innerHTML = `<span class="status-badge ${statutClass}">${statutLibelle}</span>`;
-          }
-
-          // Populate currentAssignments from fetched data
-          currentAssignments = {}; // Start fresh
-          if (projet.Responsables && Array.isArray(projet.Responsables)) {
-              projet.Responsables.forEach(pro => {
-                  currentAssignments[pro.id] = 'responsable';
-              });
-          }
-          if (projet.Contributeurs && Array.isArray(projet.Contributeurs)) {
-              projet.Contributeurs.forEach(pro => {
-                  // Avoid overwriting if already set as responsable (responsable takes precedence?)
-                  if (!currentAssignments[pro.id]) {
-                      currentAssignments[pro.id] = 'contributeur';
-                  }
-              });
-          }
-          console.log("Loaded assignments:", currentAssignments);
-
-          renderAssignedProfessionals(); // Render the list based on fetched assignments
-
-          // Cacher l'avertissement de contribution pour l'instant
-          const warningDiv = document.getElementById('warning-contributions');
-          if(warningDiv) warningDiv.style.display = 'none';
-
-          // Removed dropdown hide logic
-
-      } catch (error) {
-          console.error("Erreur lors de l'affichage des détails du projet:", error);
-          alert("Erreur lors du chargement des détails du projet.");
-          resetDetailsSection();
-      }
-  }
-
-        // --- Gestion des modales ---
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.style.display = 'none';
-            // Réinitialiser les formulaires lors de la fermeture
-            const form = modal.querySelector('form');
-            if (form) form.reset();
-            document.getElementById('projet-id').value = ''; // Vider l'ID caché
-
-            // Refresh the main assigned list when closing the modal
-            renderAssignedProfessionals();
-        }
-
-        // --- Gestion des actions ---
-
-        function handleNouveauProjet() {
-             document.getElementById('form-projet').reset();
-             document.getElementById('projet-id').value = '';
-             document.querySelector('#modal-projet .modal-title').textContent = 'Nouveau projet';
-             currentAssignments = {}; // Clear assignments for new project
-             renderProfessionalsListInModal(); // Populate modal list for new project
-             openModal('modal-projet');
-        }
-
-        function handleModifierProjet() {
-            if (!projetSelectionne) return;
-
-            document.getElementById('projet-id').value = projetSelectionne.id;
-            document.getElementById('projet-titre-input').value = projetSelectionne.titre;
-            document.getElementById('projet-annee').value = projetSelectionne.annee;
-            document.getElementById('projet-poids-input').value = projetSelectionne.poids;
-            document.getElementById('projet-statut').value = projetSelectionne.statut;
-
-            // Populate the professionals list in the modal with current assignments
-            renderProfessionalsListInModal(); // Populate modal list for editing
-
-            document.querySelector('#modal-projet .modal-title').textContent = 'Modifier le projet';
-            openModal('modal-projet');
-        }
-
-        async function handleSauvegarderProjet() {
-            // Prepare assignment data to be sent
-            const responsablesIds = Object.keys(currentAssignments).filter(id => currentAssignments[id] === 'responsable');
-            const contributeursIds = Object.keys(currentAssignments).filter(id => currentAssignments[id] === 'contributeur');
-
-            const projetData = {
-                id: document.getElementById('projet-id').value || undefined, // Envoyer undefined si nouveau
-                titre: document.getElementById('projet-titre-input').value,
-                annee: document.getElementById('projet-annee').value,
-                poids: parseInt(document.getElementById('projet-poids-input').value) || 1,
-                statut: document.getElementById('projet-statut').value,
-                responsables: responsablesIds, // Array of IDs
-                contributeurs: contributeursIds // Array of IDs
-            };
-
-            // Validation simple
-            if (!projetData.titre || !projetData.annee || !projetData.statut) {
-                 alert("Le titre, l'année et le statut sont requis.");
-                return;
+                    container.appendChild(div);
+                });
             }
 
-            console.log("Saving project data:", projetData); // Log data being sent
+            function resetDetailsSection() {
+                document.getElementById('details-content').style.display = 'none';
+                document.getElementById('details-placeholder').style.display = 'block';
+                document.getElementById('btn-modifier').style.display = 'none';
+                document.getElementById('btn-supprimer').style.display = 'none';
+                document.getElementById('projet-titre').textContent = 'Détails du projet';
+                document.getElementById('liste-associes').innerHTML = ''; // Vider la liste des associés
+                projetSelectionne = null;
+                document.querySelectorAll('.projet-item').forEach(c => c.classList.remove('selected'));
+                // Removed dropdown hide logic
+                currentAssignments = {}; // Clear assignments when resetting
+            }
 
-            try {
-                // TODO: Update dataService.saveProjet to handle 'responsables' and 'contributeurs' arrays
-                const savedProjet = await dataService.saveProjet(projetData);
-
-                // If it's a new project, select it after saving
-                if (!projetData.id && savedProjet) {
-                    projetSelectionne = savedProjet;
-                } else if (savedProjet) {
-                    // Update the selected project data if it was an edit
-                     projetSelectionne = savedProjet;
+            // Modified to accept projetId and fetch detailed data
+            async function afficherDetailsProjet(projetId) {
+                if (!projetId) {
+                    resetDetailsSection();
+                    return;
                 }
 
-                closeModal('modal-projet');
-                await loadInitialData(); // Recharger la liste et les détails (will reset currentAssignments based on backend)
-                // If loadInitialData doesn't return the updated assignments, manually update here:
-                // renderAssignedProfessionals(); // Refresh main list based on currentAssignments
-            } catch (error) {
-                console.error("Erreur sauvegarde projet:", error);
-                alert("Erreur lors de la sauvegarde: " + error.message);
-            }
-        }
-
-        async function handleSupprimerProjet() {
-            if (!projetSelectionne) return;
-
-            if (confirm(`Êtes-vous sûr de vouloir supprimer le projet "${projetSelectionne.titre}" ?`)) {
                 try {
-                    await dataService.deleteProjet(projetSelectionne.id);
-                    projetSelectionne = null; // Déselectionner
-                    await loadInitialData(); // Recharger la liste et réinitialiser les détails
+                    // Fetch detailed project data including associations
+                    const projet = await dataService.loadProjetById(projetId);
+
+                    if (!projet) {
+                        console.error(`Projet avec ID ${projetId} non trouvé après fetch.`);
+                        resetDetailsSection();
+                        alert("Le projet sélectionné n'a pas pu être chargé.");
+                        return;
+                    }
+
+                    // Update the global selected project variable with full data
+                    projetSelectionne = projet;
+
+                    document.getElementById('details-placeholder').style.display = 'none';
+                    document.getElementById('details-content').style.display = 'block';
+                    document.getElementById('btn-modifier').style.display = 'inline-block';
+                    document.getElementById('btn-supprimer').style.display = 'inline-block';
+
+                    document.getElementById('projet-titre').textContent = projet.titre;
+                    document.getElementById('projet-dates').textContent = projet.annee;
+                    document.getElementById('projet-poids').textContent = projet.poids;
+
+                    // Populate the status badge in the details section
+                    const statutDetailSpan = document.getElementById('projet-statut-detail');
+                    if (statutDetailSpan) {
+                        const statutLibelle = projet.statut === 'en-cours' ? 'En cours' : (projet.statut === 'valide' ? 'Validé' : projet.statut);
+                        const statutClass = projet.statut === 'en-cours' ? 'en-cours' : (projet.statut === 'valide' ? 'valide' : 'inactif');
+                        statutDetailSpan.innerHTML = `<span class="status-badge ${statutClass}">${statutLibelle}</span>`;
+                    }
+
+                    // Populate currentAssignments from fetched data
+                    currentAssignments = {}; // Start fresh
+                    if (projet.Responsables && Array.isArray(projet.Responsables)) {
+                        projet.Responsables.forEach(pro => {
+                            currentAssignments[pro.id] = 'responsable';
+                        });
+                    }
+                    if (projet.Contributeurs && Array.isArray(projet.Contributeurs)) {
+                        projet.Contributeurs.forEach(pro => {
+                            // Avoid overwriting if already set as responsable (responsable takes precedence?)
+                            if (!currentAssignments[pro.id]) {
+                                currentAssignments[pro.id] = 'contributeur';
+                            }
+                        });
+                    }
+                    console.log("Loaded assignments:", currentAssignments);
+
+                    renderAssignedProfessionals(); // Render the list based on fetched assignments
+
+                    // Cacher l'avertissement de contribution pour l'instant
+                    const warningDiv = document.getElementById('warning-contributions');
+                    if (warningDiv) warningDiv.style.display = 'none';
+
+                    // Removed dropdown hide logic
+
                 } catch (error) {
-                    console.error("Erreur suppression projet:", error);
-                    alert("Erreur lors de la suppression: " + error.message);
+                    console.error("Erreur lors de l'affichage des détails du projet:", error);
+                    alert("Erreur lors du chargement des détails du projet.");
+                    resetDetailsSection();
                 }
             }
-        }
 
-        // --- Removed Dropdown Management Functions ---
-        // renderAssociesDropdown, toggleAssociesDropdown, closeDropdownOnClickOutside removed
-
-        // --- Render Assigned Professionals List (Main View - Display Only) ---
-        function renderAssignedProfessionals() {
-            if (!listeAssociesContainer) return;
-            listeAssociesContainer.innerHTML = ''; // Clear current list
-
-            const assignedIds = Object.keys(currentAssignments);
-
-            if (assignedIds.length === 0) {
-                // Updated placeholder text
-                listeAssociesContainer.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">Aucun associé affecté. Utilisez le bouton "Modifier" pour gérer les affectations.</p>';
-                return;
+            // --- Gestion des modales ---
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.style.display = 'block';
             }
 
-            assignedIds.forEach(proId => {
-                const professionnel = allProfessionnels.find(p => p.id.toString() === proId);
-                const role = currentAssignments[proId];
-                if (professionnel) {
-                    const div = document.createElement('div');
-                    div.className = 'associe-item'; // Reuse existing style
-                    // Construct display string safely
-                    let roleDisplay = role === 'responsable' ? 'Responsable' : 'Contributeur';
-                    let professionDisplay = professionnel.profession ? `${professionnel.profession} - ` : ''; // Only add profession if it exists
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.style.display = 'none';
+                // Réinitialiser les formulaires lors de la fermeture
+                const form = modal.querySelector('form');
+                if (form) form.reset();
+                document.getElementById('projet-id').value = ''; // Vider l'ID caché
 
-                    div.innerHTML = `
+                // Refresh the main assigned list when closing the modal
+                renderAssignedProfessionals();
+            }
+
+            // --- Gestion des actions ---
+
+            function handleNouveauProjet() {
+                document.getElementById('form-projet').reset();
+                document.getElementById('projet-id').value = '';
+                document.querySelector('#modal-projet .modal-title').textContent = 'Nouveau projet';
+                currentAssignments = {}; // Clear assignments for new project
+                renderProfessionalsListInModal(); // Populate modal list for new project
+                openModal('modal-projet');
+            }
+
+            function handleModifierProjet() {
+                if (!projetSelectionne) return;
+
+                document.getElementById('projet-id').value = projetSelectionne.id;
+                document.getElementById('projet-titre-input').value = projetSelectionne.titre;
+                document.getElementById('projet-annee').value = projetSelectionne.annee;
+                document.getElementById('projet-poids-input').value = projetSelectionne.poids;
+                document.getElementById('projet-statut').value = projetSelectionne.statut;
+
+                // Populate the professionals list in the modal with current assignments
+                renderProfessionalsListInModal(); // Populate modal list for editing
+
+                document.querySelector('#modal-projet .modal-title').textContent = 'Modifier le projet';
+                openModal('modal-projet');
+            }
+
+            async function handleSauvegarderProjet() {
+                // Prepare assignment data to be sent
+                const responsablesIds = Object.keys(currentAssignments).filter(id => currentAssignments[id] === 'responsable');
+                const contributeursIds = Object.keys(currentAssignments).filter(id => currentAssignments[id] === 'contributeur');
+
+                const projetData = {
+                    id: document.getElementById('projet-id').value || undefined, // Envoyer undefined si nouveau
+                    titre: document.getElementById('projet-titre-input').value,
+                    annee: document.getElementById('projet-annee').value,
+                    poids: parseInt(document.getElementById('projet-poids-input').value) || 1,
+                    statut: document.getElementById('projet-statut').value,
+                    responsables: responsablesIds, // Array of IDs
+                    contributeurs: contributeursIds // Array of IDs
+                };
+
+                // Validation simple
+                if (!projetData.titre || !projetData.annee || !projetData.statut) {
+                    alert("Le titre, l'année et le statut sont requis.");
+                    return;
+                }
+
+                console.log("Saving project data:", projetData); // Log data being sent
+
+                try {
+                    // TODO: Update dataService.saveProjet to handle 'responsables' and 'contributeurs' arrays
+                    const savedProjet = await dataService.saveProjet(projetData);
+
+                    // If it's a new project, select it after saving
+                    if (!projetData.id && savedProjet) {
+                        projetSelectionne = savedProjet;
+                    } else if (savedProjet) {
+                        // Update the selected project data if it was an edit
+                        projetSelectionne = savedProjet;
+                    }
+
+                    closeModal('modal-projet');
+                    await loadInitialData(); // Recharger la liste et les détails (will reset currentAssignments based on backend)
+                    // If loadInitialData doesn't return the updated assignments, manually update here:
+                    // renderAssignedProfessionals(); // Refresh main list based on currentAssignments
+                } catch (error) {
+                    console.error("Erreur sauvegarde projet:", error);
+                    alert("Erreur lors de la sauvegarde: " + error.message);
+                }
+            }
+
+            async function handleSupprimerProjet() {
+                if (!projetSelectionne) return;
+
+                if (confirm(`Êtes-vous sûr de vouloir supprimer le projet "${projetSelectionne.titre}" ?`)) {
+                    try {
+                        await dataService.deleteProjet(projetSelectionne.id);
+                        projetSelectionne = null; // Déselectionner
+                        await loadInitialData(); // Recharger la liste et réinitialiser les détails
+                    } catch (error) {
+                        console.error("Erreur suppression projet:", error);
+                        alert("Erreur lors de la suppression: " + error.message);
+                    }
+                }
+            }
+
+            // --- Removed Dropdown Management Functions ---
+            // renderAssociesDropdown, toggleAssociesDropdown, closeDropdownOnClickOutside removed
+
+            // --- Render Assigned Professionals List (Main View - Display Only) ---
+            function renderAssignedProfessionals() {
+                if (!listeAssociesContainer) return;
+                listeAssociesContainer.innerHTML = ''; // Clear current list
+
+                const assignedIds = Object.keys(currentAssignments);
+
+                if (assignedIds.length === 0) {
+                    // Updated placeholder text
+                    listeAssociesContainer.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">Aucun associé affecté. Utilisez le bouton "Modifier" pour gérer les affectations.</p>';
+                    return;
+                }
+
+                assignedIds.forEach(proId => {
+                    const professionnel = allProfessionnels.find(p => p.id.toString() === proId);
+                    const role = currentAssignments[proId];
+                    if (professionnel) {
+                        const div = document.createElement('div');
+                        div.className = 'associe-item'; // Reuse existing style
+                        // Construct display string safely
+                        let roleDisplay = role === 'responsable' ? 'Responsable' : 'Contributeur';
+                        let professionDisplay = professionnel.profession ? `${professionnel.profession} - ` : ''; // Only add profession if it exists
+
+                        div.innerHTML = `
                         <div class="associe-info">
                             <span class="associe-name">${professionnel.nom}</span>
                             <span class="associe-role">${professionDisplay}${roleDisplay}</span> <!-- Safer display -->
                         </div>
                         <!-- Add remove button or other actions later if needed -->
                     `;
-                    listeAssociesContainer.appendChild(div);
-                }
-            });
-        }
-
-         // --- Render ALL Professionals List with Toggles (Modal View) ---
-        function renderProfessionalsListInModal() {
-            if (!modalProfessionalsListContainer) return;
-            modalProfessionalsListContainer.innerHTML = ''; // Clear current list
-
-            if (!allProfessionnels || allProfessionnels.length === 0) {
-                modalProfessionalsListContainer.innerHTML = '<p style="padding: 8px 12px; color: #666;">Aucun professionnel disponible.</p>';
-                return;
+                        listeAssociesContainer.appendChild(div);
+                    }
+                });
             }
 
-            allProfessionnels.forEach(pro => {
-                const currentRole = currentAssignments[pro.id]; // Get current assignment for this pro
-                const div = document.createElement('div');
-                // Using a similar class name for potential styling reuse, but maybe adjust later
-                div.className = 'modal-associe-item';
-                div.setAttribute('data-id', pro.id);
+            // --- Render ALL Professionals List with Toggles (Modal View) ---
+            function renderProfessionalsListInModal() {
+                if (!modalProfessionalsListContainer) return;
+                modalProfessionalsListContainer.innerHTML = ''; // Clear current list
 
-                div.innerHTML = `
+                if (!allProfessionnels || allProfessionnels.length === 0) {
+                    modalProfessionalsListContainer.innerHTML = '<p style="padding: 8px 12px; color: #666;">Aucun professionnel disponible.</p>';
+                    return;
+                }
+
+                allProfessionnels.forEach(pro => {
+                    const currentRole = currentAssignments[pro.id]; // Get current assignment for this pro
+                    const div = document.createElement('div');
+                    // Using a similar class name for potential styling reuse, but maybe adjust later
+                    div.className = 'modal-associe-item';
+                    div.setAttribute('data-id', pro.id);
+
+                    div.innerHTML = `
                     <div class="modal-associe-info">
                         <span class="associe-name">${pro.nom}</span> <!-- Simplified modal display -->
                         <!-- Removed profession display from modal for simplicity -->
@@ -954,95 +993,96 @@
                         <span class="role-toggle ${currentRole === 'contributeur' ? 'active' : ''}" data-role="contributeur">Contributeur</span>
                     </div>
                 `;
-                modalProfessionalsListContainer.appendChild(div);
-            });
-        }
+                    modalProfessionalsListContainer.appendChild(div);
+                });
+            }
 
-        // --- Handle Assignment Toggles in Modal ---
-        function handleAssignmentToggleInModal(event) {
-            const clickedToggle = event.target.closest('.role-toggle');
-            if (!clickedToggle) return; // Click wasn't on a toggle button
+            // --- Handle Assignment Toggles in Modal ---
+            function handleAssignmentToggleInModal(event) {
+                const clickedToggle = event.target.closest('.role-toggle');
+                if (!clickedToggle) return; // Click wasn't on a toggle button
 
-            const itemElement = clickedToggle.closest('.modal-associe-item');
-            const proId = itemElement.dataset.id;
-            const role = clickedToggle.dataset.role;
-            const parentToggles = clickedToggle.parentElement;
+                const itemElement = clickedToggle.closest('.modal-associe-item');
+                const proId = itemElement.dataset.id;
+                const role = clickedToggle.dataset.role;
+                const parentToggles = clickedToggle.parentElement;
 
-            // Toggle the active state for the clicked button
-            const wasActive = clickedToggle.classList.contains('active');
-            clickedToggle.classList.toggle('active');
+                // Toggle the active state for the clicked button
+                const wasActive = clickedToggle.classList.contains('active');
+                clickedToggle.classList.toggle('active');
 
-            // Ensure only one toggle is active at a time within the pair
-            if (!wasActive) { // If it just became active
-                const otherRole = role === 'responsable' ? 'contributeur' : 'responsable';
-                const otherToggle = parentToggles.querySelector(`.role-toggle[data-role="${otherRole}"]`);
-                if (otherToggle) {
-                    otherToggle.classList.remove('active');
+                // Ensure only one toggle is active at a time within the pair
+                if (!wasActive) { // If it just became active
+                    const otherRole = role === 'responsable' ? 'contributeur' : 'responsable';
+                    const otherToggle = parentToggles.querySelector(`.role-toggle[data-role="${otherRole}"]`);
+                    if (otherToggle) {
+                        otherToggle.classList.remove('active');
+                    }
+                    // Update the assignment state
+                    currentAssignments[proId] = role;
+                } else { // If it just became inactive
+                    // Remove from assignments only if this specific role was assigned
+                    if (currentAssignments[proId] === role) {
+                        delete currentAssignments[proId];
+                    }
                 }
-                // Update the assignment state
-                currentAssignments[proId] = role;
-            } else { // If it just became inactive
-                // Remove from assignments only if this specific role was assigned
-                if (currentAssignments[proId] === role) {
-                    delete currentAssignments[proId];
+
+                console.log(`Assignments updated:`, currentAssignments);
+                // No need to re-render the whole list here, just toggled the class
+            }
+
+
+            // --- Fonctions à réimplémenter si nécessaire ---
+            /*
+            function modifierPoids() {
+                if (!projetSelectionne) return;
+                const nouveauPoids = prompt("Nouveau poids:", projetSelectionne.poids);
+                if (nouveauPoids !== null && !isNaN(parseInt(nouveauPoids))) {
+                    // TODO: Appeler dataService.saveProjet avec le nouveau poids
+                    alert("Modification du poids à implémenter.");
+                }
+            }
+    
+            // Removed egaliserContributions function stub
+            */
+
+            // Display username on load
+            const usernameElement = document.getElementById('usernameDisplay');
+            const token = localStorage.getItem('token');
+            let username = 'developpement'; // Default value
+
+            if (token) {
+                try {
+                    // Decode JWT payload (second part)
+                    const payloadBase64 = token.split('.')[1];
+                    const payloadJson = atob(payloadBase64);
+                    const payload = JSON.parse(payloadJson);
+
+                    if (payload && payload.username) {
+                        username = payload.username;
+                    }
+                } catch (e) {
+                    console.error('Failed to decode JWT token:', e);
+                    // Keep default 'developpement' if decoding fails
                 }
             }
 
-            console.log(`Assignments updated:`, currentAssignments);
-            // No need to re-render the whole list here, just toggled the class
-        }
-
-
-        // --- Fonctions à réimplémenter si nécessaire ---
-        /*
-        function modifierPoids() {
-            if (!projetSelectionne) return;
-            const nouveauPoids = prompt("Nouveau poids:", projetSelectionne.poids);
-            if (nouveauPoids !== null && !isNaN(parseInt(nouveauPoids))) {
-                // TODO: Appeler dataService.saveProjet avec le nouveau poids
-                alert("Modification du poids à implémenter.");
+            if (usernameElement) {
+                usernameElement.textContent = username;
+            } else {
+                console.error("Username display element 'usernameDisplay' not found.");
             }
-        }
-
-        // Removed egaliserContributions function stub
-        */
-
-        // Display username on load
-        const usernameElement = document.getElementById('usernameDisplay');
-        const token = localStorage.getItem('token');
-        let username = 'developpement'; // Default value
-
-        if (token) {
-            try {
-                // Decode JWT payload (second part)
-                const payloadBase64 = token.split('.')[1];
-                const payloadJson = atob(payloadBase64);
-                const payload = JSON.parse(payloadJson);
-
-                if (payload && payload.username) {
-                    username = payload.username;
-                }
-            } catch (e) {
-                console.error('Failed to decode JWT token:', e);
-                // Keep default 'developpement' if decoding fails
-            }
-        }
-
-        if (usernameElement) {
-            usernameElement.textContent = username;
-        } else {
-            console.error("Username display element 'usernameDisplay' not found.");
-        }
-        const logoutButton = document.getElementById('logoutButton');
-        if (logoutButton) {
-            logoutButton.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior
-                localStorage.removeItem('token'); // Remove the JWT from localStorage
-                window.location.href = 'login.html'; // Redirect to the login page
-        });
-    } // <-- Added missing closing brace for 'if (logoutButton)'
-    </script>
-    <script type="module" src="../js/main.js"></script>
-    <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
+            const logoutButton = document.getElementById('logoutButton');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+                    localStorage.removeItem('token'); // Remove the JWT from localStorage
+                    window.location.href = 'login.html'; // Redirect to the login page
+                });
+            } // <-- Added missing closing brace for 'if (logoutButton)'
+        </script>
+        <script type="module" src="../js/main.js"></script>
+        <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
 </body>
+
 </html>

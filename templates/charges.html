@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,27 +11,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Ajout de Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Authentication -->
     <script type="module" src="../js/auth.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
+                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <h1>MSP Gestion</h1>
             </div>
             <nav>
                 <ul>
                     <li><a href="../index.html"><i class="fas fa-home"></i> <span>Accueil</span></a></li>
                     <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> <span>Revenus ACI</span></a></li>
                     <li><a href="associes.html"><i class="fas fa-user-md"></i> <span>Associés</span></a></li>
-                    <li class="active"><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> <span>Charges</span></a></li>
+                    <li class="active"><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i>
+                            <span>Charges</span></a></li>
                     <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> <span>Réunions RCP</span></a></li>
                     <li><a href="projets.html"><i class="fas fa-tasks"></i> <span>Projets & Missions</span></a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> <span>Répartition</span></a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
-<li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span></a></li>
+                    <li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span></a></li>
                 </ul>
             </nav>
         </div>
@@ -41,9 +46,9 @@
                     <button id="sidebarToggle" class="sidebar-toggle"><i class="fas fa-bars"></i></button>
                     <h1>Gestion des Charges</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
+                            style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
                         <span id="usernameDisplay">Utilisateur</span>
-                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
                     </div>
                 </div>
             </header>
@@ -230,7 +235,8 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-save-edit-charge">Enregistrer</button>
-                <button class="btn btn-danger" id="btn-cancel-edit-charge">Annuler</button> <!-- Removed modal-close, added ID -->
+                <button class="btn btn-danger" id="btn-cancel-edit-charge">Annuler</button>
+                <!-- Removed modal-close, added ID -->
             </div>
         </div>
     </div>
@@ -267,11 +273,11 @@
                 } else if (allYears.length > 0) {
                     yearSelect.value = allYears[0]; // Default to the latest year if current selection is invalid
                 } else {
-                     yearSelect.value = ""; // Default to "All years" if no charges exist
+                    yearSelect.value = ""; // Default to "All years" if no charges exist
                 }
 
                 // Trigger initial data load with the determined year
-                loadData(); 
+                loadData();
 
             }).catch(error => {
                 console.error("Error loading all charges for year population:", error);
@@ -288,7 +294,7 @@
 
             try {
                 // Load charges for the selected year
-                filteredCharges = await dataService.loadCharges(selectedYear); 
+                filteredCharges = await dataService.loadCharges(selectedYear);
                 // Note: globalData might need separate handling if other parts rely on *all* data
                 // For now, let's assume filtering is the primary goal here.
                 // If needed, we could load all data once and filter client-side, but server-side is better for large datasets.
@@ -381,19 +387,19 @@
                         document.getElementById('edit-charge-categorie').value = charge.categorie || '';
                         document.getElementById('edit-charge-type').value = charge.type || '';
                         document.getElementById('edit-charge-montant').value = charge.montant || '';
-                        
+
                         // Show modal using style.display
                         const modalElement = document.getElementById('modal-edit-charge');
                         if (modalElement) {
                             console.log('Showing edit charge modal using style.display.');
-                            modalElement.style.display = 'block'; 
+                            modalElement.style.display = 'block';
                         } else {
                             console.error('Edit modal element (#modal-edit-charge) not found!');
                             alert("Erreur : Impossible d'ouvrir la fenêtre de modification.");
                         }
                     } catch (error) {
-                         console.error('Error populating or showing edit charge modal:', error);
-                         alert(`Une erreur est survenue lors de l'ouverture de la fenêtre de modification: ${error.message}`);
+                        console.error('Error populating or showing edit charge modal:', error);
+                        alert(`Une erreur est survenue lors de l'ouverture de la fenêtre de modification: ${error.message}`);
                     }
                 });
                 tdActions.appendChild(editBtn);
@@ -449,7 +455,7 @@
             document.getElementById('total-charges').textContent = dataService.formatMontant(total);
             document.getElementById('charges-fixes').textContent = dataService.formatMontant(fixes);
             document.getElementById('charges-variables').textContent = dataService.formatMontant(variables);
-            
+
             // Update year labels on summary cards
             document.querySelectorAll('.stat-card .year-label').forEach(label => {
                 label.textContent = displayYear;
@@ -520,7 +526,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     let label = context.label || '';
                                     if (label) {
                                         label += ': ';
@@ -545,7 +551,7 @@
             const categories = [...new Set(charges.map(c => c.categorie))].sort(); // Sort categories alphabetically
             const select = document.getElementById('filter-categorie');
             // Preserve current selection if possible
-            const currentSelection = select.value; 
+            const currentSelection = select.value;
             select.innerHTML = '<option value="">Toutes les catégories</option>';
 
             categories.forEach(categorie => {
@@ -556,7 +562,7 @@
                     select.appendChild(option);
                 }
             });
-             // Restore selection if the category still exists in the filtered data
+            // Restore selection if the category still exists in the filtered data
             if (categories.includes(currentSelection)) {
                 select.value = currentSelection;
             } else {
@@ -586,11 +592,11 @@
         }
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('[charges.html] DOMContentLoaded event fired.');
-            
+
             // Populate year filter first, which then triggers loadData
-            populateYearFilter(); 
+            populateYearFilter();
 
             // Gestion des filtres
             document.getElementById('filter-type').addEventListener('change', filterCharges); // Client-side type filter
@@ -599,7 +605,7 @@
 
             // Gestion des modales (fermeture générique - ne s'applique plus au cancel de l'edit modal)
             document.querySelectorAll('.modal-close').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     // This handles closing for modals opened with classList.add('show'), like the 'Add Charge' modal
                     const modal = this.closest('.modal');
                     if (modal) {
@@ -613,7 +619,7 @@
             // Gestion spécifique de la fermeture du modal d'édition via le bouton Annuler
             const cancelEditButton = document.getElementById('btn-cancel-edit-charge');
             if (cancelEditButton) {
-                cancelEditButton.addEventListener('click', function() {
+                cancelEditButton.addEventListener('click', function () {
                     const editModal = document.getElementById('modal-edit-charge');
                     if (editModal) {
                         editModal.style.display = 'none'; // Close using style.display
@@ -625,59 +631,59 @@
             const saveButton = document.getElementById('btn-save-add-charge');
             if (saveButton) {
                 console.log('[charges.html] Attaching click listener to #btn-save-add-charge.');
-                saveButton.addEventListener('click', async function(event) {
+                saveButton.addEventListener('click', async function (event) {
                     console.log('[charges.html] Save button clicked!');
                     event.preventDefault(); // Prevent default form submission if it's part of a form
 
                     // --- Add Charge Logic ---
                     const chargeData = {
-                       date: document.getElementById('add-charge-date').value,
-                       description: document.getElementById('add-charge-description').value,
-                       categorie: document.getElementById('add-charge-categorie').value,
-                       type: document.getElementById('add-charge-type').value,
-                       montant: parseFloat(document.getElementById('add-charge-montant').value)
-                   };
+                        date: document.getElementById('add-charge-date').value,
+                        description: document.getElementById('add-charge-description').value,
+                        categorie: document.getElementById('add-charge-categorie').value,
+                        type: document.getElementById('add-charge-type').value,
+                        montant: parseFloat(document.getElementById('add-charge-montant').value)
+                    };
 
-                   // Validation simple (peut être améliorée)
-                   if (!chargeData.date || !chargeData.description || !chargeData.categorie || !chargeData.type || isNaN(chargeData.montant) || chargeData.montant <= 0) {
-                       alert('Veuillez remplir tous les champs correctement.');
-                       return;
-                   }
+                    // Validation simple (peut être améliorée)
+                    if (!chargeData.date || !chargeData.description || !chargeData.categorie || !chargeData.type || isNaN(chargeData.montant) || chargeData.montant <= 0) {
+                        alert('Veuillez remplir tous les champs correctement.');
+                        return;
+                    }
 
-                   try {
-                       // Use dataService.saveCharge for adding a new charge (it handles authentication)
-                       // saveCharge expects an object with id, date, description, categorie, type, montant
-                       // For adding, we pass the data without an id, and dataService should handle POST
-                       const savedCharge = await dataService.saveCharge(chargeData); 
-                       console.log('Charge ajoutée:', savedCharge);
+                    try {
+                        // Use dataService.saveCharge for adding a new charge (it handles authentication)
+                        // saveCharge expects an object with id, date, description, categorie, type, montant
+                        // For adding, we pass the data without an id, and dataService should handle POST
+                        const savedCharge = await dataService.saveCharge(chargeData);
+                        console.log('Charge ajoutée:', savedCharge);
 
-                       // Succès
-                       // Close modal using style.display (consistent with edit modal closing)
-                       const addModal = document.getElementById('modal-add-charge');
-                       if (addModal) {
-                           addModal.style.display = 'none'; 
-                       }
-                       document.getElementById('form-add-charge').reset(); // Réinitialiser le formulaire
-                       // Repopulate year filter in case the new charge adds a new year, then reload data
-                       populateYearFilter(); 
-                       if (window.showAlert) {
-                           window.showAlert('Charge ajoutée avec succès!', 'success');
-                       } else {
-                           alert('Charge ajoutée avec succès !');
-                       }
+                        // Succès
+                        // Close modal using style.display (consistent with edit modal closing)
+                        const addModal = document.getElementById('modal-add-charge');
+                        if (addModal) {
+                            addModal.style.display = 'none';
+                        }
+                        document.getElementById('form-add-charge').reset(); // Réinitialiser le formulaire
+                        // Repopulate year filter in case the new charge adds a new year, then reload data
+                        populateYearFilter();
+                        if (window.showAlert) {
+                            window.showAlert('Charge ajoutée avec succès!', 'success');
+                        } else {
+                            alert('Charge ajoutée avec succès !');
+                        }
 
-                   } catch (error) {
-                       console.error('Erreur lors de l\'ajout de la charge:', error);
-                       alert(`Échec de l'ajout de la charge: ${error.message}`);
-                   }
-                   // --- End Add Charge Logic ---
+                    } catch (error) {
+                        console.error('Erreur lors de l\'ajout de la charge:', error);
+                        alert(`Échec de l'ajout de la charge: ${error.message}`);
+                    }
+                    // --- End Add Charge Logic ---
                 });
             } else {
                 console.error('[charges.html] Could not find #btn-save-add-charge on DOMContentLoaded.');
             }
 
             // Gestion du formulaire d'édition
-            document.getElementById('btn-save-edit-charge').addEventListener('click', async function() { // Make async
+            document.getElementById('btn-save-edit-charge').addEventListener('click', async function () { // Make async
                 const id = document.getElementById('edit-charge-id').value;
                 const date = document.getElementById('edit-charge-date').value;
                 const description = document.getElementById('edit-charge-description').value;
@@ -712,10 +718,10 @@
                     // Close modal using style.display
                     const editModal = document.getElementById('modal-edit-charge');
                     if (editModal) {
-                        editModal.style.display = 'none'; 
+                        editModal.style.display = 'none';
                     }
                     // Reload data for the currently selected year
-                    await loadData(); 
+                    await loadData();
                 } catch (error) {
                     console.error('Erreur lors de la modification de la charge:', error);
                     alert(`Erreur lors de la modification: ${error.message}`);
@@ -757,4 +763,5 @@
     <script type="module" src="../js/main.js"></script>
     <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
 </body>
+
 </html>

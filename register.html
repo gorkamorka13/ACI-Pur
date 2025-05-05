@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +13,14 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background-color: #f5f7fa;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        
+
         .navbar {
             background-color: #2c3e50;
             color: white;
@@ -28,32 +29,37 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
         }
-        
+
         .nav-links a {
             color: white;
             text-decoration: none;
             margin-left: 1.5rem;
             font-size: 1rem;
-            cursor: pointer; /* Add cursor pointer for better UX */
+            cursor: pointer;
+            /* Add cursor pointer for better UX */
         }
 
         .nav-links a:hover,
         .nav-links a.highlight-menu-item {
-            background-color: rgba(255, 255, 255, 0.15); /* Slightly more prominent highlight */
-            text-decoration: none; /* Remove underline on hover/highlight */
+            background-color: rgba(255, 255, 255, 0.15);
+            /* Slightly more prominent highlight */
+            text-decoration: none;
+            /* Remove underline on hover/highlight */
         }
 
         /* Hamburger styles */
         .hamburger {
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
             cursor: pointer;
             padding: 10px;
-            z-index: 1001; /* Ensure it's above other content */
+            z-index: 1001;
+            /* Ensure it's above other content */
         }
 
         .hamburger .bar {
@@ -74,18 +80,21 @@
 
             .nav-links {
                 width: 100%;
-                display: none; /* Hidden by default on small screens */
+                display: none;
+                /* Hidden by default on small screens */
                 flex-direction: column;
                 background-color: #2c3e50;
                 position: absolute;
-                top: 60px; /* Adjust based on navbar height */
+                top: 60px;
+                /* Adjust based on navbar height */
                 left: 0;
                 padding: 1rem 0;
                 text-align: center;
             }
 
             .nav-links.active {
-                display: flex; /* Show when active */
+                display: flex;
+                /* Show when active */
             }
 
             .nav-links a {
@@ -93,28 +102,29 @@
             }
 
             .hamburger {
-                display: block; /* Show hamburger on small screens */
+                display: block;
+                /* Show hamburger on small screens */
             }
         }
-        
+
         .hero {
             background: linear-gradient(135deg, #3498db, #2c3e50);
             color: white;
             padding: 3rem 1rem;
             text-align: center;
         }
-        
+
         .hero h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .hero p {
             font-size: 1.2rem;
             max-width: 600px;
             margin: 0 auto 1rem;
         }
-        
+
         .main-content {
             flex-grow: 1;
             display: flex;
@@ -122,7 +132,7 @@
             align-items: center;
             padding: 2rem;
         }
-        
+
         .login-container {
             background-color: white;
             padding: 2rem;
@@ -131,28 +141,28 @@
             width: 100%;
             max-width: 400px;
         }
-        
+
         .login-header {
             text-align: center;
             margin-bottom: 1.5rem;
         }
-        
+
         .login-form {
             display: flex;
             flex-direction: column;
         }
-        
+
         .form-group {
             margin-bottom: 1.2rem;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #333;
         }
-        
+
         .form-group input {
             width: 100%;
             padding: 0.8rem;
@@ -160,13 +170,15 @@
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.3s;
-            box-sizing: border-box; /* Important for padding */
+            box-sizing: border-box;
+            /* Important for padding */
         }
-        
+
         .form-group input:focus {
             outline: none;
             border-color: #3498db;
         }
+
         .btn-login {
             background-color: #3498db;
             color: white;
@@ -178,23 +190,23 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
-        
+
         .btn-login:hover {
             background-color: #2980b9;
         }
-        
+
         .register-link {
             text-align: center;
             margin-top: 1.5rem;
             font-size: 0.9rem;
         }
-        
+
         .register-link a {
             color: #3498db;
             text-decoration: none;
             font-weight: 600;
         }
-        
+
         footer {
             background-color: #2c3e50;
             color: white;
@@ -224,8 +236,10 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 600px;
-            position: relative; /* For close button */
-            margin: 2rem 0; /* Add margin for scroll */
+            position: relative;
+            /* For close button */
+            margin: 2rem 0;
+            /* Add margin for scroll */
         }
 
         .dialog-content h3 {
@@ -240,10 +254,13 @@
 
         .dialog-close {
             font-size: 1.5rem;
-            color: white; /* Change color to white for visibility on dark banner */
+            color: white;
+            /* Change color to white for visibility on dark banner */
             cursor: pointer;
-            z-index: 10; /* Ensure it's on top */
-            margin-left: auto; /* Push to the right in flex container */
+            z-index: 10;
+            /* Ensure it's on top */
+            margin-left: auto;
+            /* Push to the right in flex container */
         }
 
         /* Contact Form Styles */
@@ -271,11 +288,13 @@
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.3s;
-            box-sizing: border-box; /* Important for padding */
+            box-sizing: border-box;
+            /* Important for padding */
         }
 
         .contact-form textarea {
-            resize: vertical; /* Allow vertical resizing */
+            resize: vertical;
+            /* Allow vertical resizing */
         }
 
         .contact-form button {
@@ -303,9 +322,12 @@
             border-top-right-radius: 8px;
             display: flex;
             align-items: center;
-            position: sticky; /* Make banner sticky */
-            top: 0; /* Stick to the top */
-            z-index: 1; /* Ensure it's above scrolling content */
+            position: sticky;
+            /* Make banner sticky */
+            top: 0;
+            /* Stick to the top */
+            z-index: 1;
+            /* Ensure it's above scrolling content */
         }
 
         .dialog-banner-content {
@@ -316,12 +338,15 @@
         }
 
         .dialog-banner-content h3 {
-            margin: 0; /* Remove default margin */
+            margin: 0;
+            /* Remove default margin */
         }
 
         .dialog-banner img {
-            width: 40px; /* Adjust size as needed */
-            height: 40px; /* Adjust size as needed */
+            width: 40px;
+            /* Adjust size as needed */
+            height: 40px;
+            /* Adjust size as needed */
             margin-right: 1rem;
         }
 
@@ -329,21 +354,27 @@
             margin: 0;
             flex-grow: 1;
             text-align: center;
-            color: white; /* Ensure title is white */
+            color: white;
+            /* Ensure title is white */
         }
 
         .dialog-body {
-            padding: 1rem; /* Add padding to the body */
-            background-color: white; /* Ensure background is white */
+            padding: 1rem;
+            /* Add padding to the body */
+            background-color: white;
+            /* Ensure background is white */
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
-            overflow-y: auto; /* Allow only body content to scroll */
-            max-height: calc(90vh - 100px); /* Set max height for scrolling */
+            overflow-y: auto;
+            /* Allow only body content to scroll */
+            max-height: calc(90vh - 100px);
+            /* Set max height for scrolling */
         }
 
         /* Adjust dialog-content padding */
         .dialog-content {
-            padding: 0; /* Remove padding from dialog-content */
+            padding: 0;
+            /* Remove padding from dialog-content */
         }
 
         /* New styles for contact dialog */
@@ -395,15 +426,17 @@
 
         /* Adjust dialog-content padding */
         .dialog-content {
-            padding: 0; /* Remove padding from dialog-content */
+            padding: 0;
+            /* Remove padding from dialog-content */
         }
-
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="logo">
-            <img src="/assets/favicon.ico" alt="MSP Gestion Logo" style="width: 25px; height: 25px; margin-bottom: 0; vertical-align: middle;">
+            <img src="/assets/favicon.ico" alt="MSP Gestion Logo"
+                style="width: 25px; height: 25px; margin-bottom: 0; vertical-align: middle;">
             <span style="margin-left: 0.5rem;">MSP Gestion</span>
         </div>
         <!-- Hamburger icon -->
@@ -420,20 +453,20 @@
             <a href="/assets/plaquette_MSP_2019_web.pdf" target="_blank" class="nav-link">Plaquette MSP</a>
         </div>
     </nav>
-    
+
     <section class="hero">
         <h1>Bienvenue sur MSP Gestion</h1>
-        <p>Votre plateforme de confiance pour des solutions numériques de gestion de  MSP sécurisées et efficaces. 
+        <p>Votre plateforme de confiance pour des solutions numériques de gestion de MSP sécurisées et efficaces.
             Connectez-vous pour accéder à votre tableau de bord.</p>
     </section>
-    
+
     <div class="main-content">
         <div class="login-container">
             <div class="login-header">
                 <h2>Inscription</h2>
                 <p>Créez votre compte</p>
             </div>
-            
+
             <form class="login-form" id="registerForm">
                 <div class="form-group">
                     <label for="registerEmail">Email:</label>
@@ -451,56 +484,71 @@
                     <label for="registerAvatar">Avatar (facultatif):</label>
                     <input type="file" id="registerAvatar" name="avatar" accept="image/*">
                 </div>
-                
+
                 <button type="submit" class="btn-login">S'inscrire</button>
             </form>
             <div id="message"></div>
         </div>
     </div>
-    
+
     <footer>
         <p>&copy; 2025 MSP Gestion. Tous droits réservés.</p>
     </footer>
 
-        <!-- READMEDialog Boxes -->
-        <div class="dialog-overlay" id="fonctionnalitesDialog">
-            <div class="dialog-content">
-                <div class="dialog-banner">
-                    <div class="dialog-banner-content">
-                        <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
-                        <h3>Fonctionnalités</h3>
-                    </div>
-                    <span class="dialog-close" id="closeFonctionnalites">&times;</span>
+    <!-- READMEDialog Boxes -->
+    <div class="dialog-overlay" id="fonctionnalitesDialog">
+        <div class="dialog-content">
+            <div class="dialog-banner">
+                <div class="dialog-banner-content">
+                    <img src="/assets/favicon.ico" alt="MSP Gestion Logo">
+                    <h3>Fonctionnalités</h3>
                 </div>
-                <div class="dialog-body">
-                    <p><strong>MSP Gestion - Gestion des Accords Cadres Interprofessionnels (ACI)</strong><br>
-                        Application web conçue pour les Maisons de Santé Pluriprofessionnelles (MSP) 
-                        afin de simplifier la gestion et la répartition des financements issus de l'Accord Cadre Interprofessionnel (ACI).</p>
-                        <h4>Objectif</h4>
-                        <p>
-                            L'ACI vise à valoriser le travail en équipe et les actions coordonnées des professionnels de santé au sein des MSP. Cette application a pour but de :
-                        </p>
-                        <ul>
-                            <li>Centraliser les informations relatives aux activités financées par l'ACI.</li>
-                            <li>Faciliter le suivi des revenus, des charges, et des différentes activités (projets, réunions).</li>
-                            <li>Automatiser la répartition des fonds ACI entre les professionnels selon des critères paramétrables.</li>
-                            <li>Offrir une meilleure visibilité sur l'utilisation des fonds et la contribution de chacun.</li>
-                        </ul>
-                        <h4>Fonctionnalités Principales</h4>
-                        <ul>
-                            <li><strong>Gestion des Revenus ACI:</strong> Enregistrement et suivi des différentes sources de revenus liées à l'ACI.</li>
-                            <li><strong>Gestion des Charges:</strong> Suivi des dépenses engagées dans le cadre des activités ACI.</li>
-                            <li><strong>Gestion des Associés et Professionnels:</strong> Répertoire des professionnels de santé membres de la MSP participant aux activités ACI.</li>
-                            <li><strong>Suivi des Réunions de Coordination Pluriprofessionnelles (RCP):</strong> Enregistrement des dates, participants et éventuellement des points clés des réunions pertinentes pour l'ACI.</li>
-                            <li><strong>Gestion des Projets et Missions:</strong> Suivi des projets spécifiques financés ou co-financés par l'ACI, incluant leur description, budget, et participants.</li>
-                            <li><strong>Répartition Automatique des Revenus:</strong> Calcul automatisé de la distribution des fonds ACI restants (après déduction des charges) entre les professionnels, basé sur les règles définies.</li>
-                            <li><strong>Paramétrage des Critères de Répartition:</strong> Interface permettant de configurer les règles et pondérations pour la répartition des fonds (ex: participation aux réunions, implication dans les projets, etc.).</li>
-                            <li><strong>Visualisation:</strong> (Potentiellement via Chart.js ou similaire) Graphiques et tableaux de bord pour visualiser les données financières et la répartition.</li>
-                        </ul>
-                    </div>
-                </div>
+                <span class="dialog-close" id="closeFonctionnalites">&times;</span>
             </div>
-        </div>      
+            <div class="dialog-body">
+                <p><strong>MSP Gestion - Gestion des Accords Cadres Interprofessionnels (ACI)</strong><br>
+                    Application web conçue pour les Maisons de Santé Pluriprofessionnelles (MSP)
+                    afin de simplifier la gestion et la répartition des financements issus de l'Accord Cadre
+                    Interprofessionnel (ACI).</p>
+                <h4>Objectif</h4>
+                <p>
+                    L'ACI vise à valoriser le travail en équipe et les actions coordonnées des professionnels de santé
+                    au sein des MSP. Cette application a pour but de :
+                </p>
+                <ul>
+                    <li>Centraliser les informations relatives aux activités financées par l'ACI.</li>
+                    <li>Faciliter le suivi des revenus, des charges, et des différentes activités (projets, réunions).
+                    </li>
+                    <li>Automatiser la répartition des fonds ACI entre les professionnels selon des critères
+                        paramétrables.</li>
+                    <li>Offrir une meilleure visibilité sur l'utilisation des fonds et la contribution de chacun.</li>
+                </ul>
+                <h4>Fonctionnalités Principales</h4>
+                <ul>
+                    <li><strong>Gestion des Revenus ACI:</strong> Enregistrement et suivi des différentes sources de
+                        revenus liées à l'ACI.</li>
+                    <li><strong>Gestion des Charges:</strong> Suivi des dépenses engagées dans le cadre des activités
+                        ACI.</li>
+                    <li><strong>Gestion des Associés et Professionnels:</strong> Répertoire des professionnels de santé
+                        membres de la MSP participant aux activités ACI.</li>
+                    <li><strong>Suivi des Réunions de Coordination Pluriprofessionnelles (RCP):</strong> Enregistrement
+                        des dates, participants et éventuellement des points clés des réunions pertinentes pour l'ACI.
+                    </li>
+                    <li><strong>Gestion des Projets et Missions:</strong> Suivi des projets spécifiques financés ou
+                        co-financés par l'ACI, incluant leur description, budget, et participants.</li>
+                    <li><strong>Répartition Automatique des Revenus:</strong> Calcul automatisé de la distribution des
+                        fonds ACI restants (après déduction des charges) entre les professionnels, basé sur les règles
+                        définies.</li>
+                    <li><strong>Paramétrage des Critères de Répartition:</strong> Interface permettant de configurer les
+                        règles et pondérations pour la répartition des fonds (ex: participation aux réunions,
+                        implication dans les projets, etc.).</li>
+                    <li><strong>Visualisation:</strong> (Potentiellement via Chart.js ou similaire) Graphiques et
+                        tableaux de bord pour visualiser les données financières et la répartition.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
     <div class="dialog-overlay" id="aProposDialog">
         <div class="dialog-content">
             <div class="dialog-banner">
@@ -553,18 +601,18 @@
                         event.preventDefault();
                         switch (page) {
                             case 'accueil':
-                            window.location.href = 'login.html';
-                            break;
-                        case 'fonctionnalites':
-                            openDialog('fonctionnalitesDialog');
-                            // Populate with README content later
-                            break;
-                        case 'a-propos':
-                            openDialog('aProposDialog');
-                            break;
-                        case 'contact':
-                            openDialog('contactDialog');
-                            break;
+                                window.location.href = 'login.html';
+                                break;
+                            case 'fonctionnalites':
+                                openDialog('fonctionnalitesDialog');
+                                // Populate with README content later
+                                break;
+                            case 'a-propos':
+                                openDialog('aProposDialog');
+                                break;
+                            case 'contact':
+                                openDialog('contactDialog');
+                                break;
                         }
                     }
                     // If no data-page, default link behavior occurs (e.g., opening PDF)
@@ -627,4 +675,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,15 @@
     <link rel="stylesheet" href="../css/style.css">
     <!-- Ajout de Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <!-- Authentication -->
-        <script type="module" src="../js/auth.js"></script>
+    <!-- Authentication -->
+    <script type="module" src="../js/auth.js"></script>
     <style>
         .content-section {
             background: white;
             border-radius: 4px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .section-title {
@@ -121,7 +122,7 @@
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: none;
         }
 
@@ -130,11 +131,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
+                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <h1>MSP Gestion</h1>
             </div>
             <nav>
                 <ul>
@@ -144,9 +147,11 @@
                     <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> <span>Charges</span></a></li>
                     <li><a href="rcpmeeting.html"><i class="fas fa-users"></i> <span>Réunions RCP</span></a></li>
                     <li><a href="projets.html"><i class="fas fa-tasks"></i> <span>Projets & Missions</span></a></li>
-                    <li class="active"><a href="repartition.html"><i class="fas fa-chart-pie"></i> <span>Répartition</span></a></li>
+                    <li class="active"><a href="repartition.html"><i class="fas fa-chart-pie"></i>
+                            <span>Répartition</span></a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
-<li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span></a></li>
+                    <li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span></a></li>
                 </ul>
             </nav>
         </div>
@@ -157,9 +162,10 @@
                     <button id="sidebarToggle" class="sidebar-toggle"><i class="fas fa-bars"></i></button>
                     <h1>Répartition</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
+                            style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
                         <span id="usernameDisplay">Utilisateur</span>
-                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
+
                     </div>
                 </div>
             </header>
@@ -180,14 +186,15 @@
                 </div>
 
                 <div class="chart-description">
-                    Ce graphique présente la répartition des rémunérations pour les associés, ventilée par type de contribution (part fixe, présence RCP, et implication dans les projets).
+                    Ce graphique présente la répartition des rémunérations pour les associés, ventilée par type de
+                    contribution (part fixe, présence RCP, et implication dans les projets).
                 </div>
 
                 <div class="chart-container">
                     <div style="position: relative; height:400px; width:100%">
                         <canvas id="repartition-chart"></canvas>
                     </div>
-            </div>
+                </div>
 
                 <div class="parametres-grid">
                     <div class="parametre-card">
@@ -219,13 +226,13 @@
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { dataService } from '../js/services/DataService.js';
-        
+
         let repartitionChart = null; // Pour garder une référence au graphique
         let globalData = null; // Pour stocker toutes les données chargées
         let currentView = 'repartition'; // Vue actuelle du graphique
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             await loadDataAndInit();
             setupEventListeners();
         });
@@ -239,7 +246,7 @@
                 ]);
 
                 if (!allData) throw new Error("Chargement des données principales a échoué.");
-                
+
                 // Combine all data into globalData
                 globalData = {
                     ...allData,
@@ -270,21 +277,21 @@
                     updateChart();
                 });
             });
-            
+
             // Bouton Modifier paramètres (redirige vers la page paramètres)
-             const btnParams = document.querySelector('.btn-parametres');
-             if(btnParams) {
-                 btnParams.addEventListener('click', () => {
-                     window.location.href = 'parametres.html';
-                 });
-             }
+            const btnParams = document.querySelector('.btn-parametres');
+            if (btnParams) {
+                btnParams.addEventListener('click', () => {
+                    window.location.href = 'parametres.html';
+                });
+            }
         }
 
         // Fonction pour mettre à jour l'affichage des paramètres
         function updateParametresDisplay() {
             const params = globalData?.parametresRepartition;
             if (!params) return; // Ne rien faire si les paramètres ne sont pas chargés
-        
+
             document.getElementById('param-part-fixe').textContent = (params.partFixe || 0) + '%';
             document.getElementById('param-facteur-cogerant').textContent = '×' + (params.facteurCogerant || 0);
             document.getElementById('param-part-rcp').textContent = (params.partRCP || 0) + '%';
@@ -295,7 +302,7 @@
         function updateChartDescription() {
             const descriptionEl = document.querySelector('.chart-description');
             if (!descriptionEl) return;
-            
+
             switch (currentView) {
                 case 'repartition':
                     descriptionEl.textContent = "Ce graphique présente la répartition des rémunérations pour les associés, ventilée par type de contribution (part fixe, présence RCP, et implication dans les projets).";
@@ -307,7 +314,7 @@
                     descriptionEl.textContent = "Ce graphique illustre l'implication pondérée de chaque associé dans les différents projets.";
                     break;
                 default:
-                     descriptionEl.textContent = 'Sélectionnez une vue.';
+                    descriptionEl.textContent = 'Sélectionnez une vue.';
             }
         }
 
@@ -330,16 +337,16 @@
                         chartConfig = getRepartitionChartConfig(); // This one is synchronous
                         break;
                     case 'presence-rcp':
-                         chartConfig = await getPresenceRcpChartConfig(); // Await the async function
+                        chartConfig = await getPresenceRcpChartConfig(); // Await the async function
                         break;
                     case 'implication-projets':
-                         chartConfig = getImplicationProjetsChartConfig(); // This one is synchronous
+                        chartConfig = getImplicationProjetsChartConfig(); // This one is synchronous
                         break;
                     default:
                         console.warn("Vue de graphique non reconnue:", currentView);
                         return; // Ne pas créer de graphique si la vue est inconnue
                 }
-                
+
                 if (chartConfig) {
                     // Create chart
                     try {
@@ -348,14 +355,14 @@
                         console.error(`Erreur lors de la création du graphique (${currentView}):`, chartError);
                         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                         ctx.textAlign = 'center';
-                        ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2);
+                        ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width / 2, ctx.canvas.height / 2);
                     }
                 }
             } catch (error) {
-                 console.error(`Erreur lors de la préparation du graphique (${currentView}):`, error); // Keep this outer catch
-                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                 ctx.textAlign = 'center';
-                 ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width/2, ctx.canvas.height/2);
+                console.error(`Erreur lors de la préparation du graphique (${currentView}):`, error); // Keep this outer catch
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillText("Erreur lors de la génération du graphique.", ctx.canvas.width / 2, ctx.canvas.height / 2);
             }
         }
 
@@ -366,7 +373,7 @@
             const professionnels = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
             const revenus = globalData.revenus;
             const charges = globalData.charges;
-            
+
             // Calculs de base (similaires à index.html, pourraient être factorisés)
             const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
             const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
@@ -379,11 +386,11 @@
             // Calcul des parts individuelles (simplifié, logique RCP/Projets à affiner)
             const nbAssocies = professionnels.length || 1;
             const pointsFixePonderes = professionnels.reduce((sum, p) => sum + (p.statut === 'Cogérant' ? params.facteurCogerant : 1), 0) || 1;
-            
+
             // Calculate RCP points based on actual presence data
             const rcpPresenceData = globalData.rcpPresenceData || [];
             const totalPresenceMinutes = rcpPresenceData.reduce((sum, item) => sum + item.totalPresenceMinutes, 0);
-            
+
             const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes]));
 
             // --- Calculate Project Implication Scores ---
@@ -427,42 +434,42 @@
 
             const data = {
                 labels: professionnels.map(p => p.nom),
-                    datasets: [
-                        {
+                datasets: [
+                    {
                         label: `Part Fixe (${params.partFixe}%)`,
-                        data: professionnels.map(p => 
+                        data: professionnels.map(p =>
                             (montantPartFixe / pointsFixePonderes) * (p.statut === 'Cogérant' ? params.facteurCogerant : 1)
                         ),
-                            backgroundColor: '#2196F3',
+                        backgroundColor: '#2196F3',
                         stack: 'Stack 0',
-                        },
-                        {
-                            label: `Part RCP (${params.partRCP}%)`,
-                            // Distribute montantPartRCP based on presence minutes
-                            data: professionnels.map(p => {
-                                const presenceMinutes = presenceMap.get(p.id) || 0;
-                                if (totalPresenceMinutes === 0) {
-                                    return 0; // Avoid division by zero
-                                }
-                                return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
-                            }),
-                            backgroundColor: '#4CAF50',
-                            stack: 'Stack 0',
-                        },
-                        {
-                            label: `Part Projets (${params.partProjets}%)`,
-                            // Distribute montantPartProjets based on calculated implication scores
-                            data: professionnels.map(p => {
-                                const individualScore = implicationScores.get(p.id) || 0;
-                                if (totalImplicationPoints === 0) {
-                                    return 0; // Avoid division by zero
-                                }
-                                return (montantPartProjets * (individualScore / totalImplicationPoints));
-                            }),
-                            backgroundColor: '#FFC107',
-                            stack: 'Stack 0',
-                        }
-                    ]
+                    },
+                    {
+                        label: `Part RCP (${params.partRCP}%)`,
+                        // Distribute montantPartRCP based on presence minutes
+                        data: professionnels.map(p => {
+                            const presenceMinutes = presenceMap.get(p.id) || 0;
+                            if (totalPresenceMinutes === 0) {
+                                return 0; // Avoid division by zero
+                            }
+                            return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
+                        }),
+                        backgroundColor: '#4CAF50',
+                        stack: 'Stack 0',
+                    },
+                    {
+                        label: `Part Projets (${params.partProjets}%)`,
+                        // Distribute montantPartProjets based on calculated implication scores
+                        data: professionnels.map(p => {
+                            const individualScore = implicationScores.get(p.id) || 0;
+                            if (totalImplicationPoints === 0) {
+                                return 0; // Avoid division by zero
+                            }
+                            return (montantPartProjets * (individualScore / totalImplicationPoints));
+                        }),
+                        backgroundColor: '#FFC107',
+                        stack: 'Stack 0',
+                    }
+                ]
             };
 
             return {
@@ -475,7 +482,7 @@
                 }
             };
         }
-        
+
         async function getPresenceRcpChartConfig() { // Made async to await data fetch
             // Fetch real presence data
             let presenceData = [];
@@ -509,7 +516,7 @@
 
             // Filter for Associés and Cogérants if necessary (backend route might already do this)
             // Assuming the backend returns data only for relevant professionals
-            const professionnels = globalData.professionnels.filter(p => 
+            const professionnels = globalData.professionnels.filter(p =>
                 presenceData.some(pd => pd.id === p.id) // Only include professionals present in the fetched data
             );
 
@@ -532,11 +539,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                         title: { display: true, text: 'Temps total de présence aux réunions RCP (minutes)' }, // Updated title
-                         legend: { display: false }
+                        title: { display: true, text: 'Temps total de présence aux réunions RCP (minutes)' }, // Updated title
+                        legend: { display: false }
                     },
                     scales: {
-                        y: { 
+                        y: {
                             beginAtZero: true,
                             title: { // Add Y-axis title
                                 display: true,
@@ -547,11 +554,11 @@
                 }
             };
         }
-        
+
         function getImplicationProjetsChartConfig() {
             const professionnelsAssocies = globalData.professionnels.filter(p => p.statut === 'Associé' || p.statut === 'Cogérant');
             const projets = globalData.projets || []; // Ensure projets is an array
-            
+
             const implicationScores = new Map(); // Use a Map for easier score tracking by ID
             professionnelsAssocies.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores to 0
 
@@ -645,4 +652,5 @@
     </script>
     <script src="../js/ui/updateHeader.js"></script> <!-- Add header update script -->
 </body>
+
 </html>

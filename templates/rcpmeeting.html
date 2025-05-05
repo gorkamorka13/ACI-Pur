@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Authentication -->
     <script type="module" src="../js/auth.js"></script>
     <style>
@@ -42,27 +43,27 @@
             border-radius: 4px;
             transition: all 0.2s ease;
         }
-        
+
         .reunion-item:hover {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .reunion-item.selected {
             border-color: #007bff;
             background-color: #f8f9fa;
         }
-        
+
         .reunion-info {
             flex-grow: 1;
         }
-        
+
         .reunion-title {
             font-size: 1.1em;
             font-weight: 600;
             margin-bottom: 8px;
             color: #333;
         }
-        
+
         .reunion-meta {
             color: #666;
             font-size: 0.9em;
@@ -71,12 +72,12 @@
             flex-wrap: wrap;
             gap: 20px;
         }
-        
+
         .reunion-meta i {
             margin-right: 5px;
             color: #007bff;
         }
-        
+
         .reunion-actions {
             display: flex;
             gap: 8px;
@@ -94,12 +95,12 @@
             color: #333;
             font-size: 1.4em;
         }
-        
+
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.9em;
         }
-        
+
         .btn-nouvelle-reunion {
             padding: 8px 16px;
             background-color: #2196F3;
@@ -123,18 +124,18 @@
             display: flex;
             gap: 10px;
         }
-        
+
         .details-section {
             background-color: #fff;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             padding: 20px;
         }
-        
+
         .presence-list {
             margin-top: 25px;
         }
-        
+
         .presence-list h3 {
             margin-bottom: 15px;
             color: #555;
@@ -162,75 +163,17 @@
             font-size: 0.9em;
             color: #666;
         }
-        
+
         #info-reunion {
             color: #666;
         }
-        
+
         .no-data {
             text-align: center;
             color: #666;
             padding: 20px;
             font-style: italic;
         }
-
-        /* Removed custom checkbox styles */
-        /*
-        .checkbox-container {
-            display: block;
-            position: relative;
-            padding-left: 25px;
-            cursor: pointer;
-            user-select: none;
-            position: relative;
-        }
-
-        .checkbox-container input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 18px;
-            width: 18px;
-            background-color: #fff;
-            border: 2px solid #ddd;
-            border-radius: 3px;
-            box-sizing: border-box;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-        }
-
-        .checkbox-container:hover input ~ .checkmark {
-            border-color: #2196F3;
-        }
-
-        .checkbox-container input:checked ~ .checkmark {
-            background-color: #2196F3;
-            border-color: #2196F3;
-        }
-
-        .checkmark i {
-            display: none;
-            color: white;
-            font-size: 10px;
-            line-height: 1;
-        }
-
-        .checkbox-container input:checked ~ .checkmark i {
-            display: inline-block;
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-        }
-        */
 
         .reunion-participation {
             display: inline-flex;
@@ -247,11 +190,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;"><h1>MSP Gestion</h1>
+                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <h1>MSP Gestion</h1>
             </div>
             <nav>
                 <ul>
@@ -259,7 +204,8 @@
                     <li><a href="revenus.html"><i class="fas fa-money-bill-wave"></i> <span>Revenus ACI</span></a></li>
                     <li><a href="associes.html"><i class="fas fa-user-md"></i> <span>Associés</span></a></li>
                     <li><a href="charges.html"><i class="fas fa-file-invoice-dollar"></i> <span>Charges</span></a></li>
-                    <li class="active"><a href="rcpmeeting.html"><i class="fas fa-users"></i> <span>Réunions RCP</span></a></li>
+                    <li class="active"><a href="rcpmeeting.html"><i class="fas fa-users"></i> <span>Réunions
+                                RCP</span></a></li>
                     <li><a href="projets.html"><i class="fas fa-tasks"></i> <span>Projets & Missions</span></a></li>
                     <li><a href="repartition.html"><i class="fas fa-chart-pie"></i> <span>Répartition</span></a></li>
                     <li><a href="parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
@@ -274,9 +220,10 @@
                     <button id="sidebarToggle" class="sidebar-toggle"><i class="fas fa-bars"></i></button>
                     <h1>Réunions RCP</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
+                            style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">
                         <span id="usernameDisplay">Utilisateur</span>
-                        <!-- <i class="fas fa-user-circle"></i> --> <!-- Optional: Keep or remove -->
+                        
                     </div>
                 </div>
             </header>
@@ -318,12 +265,12 @@
 
             <div class="table-container">
                 <table class="table">
-                     <thead>
-                         <tr>
-                             <th>Date</th>
-                             <th>Titre</th>
-                             <th>Durée (minutes)</th>
-                             <th>Actions</th>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Titre</th>
+                            <th>Durée (minutes)</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="liste-reunions">
@@ -346,23 +293,24 @@
                 <form id="form-add-reunion">
                     <div class="form-group">
                         <label for="add-reunion-date">Date</label>
-                         <input type="date" id="add-reunion-date" class="form-control" required>
-                     </div>
-                     <div class="form-group">
-                         <label for="add-reunion-titre">Titre</label>
-                         <input type="text" id="add-reunion-titre" class="form-control" required>
-                     </div>
-                     <div class="form-group">
-                         <label for="add-reunion-description">Description (optionnel)</label>
-                         <textarea id="add-reunion-description" class="form-control" rows="3"></textarea>
-                     </div>
-                     <div class="form-group">
-                         <label for="add-reunion-duree">Durée (minutes)</label>
+                        <input type="date" id="add-reunion-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-reunion-titre">Titre</label>
+                        <input type="text" id="add-reunion-titre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-reunion-description">Description (optionnel)</label>
+                        <textarea id="add-reunion-description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-reunion-duree">Durée (minutes)</label>
                         <input type="number" id="add-reunion-duree" class="form-control" min="1" required>
                     </div>
                     <div class="form-group">
                         <label>Participants (Associés)</label>
-                        <div id="add-reunion-attendees-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                        <div id="add-reunion-attendees-list"
+                            style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
                             <!-- Checkboxes will be loaded here -->
                             <p>Chargement des associés...</p>
                         </div>
@@ -404,7 +352,8 @@
                     </div>
                     <div class="form-group">
                         <label>Participants (Associés)</label>
-                        <div id="edit-reunion-attendees-list" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
+                        <div id="edit-reunion-attendees-list"
+                            style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 4px;">
                             <!-- Checkboxes will be loaded here -->
                             <p>Chargement des associés...</p>
                         </div>
@@ -413,495 +362,497 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-save-edit-reunion">Enregistrer</button>
-                <button class="btn btn-danger" id="btn-cancel-edit-reunion">Annuler</button> <!-- Removed modal-close, added ID -->
+                <button class="btn btn-danger" id="btn-cancel-edit-reunion">Annuler</button>
+                <!-- Removed modal-close, added ID -->
             </div>
         </div>
     </div>
 </body>
+
 </html>
-    <script type="module" src="../js/main.js"></script>
-    <script src="../js/ui/updateHeader.js"></script>
-    <script type="module">
-        import { dataService } from '/js/services/DataService.js';
+<script type="module" src="../js/main.js"></script>
+<script src="../js/ui/updateHeader.js"></script>
+<script type="module">
+    import { dataService } from '/js/services/DataService.js';
 
-        let globalData = null;
-        let allProfessionnels = []; // Added to store professionals
+    let globalData = null;
+    let allProfessionnels = []; // Added to store professionals
 
-        // Fonction pour charger les données
-        async function loadData() {
-            try {
-                // Load professionals and meetings in parallel
-                const [rcpMeetings, professionnels] = await Promise.all([
-                    dataService.loadRcpMeetings(),
-                    dataService.loadProfessionnels()
-                ]);
-                allProfessionnels = professionnels; // Store professionals
-                globalData = { rcpMeetings };
-                updateStats();
-                initTableReunions();
-                initFilterAnnees();
-                // Populate attendees checkboxes once data is loaded
-                populateAttendeesCheckboxes();
-            } catch (error) {
-                console.error('Erreur lors du chargement des réunions ou professionnels:', error);
-                const tableBody = document.getElementById('liste-reunions');
-                tableBody.innerHTML = `
+    // Fonction pour charger les données
+    async function loadData() {
+        try {
+            // Load professionals and meetings in parallel
+            const [rcpMeetings, professionnels] = await Promise.all([
+                dataService.loadRcpMeetings(),
+                dataService.loadProfessionnels()
+            ]);
+            allProfessionnels = professionnels; // Store professionals
+            globalData = { rcpMeetings };
+            updateStats();
+            initTableReunions();
+            initFilterAnnees();
+            // Populate attendees checkboxes once data is loaded
+            populateAttendeesCheckboxes();
+        } catch (error) {
+            console.error('Erreur lors du chargement des réunions ou professionnels:', error);
+            const tableBody = document.getElementById('liste-reunions');
+            tableBody.innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align: center; color: red;">
                             Erreur lors du chargement des données. Détails: ${error.message}
                         </td>
                     </tr>
                 `;
-            }
+        }
+    }
+
+    // Fonction pour mettre à jour les statistiques
+    function updateStats() {
+        if (!globalData || !globalData.rcpMeetings) return;
+
+        const currentYear = new Date().getFullYear();
+        document.getElementById('annee-reunions').textContent = currentYear;
+        document.getElementById('annee-reunions-temps').textContent = currentYear; // Update year for time card
+
+        const meetingsThisYear = globalData.rcpMeetings
+            .filter(reunion => new Date(reunion.date).getFullYear() === currentYear);
+
+        const totalReunions = meetingsThisYear.length;
+        document.getElementById('total-reunions').textContent = totalReunions;
+
+        // Calculate total duration in minutes
+        const totalDureeMinutes = meetingsThisYear.reduce((sum, reunion) => {
+            // Ensure duree is a number, default to 0 if not
+            const duration = Number(reunion.duree) || 0;
+            return sum + duration;
+        }, 0);
+
+        // Convert to hours and format to 1 decimal place
+        const totalDureeHeures = (totalDureeMinutes / 60).toFixed(1);
+        document.getElementById('total-reunions-temps').textContent = totalDureeHeures;
+    }
+
+    // Fonction pour initialiser le tableau des réunions
+    function initTableReunions() {
+        const tableBody = document.getElementById('liste-reunions');
+        tableBody.innerHTML = '';
+
+        if (!globalData || !globalData.rcpMeetings || globalData.rcpMeetings.length === 0) {
+            const row = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 4;
+            td.textContent = 'Aucune réunion enregistrée';
+            td.style.textAlign = 'center';
+            row.appendChild(td);
+            tableBody.appendChild(row);
+            return;
         }
 
-        // Fonction pour mettre à jour les statistiques
-        function updateStats() {
-            if (!globalData || !globalData.rcpMeetings) return;
+        const anneeFilter = document.getElementById('filter-annee').value;
+        let reunions = globalData.rcpMeetings;
 
-            const currentYear = new Date().getFullYear();
-            document.getElementById('annee-reunions').textContent = currentYear;
-            document.getElementById('annee-reunions-temps').textContent = currentYear; // Update year for time card
-
-            const meetingsThisYear = globalData.rcpMeetings
-                .filter(reunion => new Date(reunion.date).getFullYear() === currentYear);
-
-            const totalReunions = meetingsThisYear.length;
-            document.getElementById('total-reunions').textContent = totalReunions;
-
-            // Calculate total duration in minutes
-            const totalDureeMinutes = meetingsThisYear.reduce((sum, reunion) => {
-                // Ensure duree is a number, default to 0 if not
-                const duration = Number(reunion.duree) || 0;
-                return sum + duration;
-            }, 0);
-
-            // Convert to hours and format to 1 decimal place
-            const totalDureeHeures = (totalDureeMinutes / 60).toFixed(1);
-            document.getElementById('total-reunions-temps').textContent = totalDureeHeures;
+        if (anneeFilter) {
+            reunions = reunions.filter(reunion =>
+                new Date(reunion.date).getFullYear().toString() === anneeFilter
+            );
         }
 
-        // Fonction pour initialiser le tableau des réunions
-        function initTableReunions() {
-            const tableBody = document.getElementById('liste-reunions');
-            tableBody.innerHTML = '';
-            
-            if (!globalData || !globalData.rcpMeetings || globalData.rcpMeetings.length === 0) {
-                const row = document.createElement('tr');
-                const td = document.createElement('td');
-                td.colSpan = 4;
-                td.textContent = 'Aucune réunion enregistrée';
-                td.style.textAlign = 'center';
-                row.appendChild(td);
-                tableBody.appendChild(row);
-                return;
-            }
+        reunions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            const anneeFilter = document.getElementById('filter-annee').value;
-            let reunions = globalData.rcpMeetings;
+        reunions.forEach(reunion => {
+            const row = document.createElement('tr');
 
-            if (anneeFilter) {
-                reunions = reunions.filter(reunion =>
-                    new Date(reunion.date).getFullYear().toString() === anneeFilter
-                );
-            }
+            // Date
+            const tdDate = document.createElement('td');
+            tdDate.textContent = dataService.formatDate(reunion.date);
+            row.appendChild(tdDate);
 
-            reunions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            reunions.forEach(reunion => {
-                const row = document.createElement('tr');
-                
-                // Date
-                const tdDate = document.createElement('td');
-                tdDate.textContent = dataService.formatDate(reunion.date);
-                row.appendChild(tdDate);
-                
-                 // Titre (remplacing participants)
-                 const tdTitre = document.createElement('td');
-                 tdTitre.textContent = reunion.titre; // Display titre instead
-                 row.appendChild(tdTitre);
-                 
-                 // Durée
-                const tdDuree = document.createElement('td');
-                tdDuree.textContent = reunion.duree;
-                row.appendChild(tdDuree);
-                
-                // Actions
-                const tdActions = document.createElement('td');
-                tdActions.className = 'action-icons';
-                
-                // Bouton éditer
-                const editBtn = document.createElement('i');
-                editBtn.className = 'fas fa-edit';
-                editBtn.title = 'Modifier';
-                editBtn.addEventListener('click', async () => { // Made async to use await
+            // Titre (remplacing participants)
+            const tdTitre = document.createElement('td');
+            tdTitre.textContent = reunion.titre; // Display titre instead
+            row.appendChild(tdTitre);
+
+            // Durée
+            const tdDuree = document.createElement('td');
+            tdDuree.textContent = reunion.duree;
+            row.appendChild(tdDuree);
+
+            // Actions
+            const tdActions = document.createElement('td');
+            tdActions.className = 'action-icons';
+
+            // Bouton éditer
+            const editBtn = document.createElement('i');
+            editBtn.className = 'fas fa-edit';
+            editBtn.title = 'Modifier';
+            editBtn.addEventListener('click', async () => { // Made async to use await
+                try {
+                    // Fetch the specific meeting including associated professionals
+                    const meetingToEdit = await dataService.getRcpMeeting(reunion.id);
+                    console.log('Fetched meeting for edit:', meetingToEdit); // Log the fetched meeting object
+
+                    // Populate the edit modal fields
+                    document.getElementById('edit-reunion-id').value = meetingToEdit.id;
+                    let formattedDate = meetingToEdit.date;
                     try {
-                        // Fetch the specific meeting including associated professionals
-                        const meetingToEdit = await dataService.getRcpMeeting(reunion.id); 
-                        console.log('Fetched meeting for edit:', meetingToEdit); // Log the fetched meeting object
+                        const dateObject = new Date(meetingToEdit.date);
+                        if (!isNaN(dateObject.getTime())) {
+                            formattedDate = dateObject.toISOString().split('T')[0];
+                        }
+                    } catch (e) { /* Keep original string if parsing fails */ }
+                    document.getElementById('edit-reunion-date').value = formattedDate;
+                    document.getElementById('edit-reunion-titre').value = meetingToEdit.titre || '';
+                    document.getElementById('edit-reunion-description').value = meetingToEdit.description || '';
+                    document.getElementById('edit-reunion-duree').value = meetingToEdit.duree;
 
-                        // Populate the edit modal fields
-                        document.getElementById('edit-reunion-id').value = meetingToEdit.id;
-                        let formattedDate = meetingToEdit.date;
-                        try {
-                            const dateObject = new Date(meetingToEdit.date);
-                            if (!isNaN(dateObject.getTime())) {
-                                formattedDate = dateObject.toISOString().split('T')[0];
-                            }
-                        } catch (e) { /* Keep original string if parsing fails */ }
-                        document.getElementById('edit-reunion-date').value = formattedDate;
-                        document.getElementById('edit-reunion-titre').value = meetingToEdit.titre || '';
-                        document.getElementById('edit-reunion-description').value = meetingToEdit.description || '';
-                        document.getElementById('edit-reunion-duree').value = meetingToEdit.duree;
+                    // Populate and pre-check attendee checkboxes in the edit modal
+                    populateEditAttendeesCheckboxes(allProfessionnels, meetingToEdit.Professionnels); // Pass all professionals and associated ones
 
-                        // Populate and pre-check attendee checkboxes in the edit modal
-                        populateEditAttendeesCheckboxes(allProfessionnels, meetingToEdit.Professionnels); // Pass all professionals and associated ones
+                    // Show the modal using style.display for consistency with main.js
+                    const modal = document.getElementById('modal-edit-reunion');
+                    if (modal) {
+                        modal.style.display = 'block';
+                    } else {
+                        console.error("Edit modal not found!");
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du chargement de la réunion pour modification:', error);
+                    alert(`Erreur lors du chargement de la réunion: ${error.message}`);
+                }
+            });
+            tdActions.appendChild(editBtn);
 
-                        // Show the modal using style.display for consistency with main.js
-                        const modal = document.getElementById('modal-edit-reunion');
-                        if (modal) {
-                            modal.style.display = 'block';
+            // Bouton supprimer
+            const deleteBtn = document.createElement('i');
+            deleteBtn.className = 'fas fa-trash-alt';
+            deleteBtn.title = 'Supprimer';
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm(`Êtes-vous sûr de vouloir supprimer la réunion "${reunion.titre}" du ${dataService.formatDate(reunion.date)} ?`)) {
+                    try {
+                        await dataService.deleteRcpMeeting(reunion.id);
+                        console.log('Réunion supprimée:', reunion.id);
+                        if (window.showAlert) {
+                            window.showAlert('Réunion supprimée avec succès!', 'success');
                         } else {
-                            console.error("Edit modal not found!");
+                            alert('Réunion supprimée avec succès!');
                         }
+                        await loadData(); // Reload data to reflect deletion
                     } catch (error) {
-                        console.error('Erreur lors du chargement de la réunion pour modification:', error);
-                        alert(`Erreur lors du chargement de la réunion: ${error.message}`);
+                        console.error('Erreur lors de la suppression de la réunion:', error);
+                        alert(`Erreur lors de la suppression: ${error.message}`);
                     }
-                 });
-                tdActions.appendChild(editBtn);
-                
-                // Bouton supprimer
-                const deleteBtn = document.createElement('i');
-                deleteBtn.className = 'fas fa-trash-alt';
-                deleteBtn.title = 'Supprimer';
-                deleteBtn.addEventListener('click', async () => {
-                    if (confirm(`Êtes-vous sûr de vouloir supprimer la réunion "${reunion.titre}" du ${dataService.formatDate(reunion.date)} ?`)) {
-                        try {
-                            await dataService.deleteRcpMeeting(reunion.id);
-                            console.log('Réunion supprimée:', reunion.id);
-                            if (window.showAlert) {
-                                window.showAlert('Réunion supprimée avec succès!', 'success');
-                            } else {
-                                alert('Réunion supprimée avec succès!');
-                            }
-                            await loadData(); // Reload data to reflect deletion
-                        } catch (error) {
-                            console.error('Erreur lors de la suppression de la réunion:', error);
-                            alert(`Erreur lors de la suppression: ${error.message}`);
-                        }
+                }
+            });
+            tdActions.appendChild(deleteBtn);
+
+            row.appendChild(tdActions);
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Fonction pour initialiser le filtre des années
+    function initFilterAnnees() {
+        if (!globalData || !globalData.rcpMeetings) return;
+
+        const annees = [...new Set(globalData.rcpMeetings.map(r =>
+            new Date(r.date).getFullYear()
+        ))];
+        annees.sort((a, b) => b - a); // Tri décroissant
+
+        const select = document.getElementById('filter-annee');
+        select.innerHTML = '<option value="">Toutes les années</option>';
+
+        annees.forEach(annee => {
+            const option = document.createElement('option');
+            option.value = annee.toString();
+            option.textContent = annee.toString();
+            select.appendChild(option);
+        });
+    }
+
+    // Function to populate attendee checkboxes
+    function populateAttendeesCheckboxes() {
+        const container = document.getElementById('add-reunion-attendees-list');
+        if (!container) return;
+        container.innerHTML = ''; // Clear previous content (like "Chargement...")
+
+        if (!allProfessionnels || allProfessionnels.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
+            return;
+        }
+
+        // Sort professionals by name for better usability
+        allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+        allProfessionnels.forEach(pro => {
+            // Assuming 'pro' has 'id' and 'nom' properties based on DataService/API
+            const div = document.createElement('div');
+            div.style.marginBottom = '8px'; // Add some spacing
+            div.style.display = 'flex'; // Use flexbox for alignment
+            div.style.alignItems = 'center'; // Vertically center items
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = `attendee-${pro.id}`;
+            input.value = pro.id; // Store the professional's ID
+            input.name = 'attendees'; // Group checkboxes
+
+            const label = document.createElement('label');
+            label.htmlFor = `attendee-${pro.id}`;
+            label.style.marginLeft = '5px'; // Space between checkbox and text
+            // Display name and profession if available
+            label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
+
+            div.appendChild(input);     // Standard checkbox input
+            div.appendChild(label);     // Standard label
+            container.appendChild(div);
+        });
+    }
+
+    // Function to populate attendee checkboxes in the edit modal and pre-check associated ones
+    function populateEditAttendeesCheckboxes(allProfessionnels, associatedProfessionnels) {
+        console.log('populateEditAttendeesCheckboxes received associatedProfessionnels:', associatedProfessionnels); // Log the received argument
+        const container = document.getElementById('edit-reunion-attendees-list');
+        if (!container) return;
+        container.innerHTML = ''; // Clear previous content (like "Chargement...")
+
+        if (!allProfessionnels || allProfessionnels.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
+            return;
+        }
+
+        // Create a set of associated professional IDs for quick lookup
+        // Ensure associatedProfessionnels is an array before mapping
+        const associatedIds = new Set(Array.isArray(associatedProfessionnels) ? associatedProfessionnels.map(pro => pro.id.toString()) : []);
+
+        // Sort professionals by name for better usability
+        allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+        allProfessionnels.forEach(pro => {
+            const div = document.createElement('div');
+            div.style.marginBottom = '8px'; // Add some spacing
+            div.style.display = 'flex'; // Use flexbox for alignment
+            div.style.alignItems = 'center'; // Vertically center items
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = `edit-attendee-${pro.id}`; // Use a unique ID for edit modal
+            input.value = pro.id; // Store the professional's ID
+            input.name = 'editAttendees'; // Use a different name for edit checkboxes
+
+            // Check if this professional is in the associated list
+            if (associatedIds.has(pro.id.toString())) { // Ensure string comparison
+                input.checked = true;
+            }
+
+            const label = document.createElement('label');
+            label.htmlFor = `edit-attendee-${pro.id}`;
+            label.style.marginLeft = '5px'; // Space between checkbox and text
+            label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
+
+            div.appendChild(input);
+            div.appendChild(label);
+            container.appendChild(div);
+        });
+    }
+
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', async function () { // Made async to await loadData
+        await loadData(); // Wait for data to load
+        //generateAndDisplayReport(); // Call the report function after data is loaded
+
+        // Gestion du filtre par année
+        document.getElementById('filter-annee').addEventListener('change', initTableReunions);
+
+        // Generic modal close handling is now done by js/main.js
+        // Remove the inline generic handler to avoid conflicts.
+
+        // Gestion spécifique de la fermeture du modal d'édition via le bouton Annuler
+        const cancelEditButton = document.getElementById('btn-cancel-edit-reunion');
+        if (cancelEditButton) {
+            cancelEditButton.addEventListener('click', async function () { // Make async
+                const editModal = document.getElementById('modal-edit-reunion');
+                if (editModal) {
+                    editModal.style.display = 'none';
+                    // Reload data specifically after cancelling edit to refresh table listeners
+                    try {
+                        await loadData();
+                    } catch (error) {
+                        console.error("Error reloading data after cancelling edit:", error);
                     }
-                });
-                tdActions.appendChild(deleteBtn);
-                
-                row.appendChild(tdActions);
-                tableBody.appendChild(row);
+                }
             });
         }
 
-        // Fonction pour initialiser le filtre des années
-        function initFilterAnnees() {
-            if (!globalData || !globalData.rcpMeetings) return;
-            
-            const annees = [...new Set(globalData.rcpMeetings.map(r =>
-                new Date(r.date).getFullYear()
-            ))];
-            annees.sort((a, b) => b - a); // Tri décroissant
+        // Gestion du formulaire d'ajout
+        document.getElementById('btn-save-add-reunion').addEventListener('click', async function () {
+            const date = document.getElementById('add-reunion-date').value;
+            const titre = document.getElementById('add-reunion-titre').value;
+            const description = document.getElementById('add-reunion-description').value;
+            const duree = document.getElementById('add-reunion-duree').value;
 
-            const select = document.getElementById('filter-annee');
-            select.innerHTML = '<option value="">Toutes les années</option>';
-            
-            annees.forEach(annee => {
-                const option = document.createElement('option');
-                option.value = annee.toString();
-                option.textContent = annee.toString();
-                select.appendChild(option);
-            });
-        }
-
-        // Function to populate attendee checkboxes
-        function populateAttendeesCheckboxes() {
-            const container = document.getElementById('add-reunion-attendees-list');
-            if (!container) return;
-            container.innerHTML = ''; // Clear previous content (like "Chargement...")
-
-            if (!allProfessionnels || allProfessionnels.length === 0) {
-                container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
+            if (!date || !titre || !duree) {
+                alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
                 return;
             }
 
-            // Sort professionals by name for better usability
-            allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
-
-            allProfessionnels.forEach(pro => {
-                // Assuming 'pro' has 'id' and 'nom' properties based on DataService/API
-                const div = document.createElement('div');
-                div.style.marginBottom = '8px'; // Add some spacing
-                div.style.display = 'flex'; // Use flexbox for alignment
-                div.style.alignItems = 'center'; // Vertically center items
-
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.id = `attendee-${pro.id}`;
-                input.value = pro.id; // Store the professional's ID
-                input.name = 'attendees'; // Group checkboxes
-
-                const label = document.createElement('label');
-                label.htmlFor = `attendee-${pro.id}`;
-                label.style.marginLeft = '5px'; // Space between checkbox and text
-                // Display name and profession if available
-                label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
-
-                div.appendChild(input);     // Standard checkbox input
-                div.appendChild(label);     // Standard label
-                container.appendChild(div);
+            // Collect selected attendee IDs
+            const selectedAttendees = [];
+            const attendeeCheckboxes = document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]:checked');
+            attendeeCheckboxes.forEach(checkbox => {
+                selectedAttendees.push(checkbox.value); // Assuming value is the ID
             });
-        }
 
-        // Function to populate attendee checkboxes in the edit modal and pre-check associated ones
-        function populateEditAttendeesCheckboxes(allProfessionnels, associatedProfessionnels) {
-            console.log('populateEditAttendeesCheckboxes received associatedProfessionnels:', associatedProfessionnels); // Log the received argument
-            const container = document.getElementById('edit-reunion-attendees-list');
-            if (!container) return;
-            container.innerHTML = ''; // Clear previous content (like "Chargement...")
+            const newMeetingData = {
+                date,
+                titre,
+                description,
+                duree: parseInt(duree),
+                attendeeIds: selectedAttendees // Add the array of IDs
+            };
 
-            if (!allProfessionnels || allProfessionnels.length === 0) {
-                container.innerHTML = '<p style="color: #666; font-style: italic;">Aucun associé trouvé.</p>';
-                return;
+            console.log('New Meeting Data:', newMeetingData); // Log the data being sent
+
+            try {
+                // Call the existing saveRcpMeeting function from DataService
+                const addedMeeting = await dataService.saveRcpMeeting(newMeetingData);
+                console.log('Réunion ajoutée:', addedMeeting);
+
+                // Optional: Show success message (using showAlert if available globally)
+                if (window.showAlert) {
+                    window.showAlert('Réunion ajoutée avec succès!', 'success');
+                } else {
+                    alert('Réunion ajoutée avec succès!');
+                }
+
+                // Close modal
+                document.getElementById('modal-add-reunion').style.display = 'none';
+                // Reset form (including clearing checkboxes)
+                document.getElementById('form-add-reunion').reset();
+                // Manually uncheck checkboxes as reset might not cover dynamically added ones reliably
+                document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]').forEach(cb => cb.checked = false);
+                // Reload data
+                await loadData();
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout de la réunion:', error);
+                alert(`Erreur lors de l'ajout: ${error.message}`);
             }
-
-            // Create a set of associated professional IDs for quick lookup
-            // Ensure associatedProfessionnels is an array before mapping
-            const associatedIds = new Set(Array.isArray(associatedProfessionnels) ? associatedProfessionnels.map(pro => pro.id.toString()) : []); 
-
-            // Sort professionals by name for better usability
-            allProfessionnels.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
-
-            allProfessionnels.forEach(pro => {
-                const div = document.createElement('div');
-                div.style.marginBottom = '8px'; // Add some spacing
-                div.style.display = 'flex'; // Use flexbox for alignment
-                div.style.alignItems = 'center'; // Vertically center items
-
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.id = `edit-attendee-${pro.id}`; // Use a unique ID for edit modal
-                input.value = pro.id; // Store the professional's ID
-                input.name = 'editAttendees'; // Use a different name for edit checkboxes
-
-                // Check if this professional is in the associated list
-                if (associatedIds.has(pro.id.toString())) { // Ensure string comparison
-                    input.checked = true;
-                }
-
-                const label = document.createElement('label');
-                label.htmlFor = `edit-attendee-${pro.id}`;
-                label.style.marginLeft = '5px'; // Space between checkbox and text
-                label.textContent = `${pro.nom || `ID: ${pro.id}`} ${pro.profession ? ' (' + pro.profession + ')' : ''}`;
-
-                div.appendChild(input);
-                div.appendChild(label);
-                container.appendChild(div);
-            });
-        }
-
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async function() { // Made async to await loadData
-            await loadData(); // Wait for data to load
-            //generateAndDisplayReport(); // Call the report function after data is loaded
-
-            // Gestion du filtre par année
-            document.getElementById('filter-annee').addEventListener('change', initTableReunions);
-
-            // Generic modal close handling is now done by js/main.js
-            // Remove the inline generic handler to avoid conflicts.
-
-            // Gestion spécifique de la fermeture du modal d'édition via le bouton Annuler
-            const cancelEditButton = document.getElementById('btn-cancel-edit-reunion');
-            if (cancelEditButton) {
-                cancelEditButton.addEventListener('click', async function() { // Make async
-                    const editModal = document.getElementById('modal-edit-reunion');
-                    if (editModal) {
-                        editModal.style.display = 'none';
-                        // Reload data specifically after cancelling edit to refresh table listeners
-                        try {
-                            await loadData();
-                        } catch (error) {
-                            console.error("Error reloading data after cancelling edit:", error);
-                        }
-                    }
-                });
-            }
-
-            // Gestion du formulaire d'ajout
-            document.getElementById('btn-save-add-reunion').addEventListener('click', async function() {
-                const date = document.getElementById('add-reunion-date').value;
-                const titre = document.getElementById('add-reunion-titre').value;
-                const description = document.getElementById('add-reunion-description').value;
-                const duree = document.getElementById('add-reunion-duree').value;
-
-                if (!date || !titre || !duree) {
-                    alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
-                    return;
-                }
-
-                // Collect selected attendee IDs
-                const selectedAttendees = [];
-                const attendeeCheckboxes = document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]:checked');
-                attendeeCheckboxes.forEach(checkbox => {
-                    selectedAttendees.push(checkbox.value); // Assuming value is the ID
-                });
-
-                const newMeetingData = {
-                    date,
-                    titre,
-                    description,
-                    duree: parseInt(duree),
-                    attendeeIds: selectedAttendees // Add the array of IDs
-                };
-
-                console.log('New Meeting Data:', newMeetingData); // Log the data being sent
-
-                try {
-                    // Call the existing saveRcpMeeting function from DataService
-                    const addedMeeting = await dataService.saveRcpMeeting(newMeetingData);
-                    console.log('Réunion ajoutée:', addedMeeting);
-                    
-                    // Optional: Show success message (using showAlert if available globally)
-                    if (window.showAlert) {
-                        window.showAlert('Réunion ajoutée avec succès!', 'success');
-                    } else {
-                        alert('Réunion ajoutée avec succès!');
-                    }
-
-                    // Close modal
-                    document.getElementById('modal-add-reunion').style.display = 'none';
-                    // Reset form (including clearing checkboxes)
-                    document.getElementById('form-add-reunion').reset();
-                    // Manually uncheck checkboxes as reset might not cover dynamically added ones reliably
-                    document.querySelectorAll('#add-reunion-attendees-list input[name="attendees"]').forEach(cb => cb.checked = false);
-                    // Reload data
-                    await loadData();
-                } catch (error) {
-                    console.error('Erreur lors de l\'ajout de la réunion:', error);
-                    alert(`Erreur lors de l'ajout: ${error.message}`);
-                }
-            });
-
-            // Gestion du formulaire d'édition
-            document.getElementById('btn-save-edit-reunion').addEventListener('click', async function() {
-                const id = document.getElementById('edit-reunion-id').value;
-                const date = document.getElementById('edit-reunion-date').value;
-                const titre = document.getElementById('edit-reunion-titre').value;
-                const description = document.getElementById('edit-reunion-description').value;
-                const duree = document.getElementById('edit-reunion-duree').value;
-
-                if (!id || !date || !titre || !duree) {
-                    alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
-                    return;
-                }
-
-                // Collect selected attendee IDs from the edit modal
-                const selectedAttendees = [];
-                const attendeeCheckboxes = document.querySelectorAll('#edit-reunion-attendees-list input[name="editAttendees"]:checked');
-                attendeeCheckboxes.forEach(checkbox => {
-                    selectedAttendees.push(checkbox.value); // Assuming value is the ID
-                });
-
-                const updatedMeetingData = {
-                    id: parseInt(id), // Ensure ID is an integer if needed by backend
-                    date,
-                    titre,
-                    description,
-                    duree: parseInt(duree),
-                    attendeeIds: selectedAttendees // Add the array of IDs
-                };
-
-                try {
-                    // Use saveRcpMeeting for both create and update
-                    const updatedMeeting = await dataService.saveRcpMeeting(updatedMeetingData);
-                    console.log('Réunion modifiée:', updatedMeeting);
-                    
-                    if (window.showAlert) {
-                        window.showAlert('Réunion modifiée avec succès!', 'success');
-                    } else {
-                        alert('Réunion modifiée avec succès!');
-                    }
-
-                    // Close modal using style.display
-                    const editModal = document.getElementById('modal-edit-reunion');
-                    if (editModal) {
-                         editModal.style.display = 'none';
-                    }
-                    // Reload data
-                    await loadData();
-                } catch (error) {
-                    console.error('Erreur lors de la modification de la réunion:', error);
-                    alert(`Erreur lors de la modification: ${error.message}`);
-                }
-            });
-
-            // Rafraîchissement périodique
-            setInterval(loadData, 30000);
         });
 
-        // Function to generate and display the PDF report
-        async function generateAndDisplayReport() {
-            try {
-                // Make a GET request to the report endpoint
-                const response = await fetch('/api/rcpMeetings/report/pdf');
+        // Gestion du formulaire d'édition
+        document.getElementById('btn-save-edit-reunion').addEventListener('click', async function () {
+            const id = document.getElementById('edit-reunion-id').value;
+            const date = document.getElementById('edit-reunion-date').value;
+            const titre = document.getElementById('edit-reunion-titre').value;
+            const description = document.getElementById('edit-reunion-description').value;
+            const duree = document.getElementById('edit-reunion-duree').value;
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            if (!id || !date || !titre || !duree) {
+                alert('Veuillez remplir tous les champs obligatoires (Date, Titre, Durée).');
+                return;
+            }
+
+            // Collect selected attendee IDs from the edit modal
+            const selectedAttendees = [];
+            const attendeeCheckboxes = document.querySelectorAll('#edit-reunion-attendees-list input[name="editAttendees"]:checked');
+            attendeeCheckboxes.forEach(checkbox => {
+                selectedAttendees.push(checkbox.value); // Assuming value is the ID
+            });
+
+            const updatedMeetingData = {
+                id: parseInt(id), // Ensure ID is an integer if needed by backend
+                date,
+                titre,
+                description,
+                duree: parseInt(duree),
+                attendeeIds: selectedAttendees // Add the array of IDs
+            };
+
+            try {
+                // Use saveRcpMeeting for both create and update
+                const updatedMeeting = await dataService.saveRcpMeeting(updatedMeetingData);
+                console.log('Réunion modifiée:', updatedMeeting);
+
+                if (window.showAlert) {
+                    window.showAlert('Réunion modifiée avec succès!', 'success');
+                } else {
+                    alert('Réunion modifiée avec succès!');
                 }
 
-                // Get the response as a Blob
-                const pdfBlob = await response.blob();
-
-                // Create a URL for the blob
-                const pdfUrl = URL.createObjectURL(pdfBlob);
-
-                // Open the PDF in a new tab
-                window.open(pdfUrl, '_blank');
-
-                // Clean up the object URL after the tab is likely loaded
-                // A small delay might be needed depending on browser behavior
-                setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
-
+                // Close modal using style.display
+                const editModal = document.getElementById('modal-edit-reunion');
+                if (editModal) {
+                    editModal.style.display = 'none';
+                }
+                // Reload data
+                await loadData();
             } catch (error) {
-                console.error('Erreur lors de la génération du rapport PDF:', error);
-                // Optionally alert the user, but maybe less intrusive on page load
-                // alert(`Erreur lors de la génération du rapport PDF: ${error.message}`);
+                console.error('Erreur lors de la modification de la réunion:', error);
+                alert(`Erreur lors de la modification: ${error.message}`);
             }
-        }
+        });
 
+        // Rafraîchissement périodique
+        setInterval(loadData, 30000);
+    });
 
-        // Display username on load
-        const usernameElement = document.getElementById('usernameDisplay');
-        const token = localStorage.getItem('token');
-        let username = 'developpement'; // Default value
+    // Function to generate and display the PDF report
+    async function generateAndDisplayReport() {
+        try {
+            // Make a GET request to the report endpoint
+            const response = await fetch('/api/rcpMeetings/report/pdf');
 
-        if (token) {
-            try {
-                // Decode JWT payload (second part)
-                const payloadBase64 = token.split('.')[1];
-                const payloadJson = atob(payloadBase64);
-                const payload = JSON.parse(payloadJson);
-
-                if (payload && payload.username) {
-                    username = payload.username;
-                }
-            } catch (e) {
-                console.error('Failed to decode JWT token:', e);
-                // Keep default 'developpement' if decoding fails
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        }
 
-        if (usernameElement) {
-            usernameElement.textContent = username;
-        } else {
-            console.error("Username display element 'usernameDisplay' not found.");
+            // Get the response as a Blob
+            const pdfBlob = await response.blob();
+
+            // Create a URL for the blob
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            // Open the PDF in a new tab
+            window.open(pdfUrl, '_blank');
+
+            // Clean up the object URL after the tab is likely loaded
+            // A small delay might be needed depending on browser behavior
+            setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+
+        } catch (error) {
+            console.error('Erreur lors de la génération du rapport PDF:', error);
+            // Optionally alert the user, but maybe less intrusive on page load
+            // alert(`Erreur lors de la génération du rapport PDF: ${error.message}`);
         }
-    </script>
-    <!-- Removed duplicate load of main.js -->
+    }
+
+
+    // Display username on load
+    const usernameElement = document.getElementById('usernameDisplay');
+    const token = localStorage.getItem('token');
+    let username = 'developpement'; // Default value
+
+    if (token) {
+        try {
+            // Decode JWT payload (second part)
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
+
+            if (payload && payload.username) {
+                username = payload.username;
+            }
+        } catch (e) {
+            console.error('Failed to decode JWT token:', e);
+            // Keep default 'developpement' if decoding fails
+        }
+    }
+
+    if (usernameElement) {
+        usernameElement.textContent = username;
+    } else {
+        console.error("Username display element 'usernameDisplay' not found.");
+    }
+</script>
+<!-- Removed duplicate load of main.js -->

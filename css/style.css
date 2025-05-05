@@ -247,7 +247,7 @@ header {
 
 .dashboard-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr; /* Give the second column more space */
     gap: 20px;
 }
 
