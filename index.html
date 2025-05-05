@@ -8,7 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <!-- Ajout de Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -20,7 +20,7 @@
             </div>
             <nav>
                 <ul>
-                    <li class="active"><a href="index.html"><i class="fas fa-home"></i> <span>Accueil</span></a></li>
+                    <li><a href="index.html"><i class="fas fa-home"></i> <span>Accueil</span></a></li>
                     <li><a href="templates/revenus.html"><i class="fas fa-money-bill-wave"></i> <span>Revenus
                                 ACI</span></a></li>
                     <li><a href="templates/associes.html"><i class="fas fa-user-md"></i> <span>Associés</span></a></li>
@@ -35,7 +35,6 @@
                     <li><a href="templates/parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
                     <li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i>
                             <span>Déconnexion</span></a></li>
-                    <!-- Logout button -->
                 </ul>
             </nav>
         </div>
@@ -53,10 +52,6 @@
             </header>
             <br>
             <div class="dashboard">
-                <!-- <div class="welcome-section">
-                    <h2>Bienvenue sur MSP Gestion</h2>
-                    <p>Application de gestion pour votre Maison de Santé Pluriprofessionnelle</p>
-                </div> -->
                 <div class="quick-stats">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -520,48 +515,48 @@
     }
 
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function () {
-            const token = localStorage.getItem('token');
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = localStorage.getItem('token');
 
-            // Check if token exists. If not, redirect to login immediately.
-            if (!token) {
-                console.log('No token found, redirecting to login.');
-                window.location.href = '/login.html'; // Use absolute path
-                return; // Stop further execution in this script block
-            }
+        // Check if token exists. If not, redirect to login immediately.
+        if (!token) {
+            console.log('No token found, redirecting to login.');
+            window.location.href = '/login.html'; // Use absolute path
+            return; // Stop further execution in this script block
+        }
 
-            // If token exists, proceed to display user info and load data
-            console.log('Token found, proceeding with page load.');
+        // If token exists, proceed to display user info and load data
+        console.log('Token found, proceeding with page load.');
 
-            // Display username and avatar on load
-            const usernameElement = document.getElementById('usernameDisplay');
-            const avatarElement = document.getElementById('userAvatar');
-            const defaultAvatar = '/images/default_avatar.png';
-            let username = 'Utilisateur';
-            let avatarSrc = defaultAvatar;
+        // Display username and avatar on load
+        const usernameElement = document.getElementById('usernameDisplay');
+        const avatarElement = document.getElementById('userAvatar');
+        const defaultAvatar = '/images/default_avatar.png';
+        let username = 'Utilisateur';
+        let avatarSrc = defaultAvatar;
 
-            // Decode token to get user info (assuming token exists at this point)
-            try {
-                // Decode JWT payload (second part)
-                const payloadBase64 = token.split('.')[1];
-                const payloadJson = atob(payloadBase64);
-                const payload = JSON.parse(payloadJson);
+        // Decode token to get user info (assuming token exists at this point)
+        try {
+            // Decode JWT payload (second part)
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
 
-                // Set username and avatar from payload if available
-                if (payload) {
-                    if (payload.username) {
-                        username = payload.username;
-                    }
-                    // Use avatar from payload if it exists, otherwise keep default
-                    if (payload.avatar) {
-                        avatarSrc = payload.avatar;
-                    }
+            // Set username and avatar from payload if available
+            if (payload) {
+                if (payload.username) {
+                    username = payload.username;
                 }
-            } catch (e) {
-                console.error('Failed to decode JWT token:', e);
-                // Keep default username and avatar if decoding fails
-            } // End of try...catch block for token decoding
+                // Use avatar from payload if it exists, otherwise keep default
+                if (payload.avatar) {
+                    avatarSrc = payload.avatar;
+                }
+            }
+        } catch (e) {
+            console.error('Failed to decode JWT token:', e);
+            // Keep default username and avatar if decoding fails
+        } // End of try...catch block for token decoding
 
         // Update DOM elements (This code should be inside the listener)
         if (usernameElement) {
