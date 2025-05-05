@@ -15,7 +15,7 @@
     <div class="container">
         <div class="sidebar">
             <div class="logo" style="background-color: #2c3e50;">
-                <img src="/assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
+                <img src="assets/favicon.ico" alt="Logo MSP" style="height: 20px; margin-right: 10px;">
                 <h1>MSP Gestion</h1>
             </div>
             <nav>
@@ -34,7 +34,7 @@
                             <span>Répartition</span></a></li>
                     <li><a href="templates/parametres.html"><i class="fas fa-cog"></i> <span>Paramètres</span></a></li>
                     <li><a href="../login.html" id="logoutButton"><i class="fas fa-sign-out-alt"></i>
-                        <span>Déconnexion</span></a></li>
+                            <span>Déconnexion</span></a></li>
                     <!-- Logout button -->
                 </ul>
             </nav>
@@ -46,8 +46,7 @@
                     <button id="sidebarToggle" class="sidebar-toggle"><i class="fas fa-bars"></i></button>
                     <h1>Dashboard</h1>
                     <div class="user-info">
-                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar"
-                            >
+                        <img id="userAvatar" src="/images/default_avatar.png" alt="User Avatar">
                         <span id="usernameDisplay">Utilisateur</span>
                     </div>
                 </div>
@@ -125,7 +124,8 @@
                                             id="param-part-rcp">25%</span></div>
                                 </div>
                                 <div class="parametre-card">
-                                    <div class="parametre-title">Part Projets du revenu net:                                     <span class="parametre-value" id="param-part-projets">25%</span></div>
+                                    <div class="parametre-title">Part Projets du revenu net: <span
+                                            class="parametre-value" id="param-part-projets">25%</span></div>
                                 </div>
                             </div>
                             <div class="parametres-chart-container">
@@ -137,451 +137,458 @@
             </div>
         </div>
     </div>
+</body>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- Authentication -->
+<script type="module" src="js/auth.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Configuration -->
+<script type="module" src="js/config/config.js"></script>
 
-    <!-- Authentication -->
-    <script type="module" src="js/auth.js"></script>
+<!-- Utilitaires -->
+<script type="module" src="js/utils/dateUtils.js"></script>
+<script type="module" src="js/utils/validationUtils.js"></script>
 
-    <!-- Configuration -->
-    <script type="module" src="js/config/config.js"></script>
+<!-- Services -->
+<script type="module" src="js/services/DataService.js"></script>
+<script type="module" src="js/services/AssocieService.js"></script>
 
-    <!-- Utilitaires -->
-    <script type="module" src="js/utils/dateUtils.js"></script>
-    <script type="module" src="js/utils/validationUtils.js"></script>
+<!-- Migration - Désactivé -->
+<!-- <script type="module" src="js/migration/migrationService.js"></script> -->
+<!-- <script type="module" src="js/migration/index.js"></script> -->
 
-    <!-- Services -->
-    <script type="module" src="js/services/DataService.js"></script>
-    <script type="module" src="js/services/AssocieService.js"></script>
+<!-- Application -->
+<script type="module" src="js/main.js"></script>
+<script type="module">
+    import { dataService } from './js/services/DataService.js';
 
-    <!-- Migration - Désactivé -->
-    <!-- <script type="module" src="js/migration/migrationService.js"></script> -->
-    <!-- <script type="module" src="js/migration/index.js"></script> -->
+    let globalData = null;
+    let repartitionChart = null; // Keep a reference to the repartition chart
+    let parametresPieChart = null; // Keep a reference to the parameters pie chart
 
-    <!-- Application -->
-    <script type="module" src="js/main.js"></script>
-    <script type="module">
-        import { dataService } from './js/services/DataService.js';
+    // Fonction pour mettre à jour les statistiques et les graphiques
+    async function updateStatsAndCharts() {
+        try {
+            const currentYear = new Date().getFullYear();
 
-        let globalData = null;
-        let repartitionChart = null; // Keep a reference to the repartition chart
-        let parametresPieChart = null; // Keep a reference to the parameters pie chart
+            // Mise à jour des années affichées (vérifier si les éléments existent)
+            const elAnneeRevenus = document.getElementById('annee-revenus');
+            if (elAnneeRevenus) elAnneeRevenus.textContent = currentYear;
 
-        // Fonction pour mettre à jour les statistiques et les graphiques
-        async function updateStatsAndCharts() {
-            try {
-                const currentYear = new Date().getFullYear();
+            const elAnneeCharges = document.getElementById('annee-charges');
+            if (elAnneeCharges) elAnneeCharges.textContent = currentYear;
 
-                // Mise à jour des années affichées (vérifier si les éléments existent)
-                const elAnneeRevenus = document.getElementById('annee-revenus');
-                if (elAnneeRevenus) elAnneeRevenus.textContent = currentYear;
+            const elAnneeReunions = document.getElementById('annee-reunions');
+            if (elAnneeReunions) elAnneeReunions.textContent = currentYear;
 
-                const elAnneeCharges = document.getElementById('annee-charges');
-                if (elAnneeCharges) elAnneeCharges.textContent = currentYear;
+            // Chargement de toutes les données nécessaires, y compris RCP presence et Projets
+            const [allData, rcpPresenceData] = await Promise.all([
+                dataService.loadAllData(),
+                dataService.loadRcpPresenceData()
+            ]);
 
-                const elAnneeReunions = document.getElementById('annee-reunions');
-                if (elAnneeReunions) elAnneeReunions.textContent = currentYear;
+            if (!allData) throw new Error("Chargement des données principales a échoué.");
 
-                // Chargement de toutes les données nécessaires, y compris RCP presence et Projets
-                const [allData, rcpPresenceData] = await Promise.all([
-                    dataService.loadAllData(),
-                    dataService.loadRcpPresenceData()
-                ]);
-
-                if (!allData) throw new Error("Chargement des données principales a échoué.");
-
-                // Combine all data into globalData
-                globalData = {
-                    ...allData,
-                    rcpPresenceData: rcpPresenceData // Store RCP presence data
-                };
-
-                // Vérifier si les données essentielles sont chargées
-                if (!globalData || !globalData.revenus || !globalData.charges || !globalData.rcpMeetings || !globalData.professionnels || !globalData.parametresRepartition || !globalData.projets || !globalData.rcpPresenceData) {
-                    console.error('Données incomplètes après chargement:', globalData);
-                    throw new Error('Données essentielles manquantes après le chargement.');
-                }
-
-                // Calcul des totaux pour l'année en cours
-                const totalRevenus = globalData.revenus
-                    .filter(rev => rev && rev.date && new Date(rev.date).getFullYear() === currentYear)
-                    .reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
-
-                const totalCharges = globalData.charges
-                    .filter(chg => chg && chg.date && new Date(chg.date).getFullYear() === currentYear)
-                    .reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
-
-                const totalReunions = globalData.rcpMeetings
-                    .filter(reu => reu && reu.date && new Date(reu.date).getFullYear() === currentYear)
-                    .length;
-
-                // Correction : Utiliser les noms de champs retournés par Sequelize (minuscules)
-                const totalAssocies = globalData.professionnels
-                    .filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'))
-                    .length;
-
-                // Mise à jour de l'affichage (vérifier si les éléments existent)
-                const elTotalRevenus = document.getElementById('total-revenus');
-                if (elTotalRevenus) elTotalRevenus.textContent = dataService.formatMontant(totalRevenus);
-
-                const elTotalCharges = document.getElementById('total-charges');
-                if (elTotalCharges) elTotalCharges.textContent = dataService.formatMontant(totalCharges);
-
-                const elTotalReunions = document.getElementById('total-reunions');
-                if (elTotalReunions) elTotalReunions.textContent = totalReunions;
-
-                const elTotalAssocies = document.getElementById('total-associes');
-                if (elTotalAssocies) elTotalAssocies.textContent = totalAssocies;
-
-                // Mise à jour des paramètres (vérifier si les éléments existent)
-                const params = globalData.parametresRepartition;
-                if (params) {
-                    const elPartFixe = document.getElementById('param-part-fixe');
-                    if (elPartFixe) elPartFixe.textContent = (params.partFixe || 0) + '%';
-
-                    const elFacteurCogerant = document.getElementById('param-facteur-cogerant');
-                    if (elFacteurCogerant) elFacteurCogerant.textContent = '×' + (params.facteurCogerant || 0);
-
-                    const elPartRCP = document.getElementById('param-part-rcp');
-                    if (elPartRCP) elPartRCP.textContent = (params.partRCP || 0) + '%';
-
-                    const elPartProjets = document.getElementById('param-part-projets');
-                    if (elPartProjets) elPartProjets.textContent = (params.partProjets || 0) + '%';
-                }
-
-                // Mise à jour du graphique de répartition
-                updateRepartitionChart();
-
-                // Mise à jour du graphique des paramètres
-                updateParametresPieChart();
-
-            } catch (error) {
-                console.error('Erreur lors de la mise à jour des statistiques et des graphiques:', error);
-                // Afficher un message d'erreur plus ciblé si possible
-                // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
-                const repartitionChartElement = document.getElementById('repartition-chart');
-                if (repartitionChartElement) {
-                    const ctx = repartitionChartElement.getContext('2d');
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    ctx.textAlign = 'center';
-                    ctx.fillStyle = 'red';
-                    ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
-                }
-                const parametresChartElement = document.getElementById('parametres-pie-chart');
-                if (parametresChartElement) {
-                    const ctx = parametresChartElement.getContext('2d');
-                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                    ctx.textAlign = 'center';
-                    ctx.fillStyle = 'red';
-                    ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
-                }
-            }
-        }
-
-        // Fonction pour afficher le graphique de répartition (aligné avec repartition.html)
-        function updateRepartitionChart() {
-            // Vérifier si les données nécessaires sont chargées
-            if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges || !globalData.rcpPresenceData || !globalData.projets) {
-                console.warn('Données manquantes pour le graphique de répartition (index.html), annulation de la mise à jour.');
-                return;
-            }
-
-            const chartElement = document.getElementById('repartition-chart');
-            if (!chartElement) {
-                console.error("Élément canvas 'repartition-chart' non trouvé.");
-                return;
-            }
-            const ctx = chartElement.getContext('2d');
-
-            const professionnels = globalData.professionnels;
-            const params = globalData.parametresRepartition;
-            const revenus = globalData.revenus;
-            const charges = globalData.charges;
-            const rcpPresenceData = globalData.rcpPresenceData;
-            const projets = globalData.projets;
-
-            // Calcul des montants
-            const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
-            const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
-            const montantNet = Math.max(0, totalRevenus - totalCharges);
-
-            const montantPartFixe = montantNet * ((params.partFixe || 0) / 100);
-            const montantPartRCP = montantNet * ((params.partRCP || 0) / 100);
-            const montantPartProjets = montantNet * ((params.partProjets || 0) / 100);
-
-            // Filtrer uniquement les associés actifs pour la répartition
-            const associesActifs = professionnels.filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'));
-            const nbAssociesActifs = associesActifs.length || 1; // Eviter division par zéro
-
-            // Calculer le total des points pondérés pour la part fixe
-            const pointsFixePonderes = associesActifs.reduce((sum, p) => sum + ((p.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1), 0) || 1;
-
-            // Calculate RCP points based on actual presence data
-            const totalPresenceMinutes = rcpPresenceData.reduce((sum, item) => sum + (item.totalPresenceMinutes || 0), 0) || 1; // Avoid division by zero
-
-            const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes || 0]));
-
-            // --- Calculate Project Implication Scores ---
-            const implicationScores = new Map(); // { associeId: score }
-            associesActifs.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores
-
-            const responsableWeight = 2;
-            const contributeurWeight = 1;
-            let totalImplicationPoints = 0;
-
-            projets.forEach(projet => {
-                const poids = projet.poids || 0;
-
-                // Process Responsables
-                if (Array.isArray(projet.Responsables)) {
-                    projet.Responsables.forEach(resp => {
-                        // Ensure resp is a valid professional object and is an active associate
-                        const associe = associesActifs.find(a => a.id === resp.id);
-                        if (associe) {
-                            const scoreToAdd = poids * responsableWeight;
-                            implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
-                            totalImplicationPoints += scoreToAdd;
-                        }
-                    });
-                }
-
-                // Process Contributeurs
-                if (Array.isArray(projet.Contributeurs)) {
-                    projet.Contributeurs.forEach(contrib => {
-                        // Ensure contrib is a valid professional object and is an active associate
-                        const associe = associesActifs.find(a => a.id === contrib.id);
-                        if (associe) {
-                            // Avoid double-counting if someone is both Responsable and Contributeur for the same project
-                            const isAlsoResponsable = projet.Responsables?.some(r => r.id === associe.id);
-                            if (!isAlsoResponsable) {
-                                const scoreToAdd = poids * contributeurWeight;
-                                implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
-                                totalImplicationPoints += scoreToAdd;
-                            }
-                        }
-                    });
-                }
-            });
-            totalImplicationPoints = totalImplicationPoints || 1; // Avoid division by zero
-            // --- End Project Implication Calculation ---
-
-
-            // Préparation des données pour le graphique
-            const data = {
-                labels: associesActifs.map(pro => pro.nom),
-                datasets: [
-                    {
-                        label: `Part Fixe (${params.partFixe || 0}%)`,
-                        data: associesActifs.map(pro =>
-                            (montantPartFixe / pointsFixePonderes) * ((pro.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1)
-                        ),
-                        backgroundColor: '#2196F3',
-                        stack: 'Stack 0',
-                    },
-                    {
-                        label: `Part RCP (${params.partRCP || 0}%)`,
-                        // Distribute montantPartRCP based on presence minutes
-                        data: associesActifs.map(p => {
-                            const presenceMinutes = presenceMap.get(p.id) || 0;
-                            return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
-                        }),
-                        backgroundColor: '#4CAF50',
-                        stack: 'Stack 0',
-                    },
-                    {
-                        label: `Part Projets (${params.partProjets || 0}%)`,
-                        // Distribute montantPartProjets based on calculated implication scores
-                        data: associesActifs.map(p => {
-                            const individualScore = implicationScores.get(p.id) || 0;
-                            return (montantPartProjets * (individualScore / totalImplicationPoints));
-                        }),
-                        backgroundColor: '#FFC107',
-                        stack: 'Stack 0',
-                    }
-                ]
+            // Combine all data into globalData
+            globalData = {
+                ...allData,
+                rcpPresenceData: rcpPresenceData // Store RCP presence data
             };
 
-            // Détruire l'ancien graphique s'il existe
-            if (repartitionChart instanceof Chart) {
-                repartitionChart.destroy();
+            // Vérifier si les données essentielles sont chargées
+            if (!globalData || !globalData.revenus || !globalData.charges || !globalData.rcpMeetings || !globalData.professionnels || !globalData.parametresRepartition || !globalData.projets || !globalData.rcpPresenceData) {
+                console.error('Données incomplètes après chargement:', globalData);
+                throw new Error('Données essentielles manquantes après le chargement.');
             }
 
-            try {
-                repartitionChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: data, // Utiliser les données préparées
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: { display: true, text: 'Répartition estimée des rémunérations' }, // Titre ajouté
-                            legend: {
-                                position: 'top'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        return context.dataset.label + ': ' + dataService.formatMontant(context.raw);
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                stacked: true,
-                                grid: {
-                                    display: false
-                                }
-                            },
-                            y: {
-                                stacked: true,
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function (value) {
-                                        return dataService.formatMontant(value);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            } catch (chartError) {
-                console.error("Erreur lors de la création du graphique Chart.js (index.html):", chartError);
-                // Afficher une erreur dans le canvas si la création échoue
+            // Calcul des totaux pour l'année en cours
+            const totalRevenus = globalData.revenus
+                .filter(rev => rev && rev.date && new Date(rev.date).getFullYear() === currentYear)
+                .reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+
+            const totalCharges = globalData.charges
+                .filter(chg => chg && chg.date && new Date(chg.date).getFullYear() === currentYear)
+                .reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
+
+            const totalReunions = globalData.rcpMeetings
+                .filter(reu => reu && reu.date && new Date(reu.date).getFullYear() === currentYear)
+                .length;
+
+            // Correction : Utiliser les noms de champs retournés par Sequelize (minuscules)
+            const totalAssocies = globalData.professionnels
+                .filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'))
+                .length;
+
+            // Mise à jour de l'affichage (vérifier si les éléments existent)
+            const elTotalRevenus = document.getElementById('total-revenus');
+            if (elTotalRevenus) elTotalRevenus.textContent = dataService.formatMontant(totalRevenus);
+
+            const elTotalCharges = document.getElementById('total-charges');
+            if (elTotalCharges) elTotalCharges.textContent = dataService.formatMontant(totalCharges);
+
+            const elTotalReunions = document.getElementById('total-reunions');
+            if (elTotalReunions) elTotalReunions.textContent = totalReunions;
+
+            const elTotalAssocies = document.getElementById('total-associes');
+            if (elTotalAssocies) elTotalAssocies.textContent = totalAssocies;
+
+            // Mise à jour des paramètres (vérifier si les éléments existent)
+            const params = globalData.parametresRepartition;
+            if (params) {
+                const elPartFixe = document.getElementById('param-part-fixe');
+                if (elPartFixe) elPartFixe.textContent = (params.partFixe || 0) + '%';
+
+                const elFacteurCogerant = document.getElementById('param-facteur-cogerant');
+                if (elFacteurCogerant) elFacteurCogerant.textContent = '×' + (params.facteurCogerant || 0);
+
+                const elPartRCP = document.getElementById('param-part-rcp');
+                if (elPartRCP) elPartRCP.textContent = (params.partRCP || 0) + '%';
+
+                const elPartProjets = document.getElementById('param-part-projets');
+                if (elPartProjets) elPartProjets.textContent = (params.partProjets || 0) + '%';
+            }
+
+            // Mise à jour du graphique de répartition
+            updateRepartitionChart();
+
+            // Mise à jour du graphique des paramètres
+            updateParametresPieChart();
+
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour des statistiques et des graphiques:', error);
+            // Afficher un message d'erreur plus ciblé si possible
+            // alert('Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.');
+            const repartitionChartElement = document.getElementById('repartition-chart');
+            if (repartitionChartElement) {
+                const ctx = repartitionChartElement.getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'red';
+                ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+            }
+            const parametresChartElement = document.getElementById('parametres-pie-chart');
+            if (parametresChartElement) {
+                const ctx = parametresChartElement.getContext('2d');
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.textAlign = 'center';
                 ctx.fillStyle = 'red';
                 ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
             }
         }
+    }
 
-        // Fonction pour afficher le graphique des paramètres de répartition
-        function updateParametresPieChart() {
-            // Vérifier si les paramètres sont chargés
-            if (!globalData || !globalData.parametresRepartition) {
-                console.warn('Paramètres de répartition manquants pour le graphique (index.html), annulation de la mise à jour.');
-                return;
+    // Fonction pour afficher le graphique de répartition (aligné avec repartition.html)
+    function updateRepartitionChart() {
+        // Vérifier si les données nécessaires sont chargées
+        if (!globalData || !globalData.professionnels || !globalData.parametresRepartition || !globalData.revenus || !globalData.charges || !globalData.rcpPresenceData || !globalData.projets) {
+            console.warn('Données manquantes pour le graphique de répartition (index.html), annulation de la mise à jour.');
+            return;
+        }
+
+        const chartElement = document.getElementById('repartition-chart');
+        if (!chartElement) {
+            console.error("Élément canvas 'repartition-chart' non trouvé.");
+            return;
+        }
+        const ctx = chartElement.getContext('2d');
+
+        const professionnels = globalData.professionnels;
+        const params = globalData.parametresRepartition;
+        const revenus = globalData.revenus;
+        const charges = globalData.charges;
+        const rcpPresenceData = globalData.rcpPresenceData;
+        const projets = globalData.projets;
+
+        // Calcul des montants
+        const totalRevenus = revenus.reduce((sum, rev) => sum + parseFloat(rev.montant || 0), 0);
+        const totalCharges = charges.reduce((sum, chg) => sum + parseFloat(chg.montant || 0), 0);
+        const montantNet = Math.max(0, totalRevenus - totalCharges);
+
+        const montantPartFixe = montantNet * ((params.partFixe || 0) / 100);
+        const montantPartRCP = montantNet * ((params.partRCP || 0) / 100);
+        const montantPartProjets = montantNet * ((params.partProjets || 0) / 100);
+
+        // Filtrer uniquement les associés actifs pour la répartition
+        const associesActifs = professionnels.filter(pro => pro && (pro.statut === 'Associé' || pro.statut === 'Cogérant'));
+        const nbAssociesActifs = associesActifs.length || 1; // Eviter division par zéro
+
+        // Calculer le total des points pondérés pour la part fixe
+        const pointsFixePonderes = associesActifs.reduce((sum, p) => sum + ((p.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1), 0) || 1;
+
+        // Calculate RCP points based on actual presence data
+        const totalPresenceMinutes = rcpPresenceData.reduce((sum, item) => sum + (item.totalPresenceMinutes || 0), 0) || 1; // Avoid division by zero
+
+        const presenceMap = new Map(rcpPresenceData.map(item => [item.id, item.totalPresenceMinutes || 0]));
+
+        // --- Calculate Project Implication Scores ---
+        const implicationScores = new Map(); // { associeId: score }
+        associesActifs.forEach(p => implicationScores.set(p.id, 0)); // Initialize scores
+
+        const responsableWeight = 2;
+        const contributeurWeight = 1;
+        let totalImplicationPoints = 0;
+
+        projets.forEach(projet => {
+            const poids = projet.poids || 0;
+
+            // Process Responsables
+            if (Array.isArray(projet.Responsables)) {
+                projet.Responsables.forEach(resp => {
+                    // Ensure resp is a valid professional object and is an active associate
+                    const associe = associesActifs.find(a => a.id === resp.id);
+                    if (associe) {
+                        const scoreToAdd = poids * responsableWeight;
+                        implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
+                        totalImplicationPoints += scoreToAdd;
+                    }
+                });
             }
 
-            const chartElement = document.getElementById('parametres-pie-chart');
-            if (!chartElement) {
-                console.error("Élément canvas 'parametres-pie-chart' non trouvé.");
-                return;
+            // Process Contributeurs
+            if (Array.isArray(projet.Contributeurs)) {
+                projet.Contributeurs.forEach(contrib => {
+                    // Ensure contrib is a valid professional object and is an active associate
+                    const associe = associesActifs.find(a => a.id === contrib.id);
+                    if (associe) {
+                        // Avoid double-counting if someone is both Responsable and Contributeur for the same project
+                        const isAlsoResponsable = projet.Responsables?.some(r => r.id === associe.id);
+                        if (!isAlsoResponsable) {
+                            const scoreToAdd = poids * contributeurWeight;
+                            implicationScores.set(associe.id, (implicationScores.get(associe.id) || 0) + scoreToAdd);
+                            totalImplicationPoints += scoreToAdd;
+                        }
+                    }
+                });
             }
-            const ctx = chartElement.getContext('2d');
+        });
+        totalImplicationPoints = totalImplicationPoints || 1; // Avoid division by zero
+        // --- End Project Implication Calculation ---
 
-            const params = globalData.parametresRepartition;
 
-            // Préparation des données pour le graphique
-            const data = {
-                labels: ['Part Fixe', 'Part RCP', 'Part Projets'],
-                datasets: [{
-                    data: [params.partFixe || 0, params.partRCP || 0, params.partProjets || 0],
-                    backgroundColor: ['#2196F3', '#4CAF50', '#FFC107'], // Matching colors with the bar chart
-                    borderWidth: 1
-                }]
-            };
+        // Préparation des données pour le graphique
+        const data = {
+            labels: associesActifs.map(pro => pro.nom),
+            datasets: [
+                {
+                    label: `Part Fixe (${params.partFixe || 0}%)`,
+                    data: associesActifs.map(pro =>
+                        (montantPartFixe / pointsFixePonderes) * ((pro.statut === 'Cogérant' ? (params.facteurCogerant || 1) : 1) || 1)
+                    ),
+                    backgroundColor: '#2196F3',
+                    stack: 'Stack 0',
+                },
+                {
+                    label: `Part RCP (${params.partRCP || 0}%)`,
+                    // Distribute montantPartRCP based on presence minutes
+                    data: associesActifs.map(p => {
+                        const presenceMinutes = presenceMap.get(p.id) || 0;
+                        return (montantPartRCP * (presenceMinutes / totalPresenceMinutes));
+                    }),
+                    backgroundColor: '#4CAF50',
+                    stack: 'Stack 0',
+                },
+                {
+                    label: `Part Projets (${params.partProjets || 0}%)`,
+                    // Distribute montantPartProjets based on calculated implication scores
+                    data: associesActifs.map(p => {
+                        const individualScore = implicationScores.get(p.id) || 0;
+                        return (montantPartProjets * (individualScore / totalImplicationPoints));
+                    }),
+                    backgroundColor: '#FFC107',
+                    stack: 'Stack 0',
+                }
+            ]
+        };
 
-            // Détruire l'ancien graphique s'il existe
-            if (parametresPieChart instanceof Chart) {
-                parametresPieChart.destroy();
-            }
+        // Détruire l'ancien graphique s'il existe
+        if (repartitionChart instanceof Chart) {
+            repartitionChart.destroy();
+        }
 
-            try {
-                parametresPieChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        return `${label}: ${value}%`;
-                                    }
+        try {
+            repartitionChart = new Chart(ctx, {
+                type: 'bar',
+                data: data, // Utiliser les données préparées
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Répartition estimée des rémunérations' }, // Titre ajouté
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + dataService.formatMontant(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return dataService.formatMontant(value);
                                 }
                             }
                         }
                     }
-                });
-            } catch (chartError) {
-                console.error("Erreur lors de la création du graphique Chart.js (parametres-pie-chart):", chartError);
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctx.textAlign = 'center';
-                ctx.fillText("Erreur graphique", ctx.canvas.width / 2, ctx.canvas.height / 2);
-            }
+                }
+            });
+        } catch (chartError) {
+            console.error("Erreur lors de la création du graphique Chart.js (index.html):", chartError);
+            // Afficher une erreur dans le canvas si la création échoue
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'red';
+            ctx.fillText("Erreur chargement données.", ctx.canvas.width / 2, ctx.canvas.height / 2);
         }
+    }
+
+    // Fonction pour afficher le graphique des paramètres de répartition
+    function updateParametresPieChart() {
+        // Vérifier si les paramètres sont chargés
+        if (!globalData || !globalData.parametresRepartition) {
+            console.warn('Paramètres de répartition manquants pour le graphique (index.html), annulation de la mise à jour.');
+            return;
+        }
+
+        const chartElement = document.getElementById('parametres-pie-chart');
+        if (!chartElement) {
+            console.error("Élément canvas 'parametres-pie-chart' non trouvé.");
+            return;
+        }
+        const ctx = chartElement.getContext('2d');
+
+        const params = globalData.parametresRepartition;
+
+        // Préparation des données pour le graphique
+        const data = {
+            labels: ['Part Fixe', 'Part RCP', 'Part Projets'],
+            datasets: [{
+                data: [params.partFixe || 0, params.partRCP || 0, params.partProjets || 0],
+                backgroundColor: ['#2196F3', '#4CAF50', '#FFC107'], // Matching colors with the bar chart
+                borderWidth: 1
+            }]
+        };
+
+        // Détruire l'ancien graphique s'il existe
+        if (parametresPieChart instanceof Chart) {
+            parametresPieChart.destroy();
+        }
+
+        try {
+            parametresPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (chartError) {
+            console.error("Erreur lors de la création du graphique Chart.js (parametres-pie-chart):", chartError);
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.textAlign = 'center';
+            ctx.fillText("Erreur graphique", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        }
+    }
 
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+
+            // Check if token exists. If not, redirect to login immediately.
+            if (!token) {
+                console.log('No token found, redirecting to login.');
+                window.location.href = '/login.html'; // Use absolute path
+                return; // Stop further execution in this script block
+            }
+
+            // If token exists, proceed to display user info and load data
+            console.log('Token found, proceeding with page load.');
+
             // Display username and avatar on load
             const usernameElement = document.getElementById('usernameDisplay');
-            const avatarElement = document.getElementById('userAvatar'); // Get avatar element
-            const defaultAvatar = '/images/default_avatar.png'; // Default avatar path using new route
-            const token = localStorage.getItem('token');
-            let username = 'Utilisateur'; // Default value if no token or error
-            let avatarSrc = defaultAvatar; // Default avatar src
+            const avatarElement = document.getElementById('userAvatar');
+            const defaultAvatar = '/images/default_avatar.png';
+            let username = 'Utilisateur';
+            let avatarSrc = defaultAvatar;
 
-            if (token) {
-                try {
-                    // Decode JWT payload (second part)
-                    const payloadBase64 = token.split('.')[1];
-                    const payloadJson = atob(payloadBase64);
-                    const payload = JSON.parse(payloadJson);
+            // Decode token to get user info (assuming token exists at this point)
+            try {
+                // Decode JWT payload (second part)
+                const payloadBase64 = token.split('.')[1];
+                const payloadJson = atob(payloadBase64);
+                const payload = JSON.parse(payloadJson);
 
-                    // Set username and avatar from payload if available
-                    if (payload) {
-                        if (payload.username) {
-                            username = payload.username;
-                        }
-                        // Use avatar from payload if it exists, otherwise keep default
-                        if (payload.avatar) {
-                            avatarSrc = payload.avatar;
-                        }
+                // Set username and avatar from payload if available
+                if (payload) {
+                    if (payload.username) {
+                        username = payload.username;
                     }
-                } catch (e) {
-                    console.error('Failed to decode JWT token:', e);
-                    // Keep default username and avatar if decoding fails
+                    // Use avatar from payload if it exists, otherwise keep default
+                    if (payload.avatar) {
+                        avatarSrc = payload.avatar;
+                    }
                 }
-            }
+            } catch (e) {
+                console.error('Failed to decode JWT token:', e);
+                // Keep default username and avatar if decoding fails
+            } // End of try...catch block for token decoding
 
-            // Update DOM elements
-            if (usernameElement) {
-                usernameElement.textContent = username;
-            } else {
-                console.error("Username display element 'usernameDisplay' not found.");
-            }
-            if (avatarElement) {
-                avatarElement.src = avatarSrc;
-                // Optional: Add error handling for the image itself
-                avatarElement.onerror = () => {
-                    console.warn(`Failed to load avatar image: ${avatarSrc}. Falling back to default.`);
-                    avatarElement.src = defaultAvatar; // Set to default on error
-                };
-            } else {
-                console.error("Avatar display element 'userAvatar' not found.");
-            }
+        // Update DOM elements (This code should be inside the listener)
+        if (usernameElement) {
+            usernameElement.textContent = username;
+        } else {
+            console.error("Username display element 'usernameDisplay' not found.");
+        }
+        if (avatarElement) {
+            avatarElement.src = avatarSrc;
+            // Optional: Add error handling for the image itself
+            avatarElement.onerror = () => {
+                console.warn(`Failed to load avatar image: ${avatarSrc}. Falling back to default.`);
+                avatarElement.src = defaultAvatar; // Set to default on error
+            };
+        } else {
+            console.error("Avatar display element 'userAvatar' not found.");
+        }
 
+        updateStatsAndCharts(); // Call the combined function
 
-            updateStatsAndCharts(); // Call the combined function
+        // Rafraîchissement périodique
+        setInterval(updateStatsAndCharts, 30000); // Update stats and charts periodically
+    });
 
-            // Rafraîchissement périodique
-            setInterval(updateStatsAndCharts, 30000); // Update stats and charts periodically
-        });
+    // Explicitly hide dialogs on load to prevent unexpected display
+    //document.getElementById('fonctionnalitesDialog').style.display = 'none';
 
-        // Explicitly hide dialogs on load to prevent unexpected display
-        //document.getElementById('fonctionnalitesDialog').style.display = 'none';
-
-    </script>
-</body>
+</script>
 
 </html>
