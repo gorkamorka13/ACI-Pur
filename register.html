@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-    </div>
+
     <div class="dialog-overlay" id="aProposDialog">
         <div class="dialog-content">
             <div class="dialog-banner">
@@ -168,89 +168,7 @@
     </div>
 
     <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Navbar Functionality
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', (event) => {
-                    const page = event.target.dataset.page;
-                    if (page) { // Only prevent default if data-page exists
-                        event.preventDefault();
-                        switch (page) {
-                            case 'accueil':
-                                window.location.href = 'login.html';
-                                break;
-                            case 'fonctionnalites':
-                                openDialog('fonctionnalitesDialog');
-                                // Populate with README content later
-                                break;
-                            case 'a-propos':
-                                openDialog('aProposDialog');
-                                break;
-                            case 'contact':
-                                openDialog('contactDialog');
-                                break;
-                        }
-                    }
-                    // If no data-page, default link behavior occurs (e.g., opening PDF)
-                });
-            });
-
-            // Close Dialogs
-            document.querySelectorAll('.dialog-close').forEach(closeButton => {
-                closeButton.addEventListener('click', (event) => {
-                    const dialogId = event.target.closest('.dialog-content').parentNode.id;
-                    closeDialog(dialogId);
-                });
-            });
-
-            // Open Dialog Function
-            function openDialog(dialogId) {
-                const dialog = document.getElementById(dialogId);
-                if (dialog) {
-                    dialog.style.display = 'flex';
-                }
-            }
-
-            // Close Dialog Function
-            function closeDialog(dialogId) {
-                const dialog = document.getElementById(dialogId);
-                if (dialog) {
-                    dialog.style.display = 'none';
-                }
-            }
-
-            // --- Contact Form Submission (Client-side only) ---
-            const contactForm = document.getElementById('contactForm');
-            if (contactForm) {
-                contactForm.addEventListener('submit', (event) => {
-                    event.preventDefault();
-                    const contactEmail = document.getElementById('contactEmail').value;
-                    const contactMessage = document.getElementById('contactMessage').value;
-
-                    // Basic validation
-                    if (!contactEmail || !contactMessage) {
-                        alert('Veuillez remplir tous les champs.');
-                        return;
-                    }
-
-                    // In a real application, you would send this data to a server-side endpoint
-                    // to handle sending the email.  Since we don't have access to the server,
-                    // we'll just display an alert.
-                    alert(`Message envoyé (simulé) de ${contactEmail}:\n${contactMessage}`);
-                    closeDialog('contactDialog');
-                });
-            }
-        });
-
-        // Hamburger menu toggle
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
-
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    </script>
+    <script src="js/auth_shared.js"></script>
 </body>
 
 </html>
